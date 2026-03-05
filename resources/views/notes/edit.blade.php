@@ -1,0 +1,218 @@
+<x-app-layout>
+    <div class="abc-page-header">
+            <div class="relative z-10">
+                <h2 class="text-2xl font-bold tracking-tight">Editar Documento: {{ $note->internal_number }}</h2>
+                <p class="text-sm text-white/70 mt-1">Modifique los datos del documento</p>
+            </div>
+        </div>
+
+    <div class="py-6">
+        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+            <div class="abc-card">
+                {{-- Card header --}}
+                <div class="gradient-navy px-6 py-4 flex items-center gap-3">
+                    <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125"/></svg>
+                    <h3 class="text-white font-semibold">Datos del Documento</h3>
+                </div>
+
+                <form method="POST" action="{{ route('notes.update', $note) }}" enctype="multipart/form-data" class="p-6">
+                    @csrf
+                    @method('PUT')
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div>
+                            <label for="box_id" class="abc-label">N. de Caja *</label>
+                            <select name="box_id" id="box_id" required class="abc-input">
+                                @foreach($boxes as $box)
+                                    <option value="{{ $box->id }}" @selected(old('box_id', $note->box_id) == $box->id)>
+                                        {{ $box->box_number }} - {{ $box->description }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('box_id')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label for="internal_number" class="abc-label">N. de CITE *</label>
+                            <input type="text" name="internal_number" id="internal_number"
+                                   value="{{ old('internal_number', $note->internal_number) }}"
+                                   class="abc-input" required>
+                            @error('internal_number')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label for="note_date" class="abc-label">Fecha *</label>
+                            <input type="date" name="note_date" id="note_date"
+                                   value="{{ old('note_date', $note->note_date->format('Y-m-d')) }}"
+                                   class="abc-input" required>
+                            @error('note_date')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label for="doc_type" class="abc-label">Estado del Documento *</label>
+                            <select name="doc_type" id="doc_type" required class="abc-input">
+                                <option value="ORIGINAL" @selected(old('doc_type', $note->doc_type) === 'ORIGINAL')>ORIGINAL</option>
+                                <option value="FOTOCOPIA" @selected(old('doc_type', $note->doc_type) === 'FOTOCOPIA')>FOTOCOPIA</option>
+                                <option value="AMBOS" @selected(old('doc_type', $note->doc_type) === 'AMBOS')>AMBOS</option>
+                                <option value="FOTOGRAFÍA" @selected(old('doc_type', $note->doc_type) === 'FOTOGRAFÍA')>FOTOGRAFÍA</option>
+                            </select>
+                            @error('doc_type')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        {{-- Nota Interno --}}
+                        <div>
+                            <label for="note_type" class="abc-label">Nota Interno *</label>
+                            <select name="note_type" id="note_type" required class="abc-input">
+                                <option value="">-- Seleccionar --</option>
+                                <option value="NOTA INTERNA" @selected(old('note_type', $note->note_type) === 'NOTA INTERNA')>NOTA INTERNA</option>
+                                <option value="NOTA EXTERNA" @selected(old('note_type', $note->note_type) === 'NOTA EXTERNA')>NOTA EXTERNA</option>
+                                <option value="INFORME" @selected(old('note_type', $note->note_type) === 'INFORME')>INFORME</option>
+                                <option value="EVALUACIONES Y/O NOTAS DE LA CONTRALORIA GENERAL DEL ESTADO" @selected(old('note_type', $note->note_type) === 'EVALUACIONES Y/O NOTAS DE LA CONTRALORIA GENERAL DEL ESTADO')>EVALUACIONES Y/O NOTAS DE LA CONTRALORIA GENERAL DEL ESTADO</option>
+                            </select>
+                            @error('note_type')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label for="pages" class="abc-label">Fojas *</label>
+                            <input type="number" name="pages" id="pages" value="{{ old('pages', $note->pages) }}" min="1"
+                                   class="abc-input" required>
+                            @error('pages')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="mt-5">
+                        <label for="reference" class="abc-label">Referencia *</label>
+                        <textarea name="reference" id="reference" rows="2"
+                                  class="abc-input" required>{{ old('reference', $note->reference) }}</textarea>
+                        @error('reference')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="mt-5">
+                        <label for="observations" class="abc-label">Observaciones</label>
+                        <textarea name="observations" id="observations" rows="2"
+                                  class="abc-input">{{ old('observations', $note->observations) }}</textarea>
+                    </div>
+
+                    {{-- Adjuntos existentes --}}
+                    @if($note->attachments->count())
+                        <div class="mt-6">
+                            <label class="abc-label">Adjuntos existentes</label>
+                            <div class="space-y-2 mt-2">
+                                @foreach($note->attachments as $attachment)
+                                    <div class="flex items-center justify-between bg-gray-50 border border-gray-100 p-3 rounded-lg">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-8 h-8 rounded-lg gradient-navy flex items-center justify-center flex-shrink-0">
+                                                <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13"/></svg>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-700">{{ $attachment->original_name }}</p>
+                                                <p class="text-xs text-gray-400">({{ number_format($attachment->file_size / 1024, 1) }} KB)</p>
+                                            </div>
+                                        </div>
+                                        <form method="POST" action="{{ route('attachments.destroy', $attachment) }}"
+                                              onsubmit="return confirm('¿Eliminar este adjunto?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="abc-btn abc-btn-danger text-xs !px-3 !py-1.5">
+                                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/></svg>
+                                                Eliminar
+                                            </button>
+                                        </form>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+
+                    {{-- Nuevos adjuntos --}}
+                    <div class="mt-5" x-data="fileUpload()">
+                        <label class="abc-label">Agregar nuevos adjuntos</label>
+                        <div class="mt-1 border-2 border-dashed rounded-xl p-6 text-center transition-all duration-200 cursor-pointer"
+                             :class="dragging ? 'border-blue-400 bg-blue-50/50 dark:bg-blue-900/20 scale-[1.01]' : 'border-gray-200 dark:border-gray-700 hover:border-blue-300 hover:bg-blue-50/30 dark:hover:bg-blue-900/10'"
+                             @click="$refs.fileInput.click()"
+                             @dragover.prevent="dragging = true"
+                             @dragleave.prevent="dragging = false"
+                             @drop.prevent="dragging = false; handleDrop($event)">
+                            <svg class="w-10 h-10 mx-auto mb-3 transition-colors" :class="dragging ? 'text-blue-400' : 'text-gray-300 dark:text-gray-600'" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"/></svg>
+                            <p class="text-sm font-medium" style="color: var(--text-secondary);">Haga clic o arrastre archivos aquí</p>
+                            <p class="text-xs mt-1" style="color: var(--text-muted);">PDF, JPG, PNG &mdash; Máximo 10MB por archivo</p>
+                            <input x-ref="fileInput" type="file" name="attachments[]" multiple accept=".pdf,.jpg,.jpeg,.png" class="hidden" @change="handleFiles($event)">
+                        </div>
+
+                        {{-- Lista de archivos seleccionados --}}
+                        <template x-if="files.length > 0">
+                            <div class="mt-3 space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <p class="text-xs font-bold" style="color: var(--text-primary);">
+                                        <span x-text="files.length"></span> archivo(s) nuevo(s)
+                                    </p>
+                                    <button type="button" @click="clearAll()" class="text-xs text-red-500 hover:text-red-700 font-medium transition">
+                                        Quitar todos
+                                    </button>
+                                </div>
+                                <template x-for="(file, index) in files" :key="index">
+                                    <div class="flex items-center gap-3 p-2.5 rounded-lg border transition-all animate-fade-in-up"
+                                         style="background: var(--surface-input); border-color: var(--surface-border);">
+                                        <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                                             :class="file.type.includes('pdf') ? 'bg-red-50 dark:bg-red-900/30' : 'bg-blue-50 dark:bg-blue-900/30'">
+                                            <template x-if="file.type.includes('pdf')">
+                                                <svg class="w-4 h-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" /></svg>
+                                            </template>
+                                            <template x-if="!file.type.includes('pdf')">
+                                                <svg class="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0 0 22.5 18.75V5.25A2.25 2.25 0 0 0 20.25 3H3.75A2.25 2.25 0 0 0 1.5 5.25v13.5A2.25 2.25 0 0 0 3.75 21Z" /></svg>
+                                            </template>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-sm font-medium truncate" style="color: var(--text-primary);" x-text="file.name"></p>
+                                            <p class="text-xs" style="color: var(--text-muted);" x-text="formatSize(file.size)"></p>
+                                        </div>
+                                        <button type="button" @click="removeFile(index)" class="p-1 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+                                        </button>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
+
+                    {{-- Botones --}}
+                    <div class="mt-8 flex justify-end gap-3 pt-5 border-t" style="border-color: var(--surface-border);" x-data="{ submitting: false }">
+                        <a href="{{ route('notes.show', $note) }}" class="abc-btn abc-btn-ghost">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+                            Cancelar
+                        </a>
+                        <button type="submit" class="abc-btn abc-btn-success" :disabled="submitting"
+                                @click="submitting = true; $nextTick(() => { $el.closest('form').submit() })">
+                            <template x-if="!submitting">
+                                <span class="flex items-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
+                                    Actualizar Nota
+                                </span>
+                            </template>
+                            <template x-if="submitting">
+                                <span class="flex items-center gap-2">
+                                    <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                    Subiendo archivos...
+                                </span>
+                            </template>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</x-app-layout>

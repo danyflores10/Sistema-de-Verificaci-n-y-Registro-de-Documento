@@ -1,0 +1,215 @@
+<x-app-layout>
+    <div class="abc-page-header">
+            <div class="flex justify-between items-center relative z-10">
+                <div class="flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-amber-300" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M4.5 6.375a4.125 4.125 0 118.25 0 4.125 4.125 0 01-8.25 0zM14.25 8.625a3.375 3.375 0 116.75 0 3.375 3.375 0 01-6.75 0zM1.5 19.125a7.125 7.125 0 0114.25 0v.003l-.001.119a.75.75 0 01-.363.63 13.067 13.067 0 01-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 01-.364-.63l-.001-.122zM17.25 19.128l-.001.144a2.25 2.25 0 01-.233.96 10.088 10.088 0 005.06-1.01.75.75 0 00.42-.643 4.875 4.875 0 00-6.957-4.611 8.586 8.586 0 011.71 5.157v.003z"/>
+                    </svg>
+                    <div>
+                        <h2 class="text-2xl font-bold tracking-tight">Gestion de Usuarios</h2>
+                        <p class="text-white/70 text-sm mt-1">Administracion de cuentas y permisos del sistema</p>
+                    </div>
+                </div>
+                <a href="{{ route('users.create') }}" class="abc-btn abc-btn-warning">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
+                    </svg>
+                    Nuevo Usuario
+                </a>
+            </div>
+        </div>
+
+    <div class="py-6">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+
+            {{-- Filtros --}}
+            <div class="abc-filter-bar">
+                <form method="GET" action="{{ route('users.index') }}" class="flex flex-col sm:flex-row gap-4 items-end">
+                    <div class="flex-1">
+                        <label class="abc-label">Buscar</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
+                                </svg>
+                            </span>
+                            <input type="text" name="search" value="{{ request('search') }}"
+                                   placeholder="Nombre o correo..."
+                                   class="abc-input pl-10">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="abc-label">Rol</label>
+                        <select name="role" class="abc-input">
+                            <option value="">-- Todos --</option>
+                            <option value="ADMIN" @selected(request('role') === 'ADMIN')>ADMIN</option>
+                            <option value="USUARIO" @selected(request('role') === 'USUARIO')>USUARIO</option>
+                        </select>
+                    </div>
+                    <div class="flex gap-2">
+                        <button type="submit" class="abc-btn abc-btn-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
+                            </svg>
+                            Buscar
+                        </button>
+                        <a href="{{ route('users.index') }}" class="abc-btn abc-btn-ghost">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                            </svg>
+                            Limpiar
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            {{-- Tabla --}}
+            <div class="abc-card">
+                <div class="overflow-x-auto">
+                    <table class="abc-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Usuario</th>
+                                <th>Email</th>
+                                <th class="text-center">Rol</th>
+                                <th class="text-center">Estado</th>
+                                <th class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($users as $user)
+                                <tr x-data="{ showReset: false }">
+                                    <td class="font-mono text-xs" style="color: var(--text-muted)">{{ $user->id }}</td>
+                                    <td>
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-9 h-9 rounded-full gradient-navy flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                                                {{ strtoupper(substr($user->name, 0, 2)) }}
+                                            </div>
+                                            <span class="font-semibold" style="color: var(--text-primary)">{{ $user->name }}</span>
+                                        </div>
+                                    </td>
+                                    <td style="color: var(--text-secondary)">{{ $user->email }}</td>
+                                    <td class="text-center">
+                                        @if($user->role === 'ADMIN')
+                                            <span class="abc-badge bg-red-50 text-red-700 border border-red-200">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                                </svg>
+                                                ADMIN
+                                            </span>
+                                        @else
+                                            <span class="abc-badge bg-blue-50 text-blue-700 border border-blue-200">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                                                </svg>
+                                                USUARIO
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td class="text-center">
+                                        @if($user->is_active)
+                                            <span class="abc-badge bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                                </svg>
+                                                Activo
+                                            </span>
+                                        @else
+                                            <span class="abc-badge bg-red-50 text-red-700 border border-red-200">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                                                </svg>
+                                                Inactivo
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <div class="flex justify-center gap-2">
+                                            <a href="{{ route('users.edit', $user) }}" class="abc-btn abc-btn-ghost !px-3 !py-1.5 text-xs">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                                                </svg>
+                                                Editar
+                                            </a>
+                                            <form method="POST" action="{{ route('users.toggle-active', $user) }}" class="inline">
+                                                @csrf
+                                                @if($user->is_active)
+                                                    <button type="submit" class="abc-btn abc-btn-danger !px-3 !py-1.5 text-xs">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                                                            <path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clip-rule="evenodd"/>
+                                                        </svg>
+                                                        Desactivar
+                                                    </button>
+                                                @else
+                                                    <button type="submit" class="abc-btn abc-btn-success !px-3 !py-1.5 text-xs">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                                        </svg>
+                                                        Activar
+                                                    </button>
+                                                @endif
+                                            </form>
+                                            <button @click="showReset = !showReset" type="button"
+                                                    class="abc-btn abc-btn-warning !px-3 !py-1.5 text-xs">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+                                                </svg>
+                                                Reset Pass
+                                            </button>
+                                        </div>
+
+                                        {{-- Form reset password con Alpine.js --}}
+                                        <div x-show="showReset"
+                                             x-transition:enter="transition ease-out duration-200"
+                                             x-transition:enter-start="opacity-0 -translate-y-2"
+                                             x-transition:enter-end="opacity-100 translate-y-0"
+                                             x-transition:leave="transition ease-in duration-150"
+                                             x-transition:leave-start="opacity-100 translate-y-0"
+                                             x-transition:leave-end="opacity-0 -translate-y-2"
+                                             x-cloak
+                                             class="mt-3 p-3 bg-amber-50 rounded-lg border border-amber-200 text-left">
+                                            <form method="POST" action="{{ route('users.reset-password', $user) }}">
+                                                @csrf
+                                                <label class="abc-label text-xs !text-amber-700">Nueva contrasena</label>
+                                                <input type="password" name="password" placeholder="Nueva contrasena"
+                                                       class="abc-input !border-amber-300 !bg-white text-xs mb-2" required>
+                                                <input type="password" name="password_confirmation" placeholder="Confirmar contrasena"
+                                                       class="abc-input !border-amber-300 !bg-white text-xs mb-2" required>
+                                                <div class="flex justify-end gap-2">
+                                                    <button @click="showReset = false" type="button" class="abc-btn abc-btn-ghost !px-3 !py-1.5 text-xs">
+                                                        Cancelar
+                                                    </button>
+                                                    <button type="submit" class="abc-btn abc-btn-warning !px-3 !py-1.5 text-xs">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                                        </svg>
+                                                        Cambiar
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="text-center py-12">
+                                        <div class="flex flex-col items-center gap-3">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/>
+                                            </svg>
+                                            <p class="font-medium" style="color: var(--text-muted)">No hay usuarios registrados.</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+                <div class="px-5 py-4" style="border-top: 1px solid var(--border-primary)">
+                    {{ $users->links() }}
+                </div>
+            </div>
+        </div>
+    </div>
+</x-app-layout>
