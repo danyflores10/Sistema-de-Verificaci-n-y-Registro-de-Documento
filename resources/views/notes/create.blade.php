@@ -10,9 +10,18 @@
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
             <div class="abc-card">
                 {{-- Card header --}}
-                <div class="gradient-navy px-6 py-4 flex items-center gap-3">
-                    <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>
-                    <h3 class="text-white font-semibold">Datos del Documento</h3>
+                {{-- Header con gradiente mejorado --}}
+                <div class="relative overflow-hidden px-6 py-5 flex items-center gap-3"
+                     style="background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-light) 50%, #0d9488 100%);">
+                    <div class="absolute inset-0 opacity-10"
+                         style="background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.15) 10px, rgba(255,255,255,0.15) 20px);"></div>
+                    <div class="relative z-10 w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center shadow-inner">
+                        <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>
+                    </div>
+                    <div class="relative z-10">
+                        <h3 class="text-white font-bold text-lg leading-tight">Registrar Nuevo Documento</h3>
+                        <p class="text-white/70 text-xs mt-0.5">Complete todos los campos obligatorios (*)</p>
+                    </div>
                 </div>
 
                 <form method="POST" action="{{ route('notes.store') }}" enctype="multipart/form-data" class="p-6">
@@ -106,7 +115,64 @@
                         @enderror
                     </div>
 
-                    {{-- Observaciones --}}
+                    {{-- ======= SECCIÓN CORRESPONDENCIA ======= --}}
+                    <div class="mt-6 rounded-xl overflow-hidden border" style="border-color: var(--surface-border);">
+                        <div class="gradient-teal px-5 py-3 flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
+                                <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"/></svg>
+                            </div>
+                            <div>
+                                <h4 class="text-white font-bold text-sm">Información de Correspondencia</h4>
+                                <p class="text-white/70 text-[11px]">Datos del remitente, destinatario y vía de envío</p>
+                            </div>
+                        </div>
+                        <div class="p-5 grid grid-cols-1 md:grid-cols-3 gap-5" style="background-color: var(--surface-card);">
+                            <div>
+                                <label for="remitente" class="abc-label flex items-center gap-1.5">
+                                    <span class="w-2 h-2 rounded-full bg-teal-500 inline-block"></span>
+                                    Remitente *
+                                </label>
+                                <input type="text" name="remitente" id="remitente"
+                                       value="{{ old('remitente') }}"
+                                       class="abc-input !focus:ring-teal-100 !focus:border-teal-400"
+                                       placeholder="Nombre del remitente" required>
+                                @error('remitente')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            <div>
+                                <label for="destinatario" class="abc-label flex items-center gap-1.5">
+                                    <span class="w-2 h-2 rounded-full bg-teal-600 inline-block"></span>
+                                    Destinatario *
+                                </label>
+                                <input type="text" name="destinatario" id="destinatario"
+                                       value="{{ old('destinatario') }}"
+                                       class="abc-input"
+                                       placeholder="Nombre del destinatario" required>
+                                @error('destinatario')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            <div>
+                                <label for="via" class="abc-label flex items-center gap-1.5">
+                                    <span class="w-2 h-2 rounded-full bg-cyan-500 inline-block"></span>
+                                    Vía *
+                                </label>
+                                <select name="via" id="via" class="abc-input" required>
+                                    <option value="">-- Seleccionar --</option>
+                                    <option value="CORREO FÍSICO" @selected(old('via') === 'CORREO FÍSICO')>CORREO FÍSICO</option>
+                                    <option value="CORREO ELECTRÓNICO" @selected(old('via') === 'CORREO ELECTRÓNICO')>CORREO ELECTRÓNICO</option>
+                                    <option value="MENSAJERO" @selected(old('via') === 'MENSAJERO')>MENSAJERO</option>
+                                    <option value="FAX" @selected(old('via') === 'FAX')>FAX</option>
+                                    <option value="ENTREGA PERSONAL" @selected(old('via') === 'ENTREGA PERSONAL')>ENTREGA PERSONAL</option>
+                                    <option value="OTRO" @selected(old('via') === 'OTRO')>OTRO</option>
+                                </select>
+                                @error('via')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
                     <div class="mt-5">
                         <label for="observations" class="abc-label">Observaciones</label>
                         <textarea name="observations" id="observations" rows="2"
@@ -180,7 +246,7 @@
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
                             Cancelar
                         </a>
-                        <button type="submit" class="abc-btn abc-btn-success" :disabled="submitting"
+                        <button type="button" class="abc-btn abc-btn-success" :disabled="submitting"
                                 @click="submitting = true; $nextTick(() => { $el.closest('form').submit() })">
                             <template x-if="!submitting">
                                 <span class="flex items-center gap-2">

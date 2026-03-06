@@ -82,6 +82,43 @@
                         </div>
                     </div>
 
+                    {{-- Sección Correspondencia --}}
+                    <div class="mt-5 rounded-xl overflow-hidden border" style="border-color: #0d9488;">
+                        <div class="gradient-teal px-4 py-2.5 flex items-center gap-2">
+                            <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"/></svg>
+                            <span class="text-white font-bold text-sm">Información de Correspondencia</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3" style="background: linear-gradient(135deg, rgba(13,148,136,0.04) 0%, rgba(6,182,212,0.04) 100%);">
+                            <div class="p-4 flex items-start gap-3 border-b md:border-b-0 md:border-r" style="border-color: var(--surface-border);">
+                                <div class="w-8 h-8 rounded-lg bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                    <svg class="w-4 h-4 text-teal-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
+                                </div>
+                                <div>
+                                    <span class="text-[11px] uppercase font-bold tracking-wider text-teal-600 dark:text-teal-400">Remitente</span>
+                                    <p class="font-semibold mt-0.5" style="color: var(--text-primary)">{{ $note->remitente ?? '-' }}</p>
+                                </div>
+                            </div>
+                            <div class="p-4 flex items-start gap-3 border-b md:border-b-0 md:border-r" style="border-color: var(--surface-border);">
+                                <div class="w-8 h-8 rounded-lg bg-cyan-100 dark:bg-cyan-900/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                    <svg class="w-4 h-4 text-cyan-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"/></svg>
+                                </div>
+                                <div>
+                                    <span class="text-[11px] uppercase font-bold tracking-wider text-cyan-600 dark:text-cyan-400">Destinatario</span>
+                                    <p class="font-semibold mt-0.5" style="color: var(--text-primary)">{{ $note->destinatario ?? '-' }}</p>
+                                </div>
+                            </div>
+                            <div class="p-4 flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                    <svg class="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5"/></svg>
+                                </div>
+                                <div>
+                                    <span class="text-[11px] uppercase font-bold tracking-wider text-emerald-600 dark:text-emerald-400">Vía</span>
+                                    <p class="font-semibold mt-0.5" style="color: var(--text-primary)">{{ $note->via ?? '-' }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="mt-5 pt-5" style="border-top: 1px solid var(--border-primary)">
                         <span class="text-[11px] uppercase font-bold tracking-wider" style="color: var(--text-muted)">Referencia</span>
                         <p class="mt-1" style="color: var(--text-secondary)">{{ $note->reference }}</p>

@@ -350,6 +350,10 @@
     .gradient-navy { background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-light) 100%); transition: background 0.4s ease; }
     .gradient-red { background: linear-gradient(135deg, var(--abc-red) 0%, var(--abc-red-light) 100%); }
     .gradient-gold { background: linear-gradient(135deg, var(--abc-gold) 0%, var(--abc-gold-light) 100%); }
+    .gradient-teal { background: linear-gradient(135deg, #0d9488 0%, #14b8a6 60%, #06b6d4 100%); }
+    .gradient-purple { background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 60%, #a78bfa 100%); }
+    .gradient-emerald { background: linear-gradient(135deg, #059669 0%, #10b981 60%, #34d399 100%); }
+    .gradient-rose { background: linear-gradient(135deg, #e11d48 0%, #f43f5e 60%, #fb7185 100%); }
     .text-abc-navy { color: var(--abc-navy); }
     .text-abc-red { color: var(--abc-red); }
     .text-abc-gold { color: var(--abc-gold); }
