@@ -75,9 +75,6 @@
                         <select name="role" id="role" required class="abc-input">
                             <option value="USUARIO" @selected(old('role') === 'USUARIO')>USUARIO</option>
                             <option value="ADMIN" @selected(old('role') === 'ADMIN')>ADMIN</option>
-                            @if(auth()->user()->isSuperAdmin())
-                                <option value="SUPER_ADMIN" @selected(old('role') === 'SUPER_ADMIN')>SUPER ADMINISTRADOR</option>
-                            @endif
                         </select>
                         @error('role')
                             <p class="text-red-500 text-xs mt-1.5 flex items-center gap-1">

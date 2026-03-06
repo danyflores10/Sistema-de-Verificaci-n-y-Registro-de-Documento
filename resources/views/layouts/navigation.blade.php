@@ -1,12 +1,20 @@
 {{-- Sidebar Navigation --}}
-<aside class="abc-sidebar fixed inset-y-0 left-0 z-40 flex flex-col transition-all duration-300 border-r border-white/5"
+<aside class="abc-sidebar fixed inset-y-0 left-0 z-40 flex flex-col transition-all duration-300 border-r border-white/5 overflow-hidden"
        :class="[
            sidebarOpen ? 'w-64' : 'w-20',
            mobileSidebar ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
        ]">
 
+    {{-- Aceternity Gradient Blobs (fondo animado del sidebar) --}}
+    <div class="sidebar-gradient-blobs">
+        <div class="sidebar-blob sb-1 animate-first"></div>
+        <div class="sidebar-blob sb-2 animate-second"></div>
+        <div class="sidebar-blob sb-3 animate-fourth"></div>
+        <div class="sidebar-blob sb-4 animate-third"></div>
+    </div>
+
     {{-- Logo Header --}}
-    <div class="flex items-center h-16 px-4 border-b border-white/10 flex-shrink-0">
+    <div class="relative z-10 flex items-center h-16 px-4 border-b border-white/10 flex-shrink-0">
         <a href="{{ route('dashboard') }}" class="flex items-center gap-3 overflow-hidden">
             <div class="flex-shrink-0 w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center">
                 <img src="{{ asset('images/logoCorreos.png') }}" alt="ABC" class="w-10 h-10 object-contain drop-shadow-lg">
@@ -23,11 +31,7 @@
     </div>
 
     {{-- Navigation Links --}}
-    <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1 relative">
-        {{-- Watermark logo de fondo --}}
-        <div class="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden" aria-hidden="true">
-            <img src="{{ asset('images/logoCorreos.png') }}" alt="" class="w-44 h-44 object-contain opacity-[0.04] select-none" draggable="false">
-        </div>
+    <nav class="relative z-10 flex-1 overflow-y-auto py-4 px-3 space-y-1">
         {{-- Section: Principal --}}
         <div x-show="sidebarOpen" class="px-3 mb-2">
             <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Principal</p>
@@ -78,7 +82,7 @@
 
             @if(auth()->user()->hasModule('verification'))
             <a href="{{ route('verification.index') }}"
-               class="abc-sidebar-link {{ request()->routeIs('verification.*') ? 'active' : '' }}">
+               class="abc-sidebar-link {{ request()->routeIs('verification.index') ? 'active' : '' }}">
                 <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" />
                 </svg>
@@ -86,6 +90,13 @@
                 @if(isset($pendingCount) && $pendingCount > 0)
                     <span class="ml-auto bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{{ $pendingCount }}</span>
                 @endif
+            </a>
+            <a href="{{ route('verification.approved') }}"
+               class="abc-sidebar-link {{ request()->routeIs('verification.approved') ? 'active' : '' }}">
+                <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+                </svg>
+                <span x-show="sidebarOpen" class="truncate">Aprobaciones</span>
             </a>
             @endif
 
@@ -164,7 +175,7 @@
     </nav>
 
     {{-- Sidebar Footer --}}
-    <div class="border-t border-white/10 p-3 flex-shrink-0">
+    <div class="relative z-10 border-t border-white/10 p-3 flex-shrink-0">
         <div x-show="sidebarOpen" class="px-2">
             <p class="text-[9px] text-gray-500 leading-relaxed text-center">Agencia Boliviana de Correos<br>v1.0 &mdash; 2026</p>
         </div>

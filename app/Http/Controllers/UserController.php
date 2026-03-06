@@ -41,7 +41,7 @@ class UserController extends Controller
             'name'     => 'required|string|max:150',
             'email'    => 'required|email|max:150|unique:users,email',
             'password' => ['required', 'confirmed', Password::defaults()],
-            'role'     => 'required|in:SUPER_ADMIN,ADMIN,USUARIO',
+            'role'     => 'required|in:ADMIN,USUARIO',
         ], [
             'name.required'  => 'El nombre es obligatorio.',
             'email.required' => 'El correo electrónico es obligatorio.',
@@ -74,7 +74,7 @@ class UserController extends Controller
         $validated = $request->validate([
             'name'  => 'required|string|max:150',
             'email' => 'required|email|max:150|unique:users,email,' . $user->id,
-            'role'  => 'required|in:SUPER_ADMIN,ADMIN,USUARIO',
+            'role'  => 'required|in:ADMIN,USUARIO',
         ]);
 
         $old = $user->only(['name', 'email', 'role']);

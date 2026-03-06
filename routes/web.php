@@ -57,7 +57,7 @@ Route::middleware(['auth', 'active'])->group(function () {
     // ========================================
     // SOLO ADMIN
     // ========================================
-    Route::middleware('role:SUPER_ADMIN,ADMIN')->group(function () {
+    Route::middleware('role:ADMIN')->group(function () {
 
         // Gestión de usuarios
         Route::resource('users', UserController::class)->except(['show', 'destroy']);
@@ -66,6 +66,7 @@ Route::middleware(['auth', 'active'])->group(function () {
 
         // Verificación / Revisión
         Route::get('/verification', [VerificationController::class, 'index'])->name('verification.index');
+        Route::get('/verification/approved', [VerificationController::class, 'approved'])->name('verification.approved');
         Route::post('/verification/{note}/verify', [VerificationController::class, 'verify'])->name('verification.verify');
         Route::post('/verification/{note}/reject', [VerificationController::class, 'reject'])->name('verification.reject');
 

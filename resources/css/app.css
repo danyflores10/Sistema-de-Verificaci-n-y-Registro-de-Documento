@@ -81,8 +81,41 @@
 
     /* ── Sidebar ── */
     .abc-sidebar {
-        background: linear-gradient(180deg, var(--accent-primary) 0%, var(--accent-dark) 100%);
-        transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.4s ease;
+        background: #060610;
+        transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    /* Blobs animados dentro del sidebar */
+    .sidebar-gradient-blobs {
+        position: absolute;
+        inset: 0;
+        filter: blur(60px);
+        overflow: hidden;
+        pointer-events: none;
+        z-index: 0;
+    }
+    .sidebar-blob {
+        position: absolute;
+        width: 160%;
+        height: 160%;
+        top: -30%;
+        left: -30%;
+        transform-origin: center center;
+        will-change: transform;
+    }
+    .sb-1 {
+        background: radial-gradient(circle at center, rgba(18, 113, 255, 0.55) 0%, transparent 55%) no-repeat;
+    }
+    .sb-2 {
+        background: radial-gradient(circle at center, rgba(180, 30, 180, 0.45) 0%, transparent 55%) no-repeat;
+        transform-origin: calc(50% - 120px);
+    }
+    .sb-3 {
+        background: radial-gradient(circle at center, rgba(200, 30, 50, 0.40) 0%, transparent 55%) no-repeat;
+        transform-origin: calc(50% + 80px) calc(50% + 80px);
+    }
+    .sb-4 {
+        background: radial-gradient(circle at center, rgba(110, 50, 255, 0.40) 0%, transparent 55%) no-repeat;
+        transform-origin: calc(50% - 60px) calc(50% + 120px);
     }
     .abc-sidebar-link {
         @apply flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200;
@@ -398,16 +431,51 @@
 
 /* ── Login Page ── */
 .login-bg {
-    background: linear-gradient(135deg, var(--abc-navy) 0%, var(--abc-navy-dark) 40%, var(--abc-red) 100%);
+    background: #060610;
     position: relative;
 }
 .login-bg::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0v60M0 30h60' stroke='rgba(255,255,255,0.03)' stroke-width='1'/%3E%3C/svg%3E");
-    pointer-events: none;
+    display: none;
 }
+
+/* ── Aceternity Gradient Blobs ── */
+.gradient-blobs-container {
+    position: absolute;
+    inset: 0;
+    filter: blur(80px);
+    overflow: hidden;
+}
+.gradient-blob {
+    position: absolute;
+    width: 80%;
+    height: 80%;
+    top: 10%;
+    left: 10%;
+    transform-origin: center center;
+    will-change: transform;
+    opacity: 1;
+}
+.gradient-blob-1 {
+    background: radial-gradient(circle at center, rgba(18, 113, 255, 0.75) 0%, rgba(18, 113, 255, 0) 55%) no-repeat;
+}
+.gradient-blob-2 {
+    background: radial-gradient(circle at center, rgba(180, 30, 180, 0.75) 0%, rgba(180, 30, 180, 0) 55%) no-repeat;
+    transform-origin: calc(50% - 400px);
+}
+.gradient-blob-3 {
+    background: radial-gradient(circle at center, rgba(82, 196, 255, 0.75) 0%, rgba(82, 196, 255, 0) 55%) no-repeat;
+    transform-origin: calc(50% + 400px);
+}
+.gradient-blob-4 {
+    background: radial-gradient(circle at center, rgba(200, 30, 50, 0.65) 0%, rgba(200, 30, 50, 0) 55%) no-repeat;
+    transform-origin: calc(50% - 200px) calc(50% + 200px);
+}
+.gradient-blob-5 {
+    background: radial-gradient(circle at center, rgba(110, 50, 255, 0.7) 0%, rgba(110, 50, 255, 0) 55%) no-repeat;
+    transform-origin: calc(50% - 800px) calc(50% + 200px);
+}
+
+
 
 /* Glass Card for Login */
 .glass-card {

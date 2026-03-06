@@ -133,9 +133,9 @@
                                     Remitente *
                                 </label>
                                 <input type="text" name="remitente" id="remitente"
-                                       value="{{ old('remitente') }}"
-                                       class="abc-input !focus:ring-teal-100 !focus:border-teal-400"
-                                       placeholder="Nombre del remitente" required>
+                                       value="{{ old('remitente', auth()->user()->name) }}"
+                                       class="abc-input !focus:ring-teal-100 !focus:border-teal-400 bg-gray-50 cursor-not-allowed"
+                                       placeholder="Nombre del remitente" readonly required>
                                 @error('remitente')
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                 @enderror

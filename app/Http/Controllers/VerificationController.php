@@ -84,4 +84,33 @@ class VerificationController extends Controller
         return redirect()->route('verification.index')
                          ->with('success', 'Nota rechazada.');
     }
+
+    /**
+     * Historial de documentos aprobados (VERIFICADO) con filtros de fecha
+     */
+    public function approved(Request $request)
+    {
+        $query = InternalNote::with(['box', 'creator', 'verifier'])
+                    ->where('status', 'VERIFICADO');
+
+        if ($dateFrom = $request->get('date_from')) {
+            $query->whereDate('verified_at', '>=', $dateFrom);
+        }
+        if ($dateTo = $request->get('date_to')) {
+            $query->whereDate('verified_at', '<=', $dateTo);
+        }
+        if ($search = $request->get('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('internal_number', 'like', "%{$search}%")
+                  ->orWhere('reference', 'like', "%{$search}%")
+                  ->orWhere('remitente', 'like', "%{$search}%")
+                  ->orWhere('destinatario', 'like', "%{$search}%");
+            });
+        }
+
+        $notes = $query->latest('verified_at')->paginate(20)->withQueryString();
+        $total = InternalNote::where('status', 'VERIFICADO')->count();
+
+        return view('verification.approved', compact('notes', 'total'));
+    }
 }

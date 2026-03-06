@@ -36,7 +36,6 @@
                         <label class="abc-label">Rol</label>
                         <select name="role" class="abc-input">
                             <option value="">-- Todos --</option>
-                            <option value="SUPER_ADMIN" @selected(request('role') === 'SUPER_ADMIN')>SUPER ADMIN</option>
                             <option value="ADMIN" @selected(request('role') === 'ADMIN')>ADMIN</option>
                             <option value="USUARIO" @selected(request('role') === 'USUARIO')>USUARIO</option>
                         </select>
@@ -71,9 +70,7 @@
                                 <div>
                                     <div class="flex items-center gap-2 flex-wrap">
                                         <span class="font-semibold text-base" style="color: var(--text-primary)">{{ $user->name }}</span>
-                                        @if($user->role === 'SUPER_ADMIN')
-                                            <span class="abc-badge bg-purple-50 text-purple-700 border border-purple-200 text-[10px]">SUPER ADMIN</span>
-                                        @elseif($user->role === 'ADMIN')
+                                        @if($user->role === 'ADMIN')
                                             <span class="abc-badge bg-red-50 text-red-700 border border-red-200 text-[10px]">ADMIN</span>
                                         @else
                                             <span class="abc-badge bg-blue-50 text-blue-700 border border-blue-200 text-[10px]">USUARIO</span>
@@ -96,7 +93,7 @@
                                     {{ $activeModules }}/{{ $totalModules }} módulos
                                 </span>
 
-                                @if($user->id !== auth()->id() && !($user->isSuperAdmin() && !auth()->user()->isSuperAdmin()))
+                                @if($user->id !== auth()->id())
                                     <button @click="expanded = !expanded" type="button"
                                             class="abc-btn abc-btn-primary !px-4 !py-2 text-xs">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform duration-200"

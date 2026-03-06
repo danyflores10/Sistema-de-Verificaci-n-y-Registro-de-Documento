@@ -24,7 +24,7 @@
                     </div>
                 </div>
 
-                <form method="POST" action="{{ route('notes.update', $note) }}" enctype="multipart/form-data" class="p-6">
+                <form id="edit-note-form" method="POST" action="{{ route('notes.update', $note) }}" enctype="multipart/form-data" class="p-6">
                     @csrf
                     @method('PUT')
 
@@ -265,7 +265,7 @@
                             Cancelar
                         </a>
                         <button type="button" class="abc-btn abc-btn-success" :disabled="submitting"
-                                @click="submitting = true; $nextTick(() => { $el.closest('form').submit() })">
+                                @click="submitting = true; $nextTick(() => { document.getElementById('edit-note-form').submit() })">
                             <template x-if="!submitting">
                                 <span class="flex items-center gap-2">
                                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>

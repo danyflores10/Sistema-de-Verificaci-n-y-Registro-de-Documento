@@ -59,7 +59,7 @@ class User extends Authenticatable
      */
     public function getAllowedModules(): array
     {
-        if ($this->isSuperAdmin()) {
+        if ($this->isAdmin()) {
             return array_keys(self::ALL_MODULES);
         }
 
@@ -71,7 +71,7 @@ class User extends Authenticatable
      */
     public function hasModule(string $module): bool
     {
-        if ($this->isSuperAdmin()) {
+        if ($this->isAdmin()) {
             return true;
         }
 
@@ -87,14 +87,9 @@ class User extends Authenticatable
 
     /* ---- Helpers de rol ---- */
 
-    public function isSuperAdmin(): bool
-    {
-        return $this->role === 'SUPER_ADMIN';
-    }
-
     public function isAdmin(): bool
     {
-        return in_array($this->role, ['SUPER_ADMIN', 'ADMIN']);
+        return $this->role === 'ADMIN';
     }
 
     public function isUsuario(): bool

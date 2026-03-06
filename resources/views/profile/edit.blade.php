@@ -33,14 +33,12 @@
                     <p class="text-sm" style="color: var(--text-muted);">{{ Auth::user()->email }}</p>
                     <div class="flex items-center justify-center sm:justify-start gap-2 mt-2">
                         <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold
-                            @if(Auth::user()->isSuperAdmin()) bg-purple-50 text-purple-700 border border-purple-200
-                            @elseif(Auth::user()->role === 'ADMIN') bg-red-50 text-red-700 border border-red-200
+                            @if(Auth::user()->role === 'ADMIN') bg-red-50 text-red-700 border border-red-200
                             @else bg-blue-50 text-blue-700 border border-blue-200 @endif">
                             <span class="w-1.5 h-1.5 rounded-full
-                                @if(Auth::user()->isSuperAdmin()) bg-purple-500
-                                @elseif(Auth::user()->role === 'ADMIN') bg-red-500
+                                @if(Auth::user()->role === 'ADMIN') bg-red-500
                                 @else bg-blue-500 @endif"></span>
-                            {{ Auth::user()->isSuperAdmin() ? 'SUPER ADMIN' : Auth::user()->role }}
+                            {{ Auth::user()->role }}
                         </span>
                         <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
                             <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>

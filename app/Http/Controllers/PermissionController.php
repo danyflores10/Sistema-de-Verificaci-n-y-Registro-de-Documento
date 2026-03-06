@@ -15,11 +15,6 @@ class PermissionController extends Controller
     {
         $query = User::query();
 
-        // ADMIN no puede ver SUPER_ADMIN
-        if (!auth()->user()->isSuperAdmin()) {
-            $query->where('role', '!=', 'SUPER_ADMIN');
-        }
-
         if ($search = $request->get('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'ilike', "%{$search}%")
@@ -44,11 +39,6 @@ class PermissionController extends Controller
         // No puede modificarse a sí mismo
         if ($user->id === auth()->id()) {
             return back()->with('error', 'No puedes modificar tus propios permisos.');
-        }
-
-        // ADMIN no puede modificar a SUPER_ADMIN
-        if ($user->isSuperAdmin() && !auth()->user()->isSuperAdmin()) {
-            return back()->with('error', 'No tienes permisos para modificar a un Super Administrador.');
         }
 
         $validated = $request->validate([

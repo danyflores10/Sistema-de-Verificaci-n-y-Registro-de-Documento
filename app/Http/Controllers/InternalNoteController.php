@@ -41,7 +41,7 @@ class InternalNoteController extends Controller
             $query->where('created_by', $createdBy);
         }
 
-        $notes = $query->latest()->paginate(15)->withQueryString();
+        $notes = $query->latest('note_date')->paginate(15)->withQueryString();
         $boxes = Box::orderBy('box_number')->get();
 
         return view('notes.index', compact('notes', 'boxes'));

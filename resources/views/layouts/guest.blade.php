@@ -12,9 +12,20 @@
     </head>
     <body class="font-sans antialiased">
         <div class="login-bg min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
-            {{-- Decorative background blurs --}}
-            <div class="absolute top-10 left-10 w-72 h-72 bg-blue-500/5 rounded-full blur-3xl"></div>
-            <div class="absolute bottom-10 right-10 w-96 h-96 bg-red-500/5 rounded-full blur-3xl"></div>
+
+            {{-- ── Aceternity Animated Gradient Background ── --}}
+            <div class="gradient-blobs-container">
+                {{-- Blob 1: Azul brillante — moveVertical 30s --}}
+                <div class="gradient-blob gradient-blob-1 animate-first"></div>
+                {{-- Blob 2: Magenta/morado — moveInCircle 20s reverse --}}
+                <div class="gradient-blob gradient-blob-2 animate-second"></div>
+                {{-- Blob 3: Cian claro — moveInCircle 40s --}}
+                <div class="gradient-blob gradient-blob-3 animate-third"></div>
+                {{-- Blob 4: Rojo ABC — moveHorizontal 40s --}}
+                <div class="gradient-blob gradient-blob-4 animate-fourth"></div>
+                {{-- Blob 5: Índigo/violeta — moveInCircle 20s --}}
+                <div class="gradient-blob gradient-blob-5 animate-fifth"></div>
+            </div>
 
             <div class="relative z-10 w-full max-w-md">
                 {{-- Logo y branding --}}
