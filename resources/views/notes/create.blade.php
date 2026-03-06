@@ -156,13 +156,13 @@
                             <div>
                                 <label for="via" class="abc-label flex items-center gap-1.5">
                                     <span class="w-2 h-2 rounded-full bg-cyan-500 inline-block"></span>
-                                    Vía *
+                                   Nombre de  Vía *
                                 </label>
                                 <input type="text" name="via" id="via"
                                        value="{{ old('via') }}"
                                        class="abc-input"
-                                       placeholder="Ej: Correo físico, mensajero, electrónico..."
-                                       maxlength="100"
+                                       placeholder="texto..."
+                                       maxlength="250"
                                        required>
                                 @error('via')
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
