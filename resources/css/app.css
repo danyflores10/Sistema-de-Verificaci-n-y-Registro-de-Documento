@@ -621,3 +621,102 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 .dark input[type="date"]::-webkit-calendar-picker-indicator {
     filter: invert(1);
 }
+
+/* ════════════════════════════════════════════
+   RESPONSIVE — MOBILE
+   ════════════════════════════════════════════ */
+
+/* En móvil, el contenido principal no tiene margen lateral (sidebar es overlay) */
+@media (max-width: 1023px) {
+    /* Main content ocupa todo el ancho */
+    .flex-1.flex.flex-col.min-h-screen {
+        margin-left: 0 !important;
+    }
+
+    /* Page header: menos padding */
+    .abc-page-header {
+        padding: 1rem 1rem 0.75rem;
+    }
+
+    /* Cards: menos padding en móvil */
+    .abc-card {
+        padding: 1rem;
+    }
+
+    /* Tablas: scroll horizontal en móvil */
+    .abc-table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Contenedor de tabla con overflow */
+    .overflow-x-auto {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Formularios: margen reducido */
+    .abc-form-section {
+        padding: 1rem;
+    }
+
+    /* Stats grid: 1 columna en móvil muy pequeño */
+    .grid.grid-cols-2 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Topbar: reducir padding */
+    .abc-topbar .px-4,
+    .abc-topbar .px-6 {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    /* Ocultar texto largo en breadcrumb en móvil */
+    .abc-topbar .hidden.sm\:flex {
+        display: none;
+    }
+
+    /* Acciones del topbar: menos gap */
+    .abc-topbar .flex.items-center.gap-3 {
+        gap: 0.5rem;
+    }
+
+    /* Botones de acción en la página: stack en móvil */
+    .abc-page-actions {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    /* Formulario de filtros en index: asegurar scroll */
+    form .grid {
+        gap: 0.5rem;
+    }
+}
+
+/* En pantallas muy pequeñas (< 480px) */
+@media (max-width: 479px) {
+    /* Tabla: fuente más pequeña */
+    .abc-table th,
+    .abc-table td {
+        font-size: 0.75rem;
+        padding: 0.5rem 0.625rem;
+    }
+
+    /* Botones de acción pequeños */
+    .abc-btn-sm,
+    .abc-btn {
+        font-size: 0.75rem;
+        padding: 0.35rem 0.75rem;
+    }
+
+    /* Page header título */
+    .abc-page-header h1 {
+        font-size: 1.1rem;
+    }
+
+    /* Cards: padding mínimo */
+    .abc-card {
+        padding: 0.75rem;
+    }
+}

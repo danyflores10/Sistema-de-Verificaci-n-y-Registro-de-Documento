@@ -34,7 +34,13 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased">
-        <div class="min-h-screen flex" x-data="{ sidebarOpen: true, mobileSidebar: false }">
+        <div class="min-h-screen flex" x-data="{ sidebarOpen: window.innerWidth >= 1024, mobileSidebar: false }">
+
+            {{-- Mobile overlay --}}
+            <div x-show="mobileSidebar"
+                 @click="mobileSidebar = false"
+                 class="fixed inset-0 bg-black/60 z-30 lg:hidden"
+                 x-cloak></div>
 
             {{-- Sidebar --}}
             @include('layouts.navigation')

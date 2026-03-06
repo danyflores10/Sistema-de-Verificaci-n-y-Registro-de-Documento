@@ -153,15 +153,12 @@
                                     <span class="w-2 h-2 rounded-full bg-cyan-500 inline-block"></span>
                                     Vía *
                                 </label>
-                                <select name="via" id="via" class="abc-input" required>
-                                    <option value="">-- Seleccionar --</option>
-                                    <option value="CORREO FÍSICO" @selected(old('via', $note->via) === 'CORREO FÍSICO')>CORREO FÍSICO</option>
-                                    <option value="CORREO ELECTRÓNICO" @selected(old('via', $note->via) === 'CORREO ELECTRÓNICO')>CORREO ELECTRÓNICO</option>
-                                    <option value="MENSAJERO" @selected(old('via', $note->via) === 'MENSAJERO')>MENSAJERO</option>
-                                    <option value="FAX" @selected(old('via', $note->via) === 'FAX')>FAX</option>
-                                    <option value="ENTREGA PERSONAL" @selected(old('via', $note->via) === 'ENTREGA PERSONAL')>ENTREGA PERSONAL</option>
-                                    <option value="OTRO" @selected(old('via', $note->via) === 'OTRO')>OTRO</option>
-                                </select>
+                                <input type="text" name="via" id="via"
+                                       value="{{ old('via', $note->via) }}"
+                                       class="abc-input"
+                                       placeholder="Ej: Correo físico, mensajero, electrónico..."
+                                       maxlength="100"
+                                       required>
                                 @error('via')
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                 @enderror
