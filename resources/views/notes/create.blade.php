@@ -7,7 +7,7 @@
         </div>
 
     <div class="py-6">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
             <div class="abc-card">
                 {{-- Card header --}}
                 {{-- Header con gradiente mejorado --}}
@@ -182,15 +182,61 @@
                     {{-- Adjuntos --}}
                     <div class="mt-5" x-data="fileUpload()">
                         <label class="abc-label">Adjuntar archivos (PDF, JPG, PNG)</label>
-                        <div class="mt-1 border-2 border-dashed rounded-xl p-6 text-center transition-all duration-200 cursor-pointer"
-                             :class="dragging ? 'border-blue-400 bg-blue-50/50 dark:bg-blue-900/20 scale-[1.01]' : 'border-gray-200 dark:border-gray-700 hover:border-blue-300 hover:bg-blue-50/30 dark:hover:bg-blue-900/10'"
+
+                        {{-- Aceternity File Upload --}}
+                        <div class="mt-2 relative w-full rounded-xl overflow-hidden cursor-pointer group transition-all duration-300"
+                             :class="dragging
+                                 ? 'ring-2 ring-blue-400/50'
+                                 : ''"
+                             style="background: var(--surface-card); border: 1px dashed var(--surface-border);"
                              @click="$refs.fileInput.click()"
                              @dragover.prevent="dragging = true"
                              @dragleave.prevent="dragging = false"
                              @drop.prevent="dragging = false; handleDrop($event)">
-                            <svg class="w-10 h-10 mx-auto mb-3 transition-colors" :class="dragging ? 'text-blue-400' : 'text-gray-300 dark:text-gray-600'" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"/></svg>
-                            <p class="text-sm font-medium" style="color: var(--text-secondary);">Haga clic o arrastre archivos aquí</p>
-                            <p class="text-xs mt-1" style="color: var(--text-muted);">Máximo 10MB por archivo. Puede seleccionar múltiples archivos.</p>
+
+                            {{-- Dot-grid background --}}
+                            <div class="absolute inset-0 pointer-events-none"
+                                 style="background-image: radial-gradient(circle, rgba(128,128,128,0.12) 1px, transparent 1px); background-size: 16px 16px;"></div>
+
+                            {{-- Radial fade from edges --}}
+                            <div class="absolute inset-0 pointer-events-none"
+                                 style="background: radial-gradient(ellipse at center, transparent 30%, var(--surface-card) 80%);"></div>
+
+                            {{-- Top section: Title + subtitle --}}
+                            <div class="relative z-10 text-center pt-10 pb-2 px-6">
+                                <p class="text-base font-semibold transition-colors duration-300"
+                                   :class="dragging ? 'text-blue-500' : ''"
+                                   style="color: var(--text-primary);">
+                                    <span x-show="!dragging">Subir archivos</span>
+                                    <span x-show="dragging" x-cloak>Suelte los archivos aquí</span>
+                                </p>
+                                <p class="text-sm mt-1.5" style="color: var(--text-muted);">
+                                    Arrastre y suelte, o haga clic para seleccionar
+                                </p>
+                            </div>
+
+                            {{-- Center: Floating card with icon (Aceternity style) --}}
+                            <div class="relative z-10 flex items-center justify-center py-8 px-6">
+                                <div class="aceternity-upload-card relative w-24 h-28 rounded-lg flex flex-col items-center justify-center gap-1 transition-all duration-500"
+                                     :class="dragging
+                                         ? 'border-blue-400 bg-blue-50/70 dark:bg-blue-950/40 shadow-lg shadow-blue-500/10 -translate-y-1'
+                                         : 'border-neutral-300/80 dark:border-neutral-600/60 bg-white dark:bg-neutral-900 shadow-md group-hover:shadow-lg group-hover:-translate-y-0.5'"
+                                     style="border: 1px dashed;">
+                                    <svg class="w-5 h-5 transition-colors duration-300"
+                                         :class="dragging ? 'text-blue-500' : 'text-neutral-400 dark:text-neutral-500'"
+                                         fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"/>
+                                    </svg>
+                                </div>
+                            </div>
+
+                            {{-- Bottom info --}}
+                            <div class="relative z-10 text-center pb-8 px-6">
+                                <p class="text-xs" style="color: var(--text-muted); opacity: 0.6;">
+                                    PDF, JPG, PNG &nbsp;&middot;&nbsp; Máx. 200 MB por archivo &nbsp;&middot;&nbsp; Múltiples archivos
+                                </p>
+                            </div>
+
                             <input x-ref="fileInput" type="file" name="attachments[]" multiple accept=".pdf,.jpg,.jpeg,.png" class="hidden" @change="handleFiles($event)">
                         </div>
 

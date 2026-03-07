@@ -137,7 +137,7 @@ window.fileUpload = function () {
         handleFiles(event) {
             const newFiles = Array.from(event.target.files);
             const accepted = ['.pdf', '.jpg', '.jpeg', '.png'];
-            const maxSize = 10 * 1024 * 1024; // 10MB
+            const maxSize = 200 * 1024 * 1024; // 200MB
 
             for (const file of newFiles) {
                 const ext = '.' + file.name.split('.').pop().toLowerCase();
@@ -149,7 +149,7 @@ window.fileUpload = function () {
                 }
                 if (file.size > maxSize) {
                     if (Alpine.store('toasts')) {
-                        Alpine.store('toasts').error(`"${file.name}" excede el límite de 10MB.`);
+                        Alpine.store('toasts').error(`"${file.name}" excede el límite de 200MB.`);
                     }
                     continue;
                 }
