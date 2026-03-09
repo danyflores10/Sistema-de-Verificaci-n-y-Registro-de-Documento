@@ -36,11 +36,11 @@ class InternalNotePolicy
     }
 
     /**
-     * Solo ADMIN puede verificar o rechazar
+     * Usuarios con módulo 'verification' pueden verificar o rechazar
      */
     public function verify(User $user, InternalNote $note): bool
     {
-        return $user->isAdmin() && $note->isEnviado();
+        return $user->hasModule('verification') && $note->isEnviado();
     }
 
     /**

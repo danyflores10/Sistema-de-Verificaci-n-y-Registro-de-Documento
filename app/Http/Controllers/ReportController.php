@@ -21,7 +21,14 @@ class ReportController extends Controller
             'internalNotes as rechazados_count'   => fn($q) => $q->where('status', 'RECHAZADO'),
         ])->orderBy('box_number')->get();
 
-        return view('reports.index', compact('boxes'));
+        // Documentos registrados por día (últimos 30 días)
+        $dailyCounts = InternalNote::selectRaw('DATE(created_at) as fecha, COUNT(*) as total')
+            ->where('created_at', '>=', now()->subDays(30))
+            ->groupByRaw('DATE(created_at)')
+            ->orderByRaw('DATE(created_at) DESC')
+            ->get();
+
+        return view('reports.index', compact('boxes', 'dailyCounts'));
     }
 
     /**

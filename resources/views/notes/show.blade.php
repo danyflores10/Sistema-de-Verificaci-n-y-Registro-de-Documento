@@ -57,6 +57,10 @@
                             <p class="font-semibold mt-0.5" style="color: var(--text-primary)">{{ $note->box->box_number ?? '-' }}</p>
                         </div>
                         <div>
+                            <span class="text-[11px] uppercase font-bold tracking-wider" style="color: var(--text-muted)">N° Carpeta</span>
+                            <p class="font-semibold mt-0.5" style="color: var(--text-primary)">{{ $note->folder_number ?? '-' }}</p>
+                        </div>
+                        <div>
                             <span class="text-[11px] uppercase font-bold tracking-wider" style="color: var(--text-muted)">N. de CITE</span>
                             <p class="font-semibold mt-0.5" style="color: var(--text-primary)">{{ $note->internal_number }}</p>
                         </div>

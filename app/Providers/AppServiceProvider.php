@@ -44,7 +44,7 @@ class AppServiceProvider extends ServiceProvider
         // Compartir contador de notas pendientes de verificación al sidebar
         View::composer('layouts.navigation', function ($view) {
             $pendingCount = 0;
-            if (Auth::check() && Auth::user()->isAdmin()) {
+            if (Auth::check() && Auth::user()->hasModule('verification')) {
                 $pendingCount = InternalNote::where('status', 'ENVIADO')->count();
             }
             $view->with('pendingCount', $pendingCount);

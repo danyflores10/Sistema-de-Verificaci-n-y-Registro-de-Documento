@@ -51,7 +51,8 @@ class InternalNoteController extends Controller
     {
         $this->authorize('create', InternalNote::class);
         $boxes = Box::orderBy('box_number')->get();
-        return view('notes.create', compact('boxes'));
+        $users = \App\Models\User::where('is_active', true)->orderBy('name')->get(['id', 'name', 'role']);
+        return view('notes.create', compact('boxes', 'users'));
     }
 
     public function store(Request $request)
@@ -60,11 +61,12 @@ class InternalNoteController extends Controller
 
         $validated = $request->validate([
             'box_id'          => 'required|exists:boxes,id',
+            'folder_number'   => 'nullable|string|max:60',
             'internal_number' => 'required|string|max:60',
             'note_date'       => 'required|date',
             'remitente'       => 'required|string|max:200',
             'destinatario'    => 'required|string|max:200',
-            'via'             => 'required|string|max:100',
+            'via'             => 'nullable|string|max:100',
             'reference'       => 'required|string|max:1000',
             'doc_type'        => 'required|in:ORIGINAL,FOTOCOPIA,AMBOS,FOTOGRAFÍA',
             'note_type'       => 'required|in:NOTA INTERNA,NOTA EXTERNA,INFORME,EVALUACIONES Y/O NOTAS DE LA CONTRALORIA GENERAL DEL ESTADO',
@@ -78,7 +80,6 @@ class InternalNoteController extends Controller
             'note_date.required'       => 'La fecha es obligatoria.',
             'remitente.required'       => 'El remitente es obligatorio.',
             'destinatario.required'    => 'El destinatario es obligatorio.',
-            'via.required'             => 'La vía de envío es obligatoria.',
             'reference.required'       => 'La referencia es obligatoria.',
             'doc_type.required'        => 'El estado del documento es obligatorio.',
             'doc_type.in'              => 'El estado debe ser ORIGINAL, FOTOCOPIA, AMBOS o FOTOGRAFÍA.',
@@ -90,6 +91,7 @@ class InternalNoteController extends Controller
 
         $note = InternalNote::create([
             'box_id'          => $validated['box_id'],
+            'folder_number'   => $validated['folder_number'] ?? null,
             'internal_number' => $validated['internal_number'],
             'note_date'       => $validated['note_date'],
             'remitente'       => $validated['remitente'],
@@ -143,7 +145,8 @@ class InternalNoteController extends Controller
     {
         $this->authorize('update', $note);
         $boxes = Box::orderBy('box_number')->get();
-        return view('notes.edit', compact('note', 'boxes'));
+        $users = \App\Models\User::where('is_active', true)->orderBy('name')->get(['id', 'name', 'role']);
+        return view('notes.edit', compact('note', 'boxes', 'users'));
     }
 
     public function update(Request $request, InternalNote $note)
@@ -152,11 +155,12 @@ class InternalNoteController extends Controller
 
         $validated = $request->validate([
             'box_id'          => 'required|exists:boxes,id',
+            'folder_number'   => 'nullable|string|max:60',
             'internal_number' => 'required|string|max:60',
             'note_date'       => 'required|date',
             'remitente'       => 'required|string|max:200',
             'destinatario'    => 'required|string|max:200',
-            'via'             => 'required|string|max:100',
+            'via'             => 'nullable|string|max:100',
             'reference'       => 'required|string|max:1000',
             'doc_type'        => 'required|in:ORIGINAL,FOTOCOPIA,AMBOS,FOTOGRAFÍA',
             'note_type'       => 'required|in:NOTA INTERNA,NOTA EXTERNA,INFORME,EVALUACIONES Y/O NOTAS DE LA CONTRALORIA GENERAL DEL ESTADO',
@@ -167,13 +171,13 @@ class InternalNoteController extends Controller
         ], [
             'remitente.required'    => 'El remitente es obligatorio.',
             'destinatario.required' => 'El destinatario es obligatorio.',
-            'via.required'          => 'La vía de envío es obligatoria.',
         ]);
 
         $old = $note->toArray();
 
         $note->update([
             'box_id'          => $validated['box_id'],
+            'folder_number'   => $validated['folder_number'] ?? null,
             'internal_number' => $validated['internal_number'],
             'note_date'       => $validated['note_date'],
             'remitente'       => $validated['remitente'],

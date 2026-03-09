@@ -6,6 +6,7 @@ use App\Models\AuditLog;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
 
 class UserController extends Controller
@@ -110,5 +111,32 @@ class UserController extends Controller
 
         return redirect()->route('users.index')
                          ->with('success', 'Contraseña reseteada exitosamente.');
+    }
+
+    public function destroy(User $user)
+    {
+        // No permitir eliminarse a sí mismo
+        if ($user->id === auth()->id()) {
+            return redirect()->route('users.index')
+                             ->with('error', 'No puede eliminarse a sí mismo.');
+        }
+
+        $old = $user->only(['id', 'name', 'email', 'role']);
+
+        // Eliminar notas y adjuntos del usuario
+        foreach ($user->internalNotes as $note) {
+            foreach ($note->attachments as $attachment) {
+                Storage::disk('public')->delete($attachment->file_path);
+                $attachment->delete();
+            }
+            $note->delete();
+        }
+
+        $user->delete();
+
+        AuditLog::record('ELIMINAR_USUARIO', 'users', $old['id'], $old, null);
+
+        return redirect()->route('users.index')
+                         ->with('success', 'Usuario eliminado permanentemente.');
     }
 }

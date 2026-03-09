@@ -125,7 +125,7 @@
                                         @endif
                                     </td>
                                     <td>
-                                        <div class="flex justify-center gap-2">
+                                        <div class="flex justify-center gap-2 flex-wrap">
                                             <a href="{{ route('users.edit', $user) }}" class="abc-btn abc-btn-ghost !px-3 !py-1.5 text-xs">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
                                                     <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
@@ -157,6 +157,23 @@
                                                 </svg>
                                                 Reset Pass
                                             </button>
+                                            {{-- Eliminar físicamente (solo admin) --}}
+                                            @if(auth()->user()->isAdmin() && $user->id !== auth()->id())
+                                                <form method="POST" action="{{ route('users.destroy', $user) }}" class="inline" id="delete-user-{{ $user->id }}">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="button"
+                                                            onclick="confirmarEliminarUsuario('{{ addslashes($user->name) }}', 'delete-user-{{ $user->id }}')"
+                                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg text-white shadow-sm transition-all duration-200"
+                                                            style="background: linear-gradient(135deg, #dc2626, #991b1b); box-shadow: 0 2px 8px rgba(220,38,38,0.4);">
+                                                        <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-300 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-red-100"></span></span>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                                        </svg>
+                                                        ELIMINAR
+                                                    </button>
+                                                </form>
+                                            @endif
                                         </div>
 
                                         {{-- Form reset password con Alpine.js --}}
@@ -212,4 +229,24 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function confirmarEliminarUsuario(nombre, formId) {
+            Swal.fire({
+                title: '¿Eliminar este usuario?',
+                html: 'Se eliminará <strong style="color:#ef4444">permanentemente</strong> al usuario <strong>' + nombre + '</strong> y todos sus documentos asociados.<br><br>Esta acción <strong>NO se puede deshacer</strong>.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#b91c1c',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Sí, eliminar permanentemente',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById(formId).submit();
+                }
+            });
+        }
+    </script>
 </x-app-layout>

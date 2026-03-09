@@ -29,15 +29,55 @@
                     @method('PUT')
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div>
-                            <label for="box_id" class="abc-label">N. de Caja *</label>
-                            <select name="box_id" id="box_id" required class="abc-input">
-                                @foreach($boxes as $box)
-                                    <option value="{{ $box->id }}" @selected(old('box_id', $note->box_id) == $box->id)>
-                                        {{ $box->box_number }} - {{ $box->description }}
-                                    </option>
-                                @endforeach
-                            </select>
+                        {{-- Caja (buscable) --}}
+                        <div x-data="{
+                            open: false,
+                            search: '',
+                            selectedId: '{{ old('box_id', $note->box_id) }}',
+                            selectedLabel: '',
+                            boxes: @js($boxes->map(fn($b) => ['id' => $b->id, 'label' => $b->box_number . ' - ' . $b->description])),
+                            get filtered() {
+                                if (!this.search) return this.boxes;
+                                let s = this.search.toLowerCase();
+                                return this.boxes.filter(b => b.label.toLowerCase().includes(s));
+                            },
+                            init() {
+                                if (this.selectedId) {
+                                    let found = this.boxes.find(b => b.id == this.selectedId);
+                                    if (found) { this.selectedLabel = found.label; this.search = found.label; }
+                                }
+                            },
+                            select(box) {
+                                this.selectedId = box.id;
+                                this.selectedLabel = box.label;
+                                this.search = box.label;
+                                this.open = false;
+                            }
+                        }" @click.outside="open = false" class="relative">
+                            <label for="box_search" class="abc-label">N. de Caja *</label>
+                            <input type="hidden" name="box_id" :value="selectedId">
+                            <input type="text" id="box_search" autocomplete="off"
+                                   class="abc-input"
+                                   placeholder="Buscar caja..."
+                                   x-model="search"
+                                   @focus="open = true; search = ''"
+                                   @input="open = true"
+                                   @keydown.escape="open = false">
+                            <div x-show="open && filtered.length > 0" x-cloak
+                                 class="absolute z-50 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-48 overflow-y-auto"
+                                 style="border-color: var(--surface-border);">
+                                <template x-for="box in filtered" :key="box.id">
+                                    <div @click="select(box)"
+                                         class="px-3 py-2 text-sm cursor-pointer hover:bg-blue-50 transition"
+                                         :class="selectedId == box.id ? 'bg-blue-50 font-semibold' : ''"
+                                         x-text="box.label"></div>
+                                </template>
+                            </div>
+                            <div x-show="open && search && filtered.length === 0" x-cloak
+                                 class="absolute z-50 w-full mt-1 bg-white border rounded-lg shadow-lg px-3 py-2 text-sm text-gray-400"
+                                 style="border-color: var(--surface-border);">
+                                No se encontraron cajas
+                            </div>
                             @error('box_id')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
@@ -72,6 +112,17 @@
                                 <option value="FOTOGRAFÍA" @selected(old('doc_type', $note->doc_type) === 'FOTOGRAFÍA')>FOTOGRAFÍA</option>
                             </select>
                             @error('doc_type')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        {{-- N° de Carpeta --}}
+                        <div>
+                            <label for="folder_number" class="abc-label">N° de Carpeta</label>
+                            <input type="text" name="folder_number" id="folder_number"
+                                   value="{{ old('folder_number', $note->folder_number) }}"
+                                   class="abc-input" placeholder="Ej: CARP-001">
+                            @error('folder_number')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
                         </div>
@@ -111,8 +162,8 @@
                     </div>
 
                     {{-- ======= SECCIÓN CORRESPONDENCIA ======= --}}
-                    <div class="mt-6 rounded-xl overflow-hidden border" style="border-color: var(--surface-border);">
-                        <div class="gradient-teal px-5 py-3 flex items-center gap-2.5">
+                    <div class="mt-6 rounded-xl border" style="border-color: var(--surface-border);">
+                        <div class="gradient-teal px-5 py-3 flex items-center gap-2.5 rounded-t-xl">
                             <div class="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
                                 <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"/></svg>
                             </div>
@@ -121,7 +172,7 @@
                                 <p class="text-white/70 text-[11px]">Datos del remitente, destinatario y vía de envío</p>
                             </div>
                         </div>
-                        <div class="p-5 grid grid-cols-1 md:grid-cols-3 gap-5" style="background-color: var(--surface-card);">
+                        <div class="p-5 grid grid-cols-1 md:grid-cols-3 gap-5" style="background-color: var(--surface-card); overflow: visible;">
                             <div>
                                 <label for="remitente" class="abc-label flex items-center gap-1.5">
                                     <span class="w-2 h-2 rounded-full bg-teal-500 inline-block"></span>
@@ -135,15 +186,55 @@
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
-                            <div>
-                                <label for="destinatario" class="abc-label flex items-center gap-1.5">
+                            <div x-data="{
+                                open: false,
+                                search: '',
+                                selectedValue: '{{ old('destinatario', $note->destinatario) }}',
+                                users: @js($users->map(fn($u) => ['id' => $u->id, 'label' => $u->name . ' (' . $u->role . ')'])),
+                                get filtered() {
+                                    if (!this.search) return this.users;
+                                    let s = this.search.toLowerCase();
+                                    return this.users.filter(u => u.label.toLowerCase().includes(s));
+                                },
+                                init() {
+                                    if (this.selectedValue) {
+                                        this.search = this.selectedValue;
+                                    }
+                                },
+                                select(user) {
+                                    this.selectedValue = user.label.split(' (')[0];
+                                    this.search = user.label;
+                                    this.open = false;
+                                }
+                            }" @click.outside="open = false" class="relative">
+                                <label for="destinatario_search" class="abc-label flex items-center gap-1.5">
                                     <span class="w-2 h-2 rounded-full bg-teal-600 inline-block"></span>
                                     Destinatario *
                                 </label>
-                                <input type="text" name="destinatario" id="destinatario"
-                                       value="{{ old('destinatario', $note->destinatario) }}"
+                                <input type="hidden" name="destinatario" :value="selectedValue">
+                                <input type="text" id="destinatario_search" autocomplete="off"
                                        class="abc-input"
-                                       placeholder="Nombre del destinatario" required>
+                                       placeholder="Buscar destinatario..."
+                                       x-model="search"
+                                       @focus="open = true; search = ''"
+                                       @input="open = true"
+                                       @keydown.escape="open = false"
+                                       x-init="search = selectedValue">
+                                <div x-show="open && filtered.length > 0" x-cloak x-transition
+                                     class="absolute z-[9999] w-full mt-1 bg-white border-2 border-gray-300 rounded-lg max-h-60 overflow-y-auto"
+                                     style="box-shadow: 0 10px 25px rgba(0,0,0,0.15);">
+                                    <template x-for="user in filtered" :key="user.id">
+                                        <div @click="select(user)"
+                                             class="px-4 py-2.5 text-sm cursor-pointer hover:bg-teal-50 hover:text-teal-700 transition-colors border-b border-gray-100 last:border-b-0"
+                                             :class="selectedValue == user.label.split(' (')[0] ? 'bg-teal-50 font-semibold text-teal-700' : 'text-gray-700'"
+                                             x-text="user.label"></div>
+                                    </template>
+                                </div>
+                                <div x-show="open && search && filtered.length === 0" x-cloak
+                                     class="absolute z-[9999] w-full mt-1 bg-white border-2 border-gray-300 rounded-lg px-4 py-3 text-sm text-gray-400"
+                                     style="box-shadow: 0 10px 25px rgba(0,0,0,0.15);">
+                                    No se encontraron usuarios
+                                </div>
                                 @error('destinatario')
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                 @enderror
@@ -151,14 +242,13 @@
                             <div>
                                 <label for="via" class="abc-label flex items-center gap-1.5">
                                     <span class="w-2 h-2 rounded-full bg-cyan-500 inline-block"></span>
-                                    Vía *
+                                    Vía
                                 </label>
                                 <input type="text" name="via" id="via"
                                        value="{{ old('via', $note->via) }}"
                                        class="abc-input"
                                        placeholder="Ej: Correo físico, mensajero, electrónico..."
-                                       maxlength="100"
-                                       required>
+                                       maxlength="250">
                                 @error('via')
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                 @enderror

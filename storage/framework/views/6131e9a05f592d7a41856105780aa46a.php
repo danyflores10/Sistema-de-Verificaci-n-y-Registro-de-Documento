@@ -1,4 +1,15 @@
-<x-app-layout>
+<?php if (isset($component)) { $__componentOriginal9ac128a9029c0e4701924bd2d73d7f54 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54 = $attributes; } ?>
+<?php $component = App\View\Components\AppLayout::resolve([] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('app-layout'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\App\View\Components\AppLayout::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes([]); ?>
+<?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::processComponentKey($component); ?>
+
     <div class="abc-page-header">
             <div class="relative z-10">
                 <h2 class="text-2xl font-bold tracking-tight">Registrar Documento</h2>
@@ -9,8 +20,8 @@
     <div class="py-6">
         <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
             <div class="abc-card">
-                {{-- Card header --}}
-                {{-- Header con gradiente mejorado --}}
+                
+                
                 <div class="relative overflow-hidden px-6 py-5 flex items-center gap-3"
                      style="background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-light) 50%, #0d9488 100%);">
                     <div class="absolute inset-0 opacity-10"
@@ -24,17 +35,17 @@
                     </div>
                 </div>
 
-                <form method="POST" action="{{ route('notes.store') }}" enctype="multipart/form-data" class="p-6">
-                    @csrf
+                <form method="POST" action="<?php echo e(route('notes.store')); ?>" enctype="multipart/form-data" class="p-6">
+                    <?php echo csrf_field(); ?>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        {{-- Caja (buscable) --}}
+                        
                         <div x-data="{
                             open: false,
                             search: '',
-                            selectedId: '{{ old('box_id', '') }}',
+                            selectedId: '<?php echo e(old('box_id', '')); ?>',
                             selectedLabel: '',
-                            boxes: @js($boxes->map(fn($b) => ['id' => $b->id, 'label' => $b->box_number . ' - ' . $b->description])),
+                            boxes: <?php echo \Illuminate\Support\Js::from($boxes->map(fn($b) => ['id' => $b->id, 'label' => $b->box_number . ' - ' . $b->description]))->toHtml() ?>,
                             get filtered() {
                                 if (!this.search) return this.boxes;
                                 let s = this.search.toLowerCase();
@@ -78,93 +89,149 @@
                                  style="border-color: var(--surface-border);">
                                 No se encontraron cajas
                             </div>
-                            @error('box_id')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['box_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <p class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p>
+                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </div>
-   {{-- N° de Carpeta --}}
+   
                         <div>
                             <label for="folder_number" class="abc-label">N° de Carpeta</label>
-                            <input type="text" name="folder_number" id="folder_number" value="{{ old('folder_number') }}"
+                            <input type="text" name="folder_number" id="folder_number" value="<?php echo e(old('folder_number')); ?>"
                                    class="abc-input" placeholder="Ej: CARP-001">
-                            @error('folder_number')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['folder_number'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <p class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p>
+                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </div>
-                        {{-- N. de CITE --}}
+                        
                         <div>
                             <label for="internal_number" class="abc-label">N. de CITE *</label>
-                            <input type="text" name="internal_number" id="internal_number" value="{{ old('internal_number') }}"
+                            <input type="text" name="internal_number" id="internal_number" value="<?php echo e(old('internal_number')); ?>"
                                    class="abc-input" placeholder="Ej: NI-2026-001" required>
-                            @error('internal_number')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['internal_number'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <p class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p>
+                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </div>
 
-                        {{-- Fecha --}}
+                        
                         <div>
                             <label for="note_date" class="abc-label">Fecha *</label>
-                            <input type="date" name="note_date" id="note_date" value="{{ old('note_date', date('Y-m-d')) }}"
+                            <input type="date" name="note_date" id="note_date" value="<?php echo e(old('note_date', date('Y-m-d'))); ?>"
                                    class="abc-input" required>
-                            @error('note_date')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['note_date'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <p class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p>
+                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </div>
 
-                        {{-- Estado del Documento --}}
+                        
                         <div>
                             <label for="doc_type" class="abc-label">Estado del Documento *</label>
                             <select name="doc_type" id="doc_type" required class="abc-input">
                                 <option value="">-- Seleccionar --</option>
-                                <option value="ORIGINAL" @selected(old('doc_type') === 'ORIGINAL')>ORIGINAL</option>
-                                <option value="FOTOCOPIA" @selected(old('doc_type') === 'FOTOCOPIA')>FOTOCOPIA</option>
-                                <option value="AMBOS" @selected(old('doc_type') === 'AMBOS')>AMBOS</option>
-                                <option value="FOTOGRAFÍA" @selected(old('doc_type') === 'FOTOGRAFÍA')>FOTOGRAFÍA</option>
+                                <option value="ORIGINAL" <?php if(old('doc_type') === 'ORIGINAL'): echo 'selected'; endif; ?>>ORIGINAL</option>
+                                <option value="FOTOCOPIA" <?php if(old('doc_type') === 'FOTOCOPIA'): echo 'selected'; endif; ?>>FOTOCOPIA</option>
+                                <option value="AMBOS" <?php if(old('doc_type') === 'AMBOS'): echo 'selected'; endif; ?>>AMBOS</option>
+                                <option value="FOTOGRAFÍA" <?php if(old('doc_type') === 'FOTOGRAFÍA'): echo 'selected'; endif; ?>>FOTOGRAFÍA</option>
                             </select>
-                            @error('doc_type')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['doc_type'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <p class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p>
+                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </div>
 
                      
 
-                        {{-- Nota Interno --}}
+                        
                         <div>
                             <label for="note_type" class="abc-label">Nota Interno *</label>
                             <select name="note_type" id="note_type" required class="abc-input">
                                 <option value="">-- Seleccionar --</option>
-                                <option value="NOTA INTERNA" @selected(old('note_type') === 'NOTA INTERNA')>NOTA INTERNA</option>
-                                <option value="NOTA EXTERNA" @selected(old('note_type') === 'NOTA EXTERNA')>NOTA EXTERNA</option>
-                                <option value="INFORME" @selected(old('note_type') === 'INFORME')>INFORME</option>
-                                <option value="EVALUACIONES Y/O NOTAS DE LA CONTRALORIA GENERAL DEL ESTADO" @selected(old('note_type') === 'EVALUACIONES Y/O NOTAS DE LA CONTRALORIA GENERAL DEL ESTADO')>EVALUACIONES Y/O NOTAS DE LA CONTRALORIA GENERAL DEL ESTADO</option>
+                                <option value="NOTA INTERNA" <?php if(old('note_type') === 'NOTA INTERNA'): echo 'selected'; endif; ?>>NOTA INTERNA</option>
+                                <option value="NOTA EXTERNA" <?php if(old('note_type') === 'NOTA EXTERNA'): echo 'selected'; endif; ?>>NOTA EXTERNA</option>
+                                <option value="INFORME" <?php if(old('note_type') === 'INFORME'): echo 'selected'; endif; ?>>INFORME</option>
+                                <option value="EVALUACIONES Y/O NOTAS DE LA CONTRALORIA GENERAL DEL ESTADO" <?php if(old('note_type') === 'EVALUACIONES Y/O NOTAS DE LA CONTRALORIA GENERAL DEL ESTADO'): echo 'selected'; endif; ?>>EVALUACIONES Y/O NOTAS DE LA CONTRALORIA GENERAL DEL ESTADO</option>
                             </select>
-                            @error('note_type')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['note_type'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <p class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p>
+                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </div>
 
-                        {{-- Fojas --}}
+                        
                         <div>
                             <label for="pages" class="abc-label">Fojas *</label>
-                            <input type="number" name="pages" id="pages" value="{{ old('pages', 1) }}" min="1"
+                            <input type="number" name="pages" id="pages" value="<?php echo e(old('pages', 1)); ?>" min="1"
                                    class="abc-input" required>
-                            @error('pages')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['pages'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <p class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p>
+                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </div>
                     </div>
 
-                    {{-- Referencia --}}
+                    
                     <div class="mt-5">
                         <label for="reference" class="abc-label">Referencia *</label>
                         <textarea name="reference" id="reference" rows="2"
-                                  class="abc-input" placeholder="Descripcion de la referencia..." required>{{ old('reference') }}</textarea>
-                        @error('reference')
-                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                        @enderror
+                                  class="abc-input" placeholder="Descripcion de la referencia..." required><?php echo e(old('reference')); ?></textarea>
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['reference'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                            <p class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p>
+                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </div>
 
-                    {{-- ======= SECCIÓN CORRESPONDENCIA ======= --}}
+                    
                     <div class="mt-6 rounded-xl border" style="border-color: var(--surface-border);">
                         <div class="gradient-teal px-5 py-3 flex items-center gap-2.5 rounded-t-xl">
                             <div class="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
@@ -182,18 +249,25 @@
                                     Remitente *
                                 </label>
                                 <input type="text" name="remitente" id="remitente"
-                                       value="{{ old('remitente', auth()->user()->name) }}"
+                                       value="<?php echo e(old('remitente', auth()->user()->name)); ?>"
                                        class="abc-input !focus:ring-teal-100 !focus:border-teal-400 bg-gray-50 cursor-not-allowed"
                                        placeholder="Nombre del remitente" readonly required>
-                                @error('remitente')
-                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                @enderror
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['remitente'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                    <p class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                             </div>
                             <div x-data="{
                                 open: false,
                                 search: '',
-                                selectedValue: '{{ old('destinatario', '') }}',
-                                users: @js($users->map(fn($u) => ['id' => $u->id, 'label' => $u->name . ' (' . $u->role . ')'])),
+                                selectedValue: '<?php echo e(old('destinatario', '')); ?>',
+                                users: <?php echo \Illuminate\Support\Js::from($users->map(fn($u) => ['id' => $u->id, 'label' => $u->name . ' (' . $u->role . ')']))->toHtml() ?>,
                                 get filtered() {
                                     if (!this.search) return this.users;
                                     let s = this.search.toLowerCase();
@@ -238,9 +312,16 @@
                                      style="box-shadow: 0 10px 25px rgba(0,0,0,0.15);">
                                     No se encontraron usuarios
                                 </div>
-                                @error('destinatario')
-                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                @enderror
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['destinatario'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                    <p class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                             </div>
                             <div>
                                 <label for="via" class="abc-label flex items-center gap-1.5">
@@ -248,30 +329,44 @@
                                    Nombre de Vía
                                 </label>
                                 <input type="text" name="via" id="via"
-                                       value="{{ old('via') }}"
+                                       value="<?php echo e(old('via')); ?>"
                                        class="abc-input"
                                        placeholder="texto..."
                                        maxlength="250">
-                                @error('via')
-                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                @enderror
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['via'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                    <p class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                             </div>
                         </div>
                     </div>
                     <div class="mt-5">
                         <label for="observations" class="abc-label">Observaciones</label>
                         <textarea name="observations" id="observations" rows="2"
-                                  class="abc-input" placeholder="Observaciones adicionales...">{{ old('observations') }}</textarea>
-                        @error('observations')
-                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                        @enderror
+                                  class="abc-input" placeholder="Observaciones adicionales..."><?php echo e(old('observations')); ?></textarea>
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['observations'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                            <p class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p>
+                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </div>
 
-                    {{-- Adjuntos --}}
+                    
                     <div class="mt-5" x-data="fileUpload()">
                         <label class="abc-label">Adjuntar archivos (PDF, JPG, PNG)</label>
 
-                        {{-- Aceternity File Upload --}}
+                        
                         <div class="mt-2 relative w-full rounded-xl overflow-hidden cursor-pointer group transition-all duration-300"
                              :class="dragging
                                  ? 'ring-2 ring-blue-400/50'
@@ -282,15 +377,15 @@
                              @dragleave.prevent="dragging = false"
                              @drop.prevent="dragging = false; handleDrop($event)">
 
-                            {{-- Dot-grid background --}}
+                            
                             <div class="absolute inset-0 pointer-events-none"
                                  style="background-image: radial-gradient(circle, rgba(128,128,128,0.12) 1px, transparent 1px); background-size: 16px 16px;"></div>
 
-                            {{-- Radial fade from edges --}}
+                            
                             <div class="absolute inset-0 pointer-events-none"
                                  style="background: radial-gradient(ellipse at center, transparent 30%, var(--surface-card) 80%);"></div>
 
-                            {{-- Top section: Title + subtitle --}}
+                            
                             <div class="relative z-10 text-center pt-10 pb-2 px-6">
                                 <p class="text-base font-semibold transition-colors duration-300"
                                    :class="dragging ? 'text-blue-500' : ''"
@@ -303,7 +398,7 @@
                                 </p>
                             </div>
 
-                            {{-- Center: Floating card with icon (Aceternity style) --}}
+                            
                             <div class="relative z-10 flex items-center justify-center py-8 px-6">
                                 <div class="aceternity-upload-card relative w-24 h-28 rounded-lg flex flex-col items-center justify-center gap-1 transition-all duration-500"
                                      :class="dragging
@@ -318,7 +413,7 @@
                                 </div>
                             </div>
 
-                            {{-- Bottom info --}}
+                            
                             <div class="relative z-10 text-center pb-8 px-6">
                                 <p class="text-xs" style="color: var(--text-muted); opacity: 0.6;">
                                     PDF, JPG, PNG &nbsp;&middot;&nbsp; Máx. 200 MB por archivo &nbsp;&middot;&nbsp; Múltiples archivos
@@ -328,7 +423,7 @@
                             <input x-ref="fileInput" type="file" name="attachments[]" multiple accept=".pdf,.jpg,.jpeg,.png" class="hidden" @change="handleFiles($event)">
                         </div>
 
-                        {{-- Lista de archivos seleccionados --}}
+                        
                         <template x-if="files.length > 0">
                             <div class="mt-3 space-y-2">
                                 <div class="flex items-center justify-between">
@@ -342,7 +437,7 @@
                                 <template x-for="(file, index) in files" :key="index">
                                     <div class="flex items-center gap-3 p-2.5 rounded-lg border transition-all animate-fade-in-up"
                                          style="background: var(--surface-input); border-color: var(--surface-border);">
-                                        {{-- Icono según tipo --}}
+                                        
                                         <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
                                              :class="file.type.includes('pdf') ? 'bg-red-50 dark:bg-red-900/30' : 'bg-blue-50 dark:bg-blue-900/30'">
                                             <template x-if="file.type.includes('pdf')">
@@ -352,12 +447,12 @@
                                                 <svg class="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0 0 22.5 18.75V5.25A2.25 2.25 0 0 0 20.25 3H3.75A2.25 2.25 0 0 0 1.5 5.25v13.5A2.25 2.25 0 0 0 3.75 21Z" /></svg>
                                             </template>
                                         </div>
-                                        {{-- Info --}}
+                                        
                                         <div class="flex-1 min-w-0">
                                             <p class="text-sm font-medium truncate" style="color: var(--text-primary);" x-text="file.name"></p>
                                             <p class="text-xs" style="color: var(--text-muted);" x-text="formatSize(file.size)"></p>
                                         </div>
-                                        {{-- Quitar --}}
+                                        
                                         <button type="button" @click="removeFile(index)" class="p-1 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
                                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
                                         </button>
@@ -366,14 +461,21 @@
                             </div>
                         </template>
 
-                        @error('attachments.*')
-                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                        @enderror
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['attachments.*'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                            <p class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p>
+                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </div>
 
-                    {{-- Botones --}}
+                    
                     <div class="mt-8 flex justify-end gap-3 pt-5 border-t" style="border-color: var(--surface-border);" x-data="{ submitting: false }">
-                        <a href="{{ route('notes.index') }}" class="abc-btn abc-btn-ghost">
+                        <a href="<?php echo e(route('notes.index')); ?>" class="abc-btn abc-btn-ghost">
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
                             Cancelar
                         </a>
@@ -397,4 +499,14 @@
             </div>
         </div>
     </div>
-</x-app-layout>
+ <?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>
+<?php $attributes = $__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54; ?>
+<?php unset($__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>
+<?php $component = $__componentOriginal9ac128a9029c0e4701924bd2d73d7f54; ?>
+<?php unset($__componentOriginal9ac128a9029c0e4701924bd2d73d7f54); ?>
+<?php endif; ?>
+<?php /**PATH C:\Users\hp pavilion\OneDrive\Escritorio\System Correos\system-correos\resources\views/notes/create.blade.php ENDPATH**/ ?>

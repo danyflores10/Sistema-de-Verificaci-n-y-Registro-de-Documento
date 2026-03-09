@@ -10,6 +10,7 @@ class InternalNote extends Model
 {
     protected $fillable = [
         'box_id',
+        'folder_number',
         'internal_number',
         'note_date',
         'remitente',

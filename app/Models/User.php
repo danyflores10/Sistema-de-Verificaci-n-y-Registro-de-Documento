@@ -59,10 +59,6 @@ class User extends Authenticatable
      */
     public function getAllowedModules(): array
     {
-        if ($this->isAdmin()) {
-            return array_keys(self::ALL_MODULES);
-        }
-
         return $this->allowed_modules ?? array_keys(self::ALL_MODULES);
     }
 
@@ -71,10 +67,6 @@ class User extends Authenticatable
      */
     public function hasModule(string $module): bool
     {
-        if ($this->isAdmin()) {
-            return true;
-        }
-
         $allowed = $this->allowed_modules;
 
         // Si nunca se configuraron módulos, tiene todos

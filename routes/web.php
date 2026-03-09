@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\BoxController;
+use App\Http\Controllers\CleanupController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ImportController;
 use App\Http\Controllers\InternalNoteController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProfileController;
@@ -55,20 +57,29 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::get('/reports/export/pdf', [ReportController::class, 'exportPdf'])->name('reports.export.pdf');
 
     // ========================================
+    // IMPORTACIÓN DESDE EXCEL
+    // ========================================
+    Route::get('/import', [ImportController::class, 'index'])->name('import.index');
+    Route::post('/import', [ImportController::class, 'store'])->name('import.store');
+
+    // ========================================
+    // VERIFICACIÓN - accesible si tiene módulo asignado
+    // ========================================
+    Route::get('/verification', [VerificationController::class, 'index'])->name('verification.index');
+    Route::get('/verification/approved', [VerificationController::class, 'approved'])->name('verification.approved');
+    Route::post('/verification/{note}/verify', [VerificationController::class, 'verify'])->name('verification.verify');
+    Route::post('/verification/{note}/reject', [VerificationController::class, 'reject'])->name('verification.reject');
+
+    // ========================================
     // SOLO ADMIN
     // ========================================
     Route::middleware('role:ADMIN')->group(function () {
 
         // Gestión de usuarios
         Route::resource('users', UserController::class)->except(['show', 'destroy']);
+        Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
         Route::post('/users/{user}/toggle-active', [UserController::class, 'toggleActive'])->name('users.toggle-active');
         Route::post('/users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset-password');
-
-        // Verificación / Revisión
-        Route::get('/verification', [VerificationController::class, 'index'])->name('verification.index');
-        Route::get('/verification/approved', [VerificationController::class, 'approved'])->name('verification.approved');
-        Route::post('/verification/{note}/verify', [VerificationController::class, 'verify'])->name('verification.verify');
-        Route::post('/verification/{note}/reject', [VerificationController::class, 'reject'])->name('verification.reject');
 
         // Auditoría
         Route::get('/audit', [AuditLogController::class, 'index'])->name('audit.index');
@@ -76,6 +87,11 @@ Route::middleware(['auth', 'active'])->group(function () {
         // Permisos de acceso (módulos del menú)
         Route::get('/permissions', [PermissionController::class, 'index'])->name('permissions.index');
         Route::put('/permissions/{user}/modules', [PermissionController::class, 'updateModules'])->name('permissions.update-modules');
+
+        // Limpieza masiva de documentos
+        Route::get('/cleanup', [CleanupController::class, 'index'])->name('cleanup.index');
+        Route::post('/cleanup/selected', [CleanupController::class, 'destroySelected'])->name('cleanup.destroy-selected');
+        Route::post('/cleanup/all', [CleanupController::class, 'destroyAll'])->name('cleanup.destroy-all');
 
         // Pulse Monitor (embebido)
         Route::get('/admin/pulse', function () {

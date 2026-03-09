@@ -1,5 +1,16 @@
-<x-app-layout>
-    {{-- Page Header --}}
+<?php if (isset($component)) { $__componentOriginal9ac128a9029c0e4701924bd2d73d7f54 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54 = $attributes; } ?>
+<?php $component = App\View\Components\AppLayout::resolve([] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('app-layout'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\App\View\Components\AppLayout::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes([]); ?>
+<?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::processComponentKey($component); ?>
+
+    
     <div class="abc-page-header">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
@@ -15,7 +26,7 @@
     <div class="py-6">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-            {{-- Exportación --}}
+            
             <div class="abc-card overflow-hidden mb-6">
                 <div class="bg-gradient-to-r from-[var(--abc-navy)] to-[#1a3c68] px-6 py-4">
                     <h3 class="text-white font-semibold flex items-center gap-2">
@@ -29,9 +40,9 @@
                             <label class="abc-label">N° Caja</label>
                             <select name="box_id" class="abc-input">
                                 <option value="">-- Todas --</option>
-                                @foreach($boxes as $box)
-                                    <option value="{{ $box->id }}">{{ $box->box_number }}</option>
-                                @endforeach
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $boxes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $box): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoop($loop->index); ?><?php endif; ?>
+                                    <option value="<?php echo e($box->id); ?>"><?php echo e($box->box_number); ?></option>
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
                             </select>
                         </div>
                         <div>
@@ -68,7 +79,7 @@
                 </div>
             </div>
 
-            {{-- Resumen por caja --}}
+            
             <div class="abc-card overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-100">
                     <h3 class="text-lg font-semibold text-[var(--abc-navy)] flex items-center gap-2">
@@ -90,41 +101,46 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($boxes as $box)
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = $boxes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $box): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoop($loop->index); ?><?php endif; ?>
                                 <tr>
                                     <td>
-                                        <span class="font-semibold text-[var(--abc-navy)]">{{ $box->box_number }}</span>
+                                        <span class="font-semibold text-[var(--abc-navy)]"><?php echo e($box->box_number); ?></span>
                                     </td>
                                     <td>
-                                        <span class="text-sm text-gray-500 max-w-xs truncate block">{{ $box->description ?? '—' }}</span>
+                                        <span class="text-sm text-gray-500 max-w-xs truncate block"><?php echo e($box->description ?? '—'); ?></span>
                                     </td>
                                     <td class="text-center">
                                         <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[var(--abc-navy)] text-white text-sm font-bold">
-                                            {{ $box->internal_notes_count }}
+                                            <?php echo e($box->internal_notes_count); ?>
+
                                         </span>
                                     </td>
                                     <td class="text-center">
                                         <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600 ring-1 ring-inset ring-gray-500/10">
-                                            {{ $box->borradores_count }}
+                                            <?php echo e($box->borradores_count); ?>
+
                                         </span>
                                     </td>
                                     <td class="text-center">
                                         <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-sky-100 text-sky-700 ring-1 ring-inset ring-sky-600/20">
-                                            {{ $box->enviados_count }}
+                                            <?php echo e($box->enviados_count); ?>
+
                                         </span>
                                     </td>
                                     <td class="text-center">
                                         <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 ring-1 ring-inset ring-emerald-600/20">
-                                            {{ $box->verificados_count }}
+                                            <?php echo e($box->verificados_count); ?>
+
                                         </span>
                                     </td>
                                     <td class="text-center">
                                         <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700 ring-1 ring-inset ring-red-600/20">
-                                            {{ $box->rechazados_count }}
+                                            <?php echo e($box->rechazados_count); ?>
+
                                         </span>
                                     </td>
                                 </tr>
-                            @empty
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
                                 <tr>
                                     <td colspan="7" class="text-center py-12">
                                         <div class="flex flex-col items-center gap-3">
@@ -133,13 +149,13 @@
                                         </div>
                                     </td>
                                 </tr>
-                            @endforelse
+                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            {{-- Documentos registrados por día (últimos 30 días) --}}
+            
             <div class="abc-card overflow-hidden mt-6">
                 <div class="px-6 py-4 border-b border-gray-100">
                     <h3 class="text-lg font-semibold text-[var(--abc-navy)] flex items-center gap-2">
@@ -149,23 +165,23 @@
                     </h3>
                 </div>
 
-                {{-- Gráfico de barras simple --}}
-                @if($dailyCounts->count())
+                
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($dailyCounts->count()): ?>
                 <div class="p-6">
-                    @php $maxTotal = $dailyCounts->max('total') ?: 1; @endphp
+                    <?php $maxTotal = $dailyCounts->max('total') ?: 1; ?>
                     <div class="flex items-end gap-1 h-48 overflow-x-auto pb-2">
-                        @foreach($dailyCounts->reverse() as $day)
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $dailyCounts->reverse(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $day): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoop($loop->index); ?><?php endif; ?>
                             <div class="flex flex-col items-center flex-shrink-0 group" style="min-width: 36px;">
-                                <span class="text-[10px] font-bold text-[var(--abc-navy)] opacity-0 group-hover:opacity-100 transition-opacity mb-1">{{ $day->total }}</span>
+                                <span class="text-[10px] font-bold text-[var(--abc-navy)] opacity-0 group-hover:opacity-100 transition-opacity mb-1"><?php echo e($day->total); ?></span>
                                 <div class="w-7 rounded-t transition-all duration-300 group-hover:opacity-80"
-                                     style="height: {{ ($day->total / $maxTotal) * 100 }}%; min-height: 4px; background: linear-gradient(to top, var(--abc-navy), var(--abc-sky));"
-                                     title="{{ \Carbon\Carbon::parse($day->fecha)->format('d/m/Y') }}: {{ $day->total }} docs"></div>
-                                <span class="text-[9px] text-gray-400 mt-1 rotate-[-45deg] origin-top-left whitespace-nowrap">{{ \Carbon\Carbon::parse($day->fecha)->format('d/m') }}</span>
+                                     style="height: <?php echo e(($day->total / $maxTotal) * 100); ?>%; min-height: 4px; background: linear-gradient(to top, var(--abc-navy), var(--abc-sky));"
+                                     title="<?php echo e(\Carbon\Carbon::parse($day->fecha)->format('d/m/Y')); ?>: <?php echo e($day->total); ?> docs"></div>
+                                <span class="text-[9px] text-gray-400 mt-1 rotate-[-45deg] origin-top-left whitespace-nowrap"><?php echo e(\Carbon\Carbon::parse($day->fecha)->format('d/m')); ?></span>
                             </div>
-                        @endforeach
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
                     </div>
                 </div>
-                @endif
+                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
                 <div class="overflow-x-auto">
                     <table class="abc-table">
@@ -176,24 +192,25 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($dailyCounts as $day)
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = $dailyCounts; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $day): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoop($loop->index); ?><?php endif; ?>
                                 <tr>
                                     <td>
-                                        <span class="font-semibold text-[var(--abc-navy)]">{{ \Carbon\Carbon::parse($day->fecha)->translatedFormat('l, d M Y') }}</span>
+                                        <span class="font-semibold text-[var(--abc-navy)]"><?php echo e(\Carbon\Carbon::parse($day->fecha)->translatedFormat('l, d M Y')); ?></span>
                                     </td>
                                     <td class="text-center">
                                         <span class="inline-flex items-center justify-center w-10 h-8 rounded-full bg-[var(--abc-navy)] text-white text-sm font-bold">
-                                            {{ $day->total }}
+                                            <?php echo e($day->total); ?>
+
                                         </span>
                                     </td>
                                 </tr>
-                            @empty
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
                                 <tr>
                                     <td colspan="2" class="text-center py-8">
                                         <p class="text-gray-400 text-sm">No hay registros en los últimos 30 días</p>
                                     </td>
                                 </tr>
-                            @endforelse
+                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </tbody>
                     </table>
                 </div>
@@ -208,11 +225,21 @@
             const params = new URLSearchParams(formData).toString();
 
             if (type === 'excel') {
-                window.location.href = '{{ route("reports.export.excel") }}?' + params;
+                window.location.href = '<?php echo e(route("reports.export.excel")); ?>?' + params;
             } else {
-                window.location.href = '{{ route("reports.export.pdf") }}?' + params;
+                window.location.href = '<?php echo e(route("reports.export.pdf")); ?>?' + params;
             }
         }
     </script>
-</x-app-layout>
+ <?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>
+<?php $attributes = $__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54; ?>
+<?php unset($__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>
+<?php $component = $__componentOriginal9ac128a9029c0e4701924bd2d73d7f54; ?>
+<?php unset($__componentOriginal9ac128a9029c0e4701924bd2d73d7f54); ?>
+<?php endif; ?>
 
+<?php /**PATH C:\Users\hp pavilion\OneDrive\Escritorio\System Correos\system-correos\resources\views/reports/index.blade.php ENDPATH**/ ?>
