@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\AuditLog;
+use App\Models\Box;
+use App\Models\InternalNote;
+use App\Models\NoteAttachment;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -123,7 +126,16 @@ class UserController extends Controller
 
         $old = $user->only(['id', 'name', 'email', 'role']);
 
-        // Eliminar notas y adjuntos del usuario
+        // Registrar auditoría ANTES de eliminar al usuario
+        AuditLog::record('ELIMINAR_USUARIO', 'users', $old['id'], $old, null);
+
+        // Desvincullar FK references en otras tablas
+        AuditLog::where('user_id', $user->id)->update(['user_id' => null]);
+        Box::where('created_by', $user->id)->update(['created_by' => null]);
+        InternalNote::where('verified_by', $user->id)->update(['verified_by' => null]);
+        NoteAttachment::where('uploaded_by', $user->id)->update(['uploaded_by' => null]);
+
+        // Eliminar notas y adjuntos creados por el usuario
         foreach ($user->internalNotes as $note) {
             foreach ($note->attachments as $attachment) {
                 Storage::disk('public')->delete($attachment->file_path);
@@ -133,8 +145,6 @@ class UserController extends Controller
         }
 
         $user->delete();
-
-        AuditLog::record('ELIMINAR_USUARIO', 'users', $old['id'], $old, null);
 
         return redirect()->route('users.index')
                          ->with('success', 'Usuario eliminado permanentemente.');

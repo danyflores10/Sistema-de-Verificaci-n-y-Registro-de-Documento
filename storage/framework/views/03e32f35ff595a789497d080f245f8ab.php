@@ -1,4 +1,15 @@
-<x-app-layout>
+<?php if (isset($component)) { $__componentOriginal9ac128a9029c0e4701924bd2d73d7f54 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54 = $attributes; } ?>
+<?php $component = App\View\Components\AppLayout::resolve([] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('app-layout'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\App\View\Components\AppLayout::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes([]); ?>
+<?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::processComponentKey($component); ?>
+
     <div class="abc-page-header">
             <div class="flex justify-between items-center relative z-10">
                 <div class="flex items-center gap-3">
@@ -10,7 +21,7 @@
                         <p class="text-white/70 text-sm mt-1">Administracion de cuentas y permisos del sistema</p>
                     </div>
                 </div>
-                <a href="{{ route('users.create') }}" class="abc-btn abc-btn-warning">
+                <a href="<?php echo e(route('users.create')); ?>" class="abc-btn abc-btn-warning">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
                     </svg>
@@ -22,9 +33,9 @@
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
-            {{-- Filtros --}}
+            
             <div class="abc-filter-bar">
-                <form method="GET" action="{{ route('users.index') }}" class="flex flex-col sm:flex-row gap-4 items-end">
+                <form method="GET" action="<?php echo e(route('users.index')); ?>" class="flex flex-col sm:flex-row gap-4 items-end">
                     <div class="flex-1">
                         <label class="abc-label">Buscar</label>
                         <div class="relative">
@@ -33,7 +44,7 @@
                                     <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
                                 </svg>
                             </span>
-                            <input type="text" name="search" value="{{ request('search') }}"
+                            <input type="text" name="search" value="<?php echo e(request('search')); ?>"
                                    placeholder="Nombre o correo..."
                                    class="abc-input pl-10">
                         </div>
@@ -42,8 +53,8 @@
                         <label class="abc-label">Rol</label>
                         <select name="role" class="abc-input">
                             <option value="">-- Todos --</option>
-                            <option value="ADMIN" @selected(request('role') === 'ADMIN')>ADMIN</option>
-                            <option value="USUARIO" @selected(request('role') === 'USUARIO')>USUARIO</option>
+                            <option value="ADMIN" <?php if(request('role') === 'ADMIN'): echo 'selected'; endif; ?>>ADMIN</option>
+                            <option value="USUARIO" <?php if(request('role') === 'USUARIO'): echo 'selected'; endif; ?>>USUARIO</option>
                         </select>
                     </div>
                     <div class="flex gap-2">
@@ -53,7 +64,7 @@
                             </svg>
                             Buscar
                         </button>
-                        <a href="{{ route('users.index') }}" class="abc-btn abc-btn-ghost">
+                        <a href="<?php echo e(route('users.index')); ?>" class="abc-btn abc-btn-ghost">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
                             </svg>
@@ -63,7 +74,7 @@
                 </form>
             </div>
 
-            {{-- Tabla --}}
+            
             <div class="abc-card">
                 <div class="overflow-x-auto">
                     <table class="abc-table">
@@ -78,77 +89,78 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($users as $user)
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = $users; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $user): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoop($loop->index); ?><?php endif; ?>
                                 <tr x-data="{ showReset: false }">
-                                    <td class="font-mono text-xs" style="color: var(--text-muted)">{{ $user->id }}</td>
+                                    <td class="font-mono text-xs" style="color: var(--text-muted)"><?php echo e($user->id); ?></td>
                                     <td>
                                         <div class="flex items-center gap-3">
                                             <div class="w-9 h-9 rounded-full gradient-navy flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
-                                                {{ strtoupper(substr($user->name, 0, 2)) }}
+                                                <?php echo e(strtoupper(substr($user->name, 0, 2))); ?>
+
                                             </div>
-                                            <span class="font-semibold" style="color: var(--text-primary)">{{ $user->name }}</span>
+                                            <span class="font-semibold" style="color: var(--text-primary)"><?php echo e($user->name); ?></span>
                                         </div>
                                     </td>
-                                    <td style="color: var(--text-secondary)">{{ $user->email }}</td>
+                                    <td style="color: var(--text-secondary)"><?php echo e($user->email); ?></td>
                                     <td class="text-center">
-                                        @if($user->role === 'ADMIN')
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($user->role === 'ADMIN'): ?>
                                             <span class="abc-badge bg-red-50 text-red-700 border border-red-200">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
                                                     <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                                                 </svg>
                                                 ADMIN
                                             </span>
-                                        @else
+                                        <?php else: ?>
                                             <span class="abc-badge bg-blue-50 text-blue-700 border border-blue-200">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
                                                     <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
                                                 </svg>
                                                 USUARIO
                                             </span>
-                                        @endif
+                                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </td>
                                     <td class="text-center">
-                                        @if($user->is_active)
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($user->is_active): ?>
                                             <span class="abc-badge bg-emerald-50 text-emerald-700 border border-emerald-200">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
                                                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                                                 </svg>
                                                 Activo
                                             </span>
-                                        @else
+                                        <?php else: ?>
                                             <span class="abc-badge bg-red-50 text-red-700 border border-red-200">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
                                                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
                                                 </svg>
                                                 Inactivo
                                             </span>
-                                        @endif
+                                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </td>
                                     <td>
                                         <div class="flex justify-center items-center gap-1.5 flex-wrap">
-                                            <a href="{{ route('users.edit', $user) }}" class="abc-btn abc-btn-ghost !px-3 !py-1.5 text-xs">
+                                            <a href="<?php echo e(route('users.edit', $user)); ?>" class="abc-btn abc-btn-ghost !px-3 !py-1.5 text-xs">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
                                                     <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
                                                 </svg>
                                                 Editar
                                             </a>
-                                            <form method="POST" action="{{ route('users.toggle-active', $user) }}" class="inline">
-                                                @csrf
-                                                @if($user->is_active)
+                                            <form method="POST" action="<?php echo e(route('users.toggle-active', $user)); ?>" class="inline">
+                                                <?php echo csrf_field(); ?>
+                                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($user->is_active): ?>
                                                     <button type="submit" class="abc-btn abc-btn-danger !px-3 !py-1.5 text-xs">
                                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
                                                             <path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clip-rule="evenodd"/>
                                                         </svg>
                                                         Desactivar
                                                     </button>
-                                                @else
+                                                <?php else: ?>
                                                     <button type="submit" class="abc-btn abc-btn-success !px-3 !py-1.5 text-xs">
                                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
                                                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                                                         </svg>
                                                         Activar
                                                     </button>
-                                                @endif
+                                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                             </form>
                                             <button @click="showReset = !showReset" type="button"
                                                     class="abc-btn abc-btn-warning !px-3 !py-1.5 text-xs">
@@ -157,13 +169,13 @@
                                                 </svg>
                                                 Reset Pass
                                             </button>
-                                            {{-- Eliminar físicamente (solo admin) --}}
-                                            @if(auth()->user()->isAdmin() && $user->id !== auth()->id())
-                                                <form method="POST" action="{{ route('users.destroy', $user) }}" class="inline" id="delete-user-{{ $user->id }}">
-                                                    @csrf
-                                                    @method('DELETE')
+                                            
+                                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->user()->isAdmin() && $user->id !== auth()->id()): ?>
+                                                <form method="POST" action="<?php echo e(route('users.destroy', $user)); ?>" class="inline" id="delete-user-<?php echo e($user->id); ?>">
+                                                    <?php echo csrf_field(); ?>
+                                                    <?php echo method_field('DELETE'); ?>
                                                     <button type="button"
-                                                            onclick="confirmarEliminarUsuario('{{ addslashes($user->name) }}', 'delete-user-{{ $user->id }}')"
+                                                            onclick="confirmarEliminarUsuario('<?php echo e(addslashes($user->name)); ?>', 'delete-user-<?php echo e($user->id); ?>')"
                                                             class="abc-btn !px-3 !py-1.5 text-xs font-bold text-white"
                                                             style="background: linear-gradient(135deg, #dc2626, #991b1b);">
                                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
@@ -172,10 +184,10 @@
                                                         Eliminar
                                                     </button>
                                                 </form>
-                                            @endif
+                                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                         </div>
 
-                                        {{-- Form reset password con Alpine.js --}}
+                                        
                                         <div x-show="showReset"
                                              x-transition:enter="transition ease-out duration-200"
                                              x-transition:enter-start="opacity-0 -translate-y-2"
@@ -185,8 +197,8 @@
                                              x-transition:leave-end="opacity-0 -translate-y-2"
                                              x-cloak
                                              class="mt-3 p-3 bg-amber-50 rounded-lg border border-amber-200 text-left">
-                                            <form method="POST" action="{{ route('users.reset-password', $user) }}">
-                                                @csrf
+                                            <form method="POST" action="<?php echo e(route('users.reset-password', $user)); ?>">
+                                                <?php echo csrf_field(); ?>
                                                 <label class="abc-label text-xs !text-amber-700">Nueva contrasena</label>
                                                 <input type="password" name="password" placeholder="Nueva contrasena"
                                                        class="abc-input !border-amber-300 !bg-white text-xs mb-2" required>
@@ -207,7 +219,7 @@
                                         </div>
                                     </td>
                                 </tr>
-                            @empty
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
                                 <tr>
                                     <td colspan="6" class="text-center py-12">
                                         <div class="flex flex-col items-center gap-3">
@@ -218,12 +230,13 @@
                                         </div>
                                     </td>
                                 </tr>
-                            @endforelse
+                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </tbody>
                     </table>
                 </div>
                 <div class="px-5 py-4" style="border-top: 1px solid var(--border-primary)">
-                    {{ $users->links() }}
+                    <?php echo e($users->links()); ?>
+
                 </div>
             </div>
         </div>
@@ -248,4 +261,14 @@
             });
         }
     </script>
-</x-app-layout>
+ <?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>
+<?php $attributes = $__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54; ?>
+<?php unset($__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>
+<?php $component = $__componentOriginal9ac128a9029c0e4701924bd2d73d7f54; ?>
+<?php unset($__componentOriginal9ac128a9029c0e4701924bd2d73d7f54); ?>
+<?php endif; ?>
+<?php /**PATH C:\Users\hp pavilion\OneDrive\Escritorio\System Correos\system-correos\resources\views/users/index.blade.php ENDPATH**/ ?>
