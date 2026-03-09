@@ -42,6 +42,7 @@ class User extends Authenticatable
         'dashboard'    => 'Dashboard',
         'boxes'        => 'Cajas',
         'notes'        => 'Documentos',
+        'import'       => 'Importar Excel',
         'reports'      => 'Reportes',
         'verification' => 'Verificación',
         'users'        => 'Usuarios',

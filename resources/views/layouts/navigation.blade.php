@@ -70,6 +70,9 @@
             </svg>
             <span x-show="sidebarOpen" class="truncate">Documentos</span>
         </a>
+        @endif
+
+        @if(auth()->user()->hasModule('import'))
         <a href="{{ route('import.index') }}"
            class="abc-sidebar-link {{ request()->routeIs('import.*') ? 'active' : '' }}">
             <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
