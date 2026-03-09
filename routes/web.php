@@ -92,6 +92,7 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::get('/cleanup', [CleanupController::class, 'index'])->name('cleanup.index');
         Route::post('/cleanup/selected', [CleanupController::class, 'destroySelected'])->name('cleanup.destroy-selected');
         Route::post('/cleanup/all', [CleanupController::class, 'destroyAll'])->name('cleanup.destroy-all');
+        Route::post('/cleanup/system', [CleanupController::class, 'destroySystem'])->name('cleanup.destroy-system');
 
         // Pulse Monitor (embebido)
         Route::get('/admin/pulse', function () {

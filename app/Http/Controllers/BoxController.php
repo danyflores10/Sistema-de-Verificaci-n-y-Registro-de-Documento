@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\AuditLog;
 use App\Models\Box;
+use App\Models\InternalNote;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class BoxController extends Controller
 {
@@ -80,9 +82,20 @@ class BoxController extends Controller
         $this->authorize('delete', $box);
 
         $old = $box->toArray();
-        $box->delete();
 
+        // Registrar auditoría antes de eliminar
         AuditLog::record('ELIMINAR', 'boxes', $box->id, $old, null);
+
+        // Eliminar archivos físicos de adjuntos antes del cascade SQL
+        $notes = $box->internalNotes()->with('attachments')->get();
+        foreach ($notes as $note) {
+            foreach ($note->attachments as $attachment) {
+                Storage::disk('public')->delete($attachment->file_path);
+            }
+        }
+
+        // El cascade en BD elimina internal_notes y note_attachments automáticamente
+        $box->delete();
 
         return redirect()->route('boxes.index')
                          ->with('success', 'Caja eliminada exitosamente.');

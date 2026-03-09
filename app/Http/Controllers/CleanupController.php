@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AuditLog;
 use App\Models\Box;
 use App\Models\InternalNote;
+use App\Models\NoteAttachment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -92,5 +93,31 @@ class CleanupController extends Controller
 
         return redirect()->route('cleanup.index')
                          ->with('success', "{$count} documento(s) eliminado(s) permanentemente.");
+    }
+
+    public function destroySystem(Request $request)
+    {
+        $request->validate([
+            'confirm_text' => 'required|in:LIMPIAR SISTEMA',
+        ], [
+            'confirm_text.in' => 'Debe escribir "LIMPIAR SISTEMA" para confirmar.',
+        ]);
+
+        // Eliminar archivos físicos de adjuntos
+        $attachments = NoteAttachment::all();
+        foreach ($attachments as $attachment) {
+            Storage::disk('public')->delete($attachment->file_path);
+        }
+
+        // Eliminar en orden correcto por FK
+        NoteAttachment::query()->delete();
+        InternalNote::query()->delete();
+        Box::query()->delete();
+        AuditLog::query()->delete();
+
+        AuditLog::record('LIMPIAR_SISTEMA', 'system', 0, null, ['accion' => 'Limpieza total del sistema (excepto usuarios)']);
+
+        return redirect()->route('cleanup.index')
+                         ->with('success', 'Sistema limpiado exitosamente. Se eliminaron todos los documentos, cajas y registros de auditoría.');
     }
 }

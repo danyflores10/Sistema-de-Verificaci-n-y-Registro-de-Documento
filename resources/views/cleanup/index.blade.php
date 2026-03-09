@@ -185,6 +185,42 @@
                 @csrf
                 <input type="hidden" name="confirm_text" id="confirm_text_input">
             </form>
+
+            {{-- Formulario oculto para limpiar sistema --}}
+            <form method="POST" action="{{ route('cleanup.destroy-system') }}" id="delete-system-form" class="hidden">
+                @csrf
+                <input type="hidden" name="confirm_text" id="confirm_system_input">
+            </form>
+
+            {{-- Secci\u00f3n: Limpiar Sistema Completo --}}
+            <div class="abc-card" style="border: 2px solid #dc2626; border-radius: 0.75rem;">
+                <div class="p-5">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center" style="background: linear-gradient(135deg, #dc2626, #991b1b);">
+                            <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-bold text-red-700">Limpiar Sistema Completo</h3>
+                            <p class="text-sm mt-1" style="color: var(--text-secondary);">
+                                Elimina <strong>todos los datos</strong> del sistema excepto los usuarios: documentos, cajas, adjuntos y registros de auditor\u00eda.
+                                Ideal para preparar el sistema antes de subir a producci\u00f3n.
+                            </p>
+                            <div class="mt-3">
+                                <button type="button" onclick="confirmarLimpiarSistema()"
+                                        class="abc-btn text-xs text-white font-bold"
+                                        style="background: linear-gradient(135deg, #dc2626, #7f1d1d);">
+                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"/>
+                                    </svg>
+                                    Limpiar Todo el Sistema
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -232,6 +268,39 @@
                 if (result.isConfirmed) {
                     document.getElementById('confirm_text_input').value = result.value;
                     document.getElementById('delete-all-form').submit();
+                }
+            });
+        }
+
+        function confirmarLimpiarSistema() {
+            Swal.fire({
+                title: '¡LIMPIAR SISTEMA COMPLETO!',
+                html: 'Esta acción eliminará <strong style="color:#ef4444">TODOS</strong> los datos del sistema:<br><br>' +
+                      '<ul style="text-align:left;margin:0 auto;max-width:280px;line-height:1.8;">' +
+                      '<li>✗ Todos los documentos</li>' +
+                      '<li>✗ Todas las cajas</li>' +
+                      '<li>✗ Todos los adjuntos</li>' +
+                      '<li>✗ Registros de auditoría</li>' +
+                      '<li>✓ <strong>Usuarios se mantienen</strong></li>' +
+                      '</ul><br>Escriba <strong>LIMPIAR SISTEMA</strong> para confirmar:',
+                icon: 'error',
+                input: 'text',
+                inputPlaceholder: 'LIMPIAR SISTEMA',
+                showCancelButton: true,
+                confirmButtonColor: '#7f1d1d',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Limpiar todo el sistema',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true,
+                inputValidator: (value) => {
+                    if (value !== 'LIMPIAR SISTEMA') {
+                        return 'Debe escribir "LIMPIAR SISTEMA" exactamente';
+                    }
+                },
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('confirm_system_input').value = result.value;
+                    document.getElementById('delete-system-form').submit();
                 }
             });
         }
