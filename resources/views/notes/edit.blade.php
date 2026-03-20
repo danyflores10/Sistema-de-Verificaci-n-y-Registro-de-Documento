@@ -294,7 +294,7 @@
                     @endif
 
                     {{-- Nuevos adjuntos --}}
-                    <div class="mt-5" x-data="fileUpload()">
+                    <div class="mt-5" x-data="fileUpload({ maxMB: {{ Auth::user()->isAdmin() ? 500 : 200 }} })">
                         <label class="abc-label">Agregar nuevos adjuntos</label>
                         <div class="mt-1 border-2 border-dashed rounded-xl p-6 text-center transition-all duration-200 cursor-pointer"
                              :class="dragging ? 'border-blue-400 bg-blue-50/50 dark:bg-blue-900/20 scale-[1.01]' : 'border-gray-200 dark:border-gray-700 hover:border-blue-300 hover:bg-blue-50/30 dark:hover:bg-blue-900/10'"
@@ -304,7 +304,7 @@
                              @drop.prevent="dragging = false; handleDrop($event)">
                             <svg class="w-10 h-10 mx-auto mb-3 transition-colors" :class="dragging ? 'text-blue-400' : 'text-gray-300 dark:text-gray-600'" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"/></svg>
                             <p class="text-sm font-medium" style="color: var(--text-secondary);">Haga clic o arrastre archivos aquí</p>
-                            <p class="text-xs mt-1" style="color: var(--text-muted);">PDF, JPG, PNG &mdash; Máximo 10MB por archivo</p>
+                            <p class="text-xs mt-1" style="color: var(--text-muted);">PDF, JPG, PNG &mdash; Máximo {{ Auth::user()->isAdmin() ? '500' : '200' }}MB por archivo</p>
                             <input x-ref="fileInput" type="file" name="attachments[]" multiple accept=".pdf,.jpg,.jpeg,.png" class="hidden" @change="handleFiles($event)">
                         </div>
 

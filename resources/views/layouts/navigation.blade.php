@@ -1,5 +1,5 @@
 {{-- Sidebar Navigation --}}
-<aside class="abc-sidebar fixed inset-y-0 left-0 z-40 flex flex-col transition-all duration-300 border-r border-white/5 overflow-hidden"
+<aside class="abc-sidebar fixed inset-y-0 left-0 z-50 flex flex-col transition-all duration-300 border-r border-white/5 overflow-x-hidden"
        :class="[
            sidebarOpen ? 'w-64' : 'w-20',
            mobileSidebar ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
@@ -140,7 +140,7 @@
         @endif
 
         {{-- Limpieza Masiva --}}
-        @if(auth()->user()->hasModule('notes') && auth()->user()->isAdmin())
+        @if(auth()->user()->hasModule('cleanup'))
         <a href="{{ route('cleanup.index') }}"
            class="abc-sidebar-link {{ request()->routeIs('cleanup.*') ? 'active' : '' }}">
             <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">

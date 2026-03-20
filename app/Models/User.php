@@ -48,6 +48,7 @@ class User extends Authenticatable
         'users'        => 'Usuarios',
         'audit'        => 'Auditoría',
         'permissions'  => 'Permisos',
+        'cleanup'      => 'Limpieza',
         'pulse'        => 'Pulse Monitor',
         'log-viewer'   => 'Log Viewer',
     ];

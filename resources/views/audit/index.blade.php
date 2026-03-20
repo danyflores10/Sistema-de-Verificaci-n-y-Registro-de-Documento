@@ -67,7 +67,7 @@
             </div>
 
             {{-- Tabla de auditoría --}}
-            <div class="abc-card overflow-hidden">
+            <div class="abc-card overflow-hidden mobile-hide-table">
                 <div class="overflow-x-auto">
                     <table class="abc-table">
                         <thead>
@@ -170,6 +170,80 @@
                     <div class="px-6 py-4 border-t border-gray-100 bg-gray-50/50">
                         {{ $logs->links() }}
                     </div>
+                @endif
+            </div>
+
+            {{-- ═══ MOBILE CARDS VIEW ═══ --}}
+            <div class="mobile-show-cards">
+                @forelse($logs as $log)
+                    <div class="mobile-card-item">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center gap-2">
+                                <div class="w-7 h-7 rounded-full bg-gradient-to-br from-[var(--abc-navy)] to-[var(--abc-sky)] text-white flex items-center justify-center text-xs font-bold flex-shrink-0">
+                                    {{ $log->user ? strtoupper(substr($log->user->name, 0, 1)) : 'S' }}
+                                </div>
+                                <span class="text-sm font-semibold" style="color: var(--text-primary)">{{ $log->user->name ?? 'Sistema' }}</span>
+                            </div>
+                            @php
+                                $actionColors = [
+                                    'CREAR' => 'bg-emerald-100 text-emerald-700',
+                                    'EDITAR' => 'bg-amber-100 text-amber-700',
+                                    'ELIMINAR' => 'bg-red-100 text-red-700',
+                                    'VERIFICAR' => 'bg-emerald-100 text-emerald-700',
+                                    'RECHAZAR' => 'bg-red-100 text-red-700',
+                                    'ENVIAR' => 'bg-sky-100 text-sky-700',
+                                    'LOGIN' => 'bg-indigo-100 text-indigo-700',
+                                ];
+                                $color = 'bg-gray-100 text-gray-700';
+                                foreach ($actionColors as $key => $val) {
+                                    if (str_contains($log->action, $key)) { $color = $val; break; }
+                                }
+                            @endphp
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold {{ $color }}">{{ $log->action }}</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-x-4 gap-y-1">
+                            <div class="mobile-card-row">
+                                <span class="mobile-card-label">Fecha</span>
+                                <span class="mobile-card-value text-xs">{{ $log->created_at->format('d/m/Y H:i') }}</span>
+                            </div>
+                            <div class="mobile-card-row">
+                                <span class="mobile-card-label">Entidad</span>
+                                <span class="mobile-card-value text-xs">{{ $log->entity }}</span>
+                            </div>
+                            <div class="mobile-card-row">
+                                <span class="mobile-card-label">ID Entidad</span>
+                                <span class="mobile-card-value text-xs font-mono">{{ $log->entity_id }}</span>
+                            </div>
+                            <div class="mobile-card-row">
+                                <span class="mobile-card-label">IP</span>
+                                <span class="mobile-card-value text-xs font-mono">{{ $log->ip_address ?? '-' }}</span>
+                            </div>
+                        </div>
+                        @if($log->new_values)
+                            <details class="mt-2" x-data="{ open: false }">
+                                <summary @click="open = !open" class="inline-flex items-center gap-1 text-[var(--abc-sky)] text-xs font-medium cursor-pointer">
+                                    <svg class="w-3.5 h-3.5 transition-transform" :class="open ? 'rotate-90' : ''" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>
+                                    Ver cambios
+                                </summary>
+                                <div class="mt-2 text-xs bg-slate-50 dark:bg-slate-800 border p-2 rounded-lg overflow-auto max-h-40">
+                                    @if($log->old_values)
+                                        <p class="font-semibold text-red-500 mb-1 text-[10px]">Antes:</p>
+                                        <pre class="text-[10px] leading-relaxed mb-2 whitespace-pre-wrap">{{ json_encode($log->old_values, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
+                                    @endif
+                                    <p class="font-semibold text-emerald-600 mb-1 text-[10px]">Después:</p>
+                                    <pre class="text-[10px] leading-relaxed whitespace-pre-wrap">{{ json_encode($log->new_values, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
+                                </div>
+                            </details>
+                        @endif
+                    </div>
+                @empty
+                    <div class="flex flex-col items-center gap-3 py-12">
+                        <svg class="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+                        <p class="text-sm" style="color: var(--text-muted)">No hay registros de auditoría</p>
+                    </div>
+                @endforelse
+                @if($logs->hasPages())
+                    <div class="mt-4">{{ $logs->links() }}</div>
                 @endif
             </div>
         </div>

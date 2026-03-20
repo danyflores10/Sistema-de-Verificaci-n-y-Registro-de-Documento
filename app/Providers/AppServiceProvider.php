@@ -21,6 +21,12 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // Aumentar límites de upload para soportar hasta 500MB
+        @ini_set('upload_max_filesize', '512M');
+        @ini_set('post_max_size', '520M');
+        @ini_set('max_execution_time', '300');
+        @ini_set('max_input_time', '300');
+
         // Registrar Policies
         Gate::policy(Box::class, BoxPolicy::class);
         Gate::policy(InternalNote::class, InternalNotePolicy::class);

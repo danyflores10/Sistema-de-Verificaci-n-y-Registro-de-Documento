@@ -31,6 +31,9 @@ class InternalNoteController extends Controller
         if ($internalNumber = $request->get('internal_number')) {
             $query->where('internal_number', 'like', "%{$internalNumber}%");
         }
+        if ($folderNumber = $request->get('folder_number')) {
+            $query->where('folder_number', 'like', "%{$folderNumber}%");
+        }
         if ($dateFrom = $request->get('date_from')) {
             $query->where('note_date', '>=', $dateFrom);
         }
@@ -73,7 +76,7 @@ class InternalNoteController extends Controller
             'pages'           => 'required|integer|min:1',
             'observations'    => 'nullable|string|max:2000',
             'attachments'     => 'nullable|array',
-            'attachments.*'   => 'file|mimes:pdf,jpg,jpeg,png|max:10240',
+            'attachments.*'   => 'file|mimes:pdf,jpg,jpeg,png|max:' . ($request->user()->isAdmin() ? 512000 : 204800),
         ], [
             'box_id.required'          => 'La caja es obligatoria.',
             'internal_number.required' => 'El CITE es obligatorio.',
@@ -167,7 +170,7 @@ class InternalNoteController extends Controller
             'pages'           => 'required|integer|min:1',
             'observations'    => 'nullable|string|max:2000',
             'attachments'     => 'nullable|array',
-            'attachments.*'   => 'file|mimes:pdf,jpg,jpeg,png|max:10240',
+            'attachments.*'   => 'file|mimes:pdf,jpg,jpeg,png|max:' . ($request->user()->isAdmin() ? 512000 : 204800),
         ], [
             'remitente.required'    => 'El remitente es obligatorio.',
             'destinatario.required' => 'El destinatario es obligatorio.',

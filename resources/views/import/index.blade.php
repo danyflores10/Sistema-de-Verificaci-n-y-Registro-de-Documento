@@ -57,43 +57,47 @@
                             </div>
                             <div>
                                 <h4 class="font-bold text-blue-900 text-sm mb-2">Formato requerido del Excel</h4>
-                                <p class="text-xs text-blue-700 mb-3">El archivo Excel debe tener las siguientes columnas en la <strong>primera fila</strong> (encabezados):</p>
-                                <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                                <p class="text-xs text-blue-700 mb-3">El archivo Excel puede tener <strong>múltiples hojas</strong> (CAJA 12, CAJA 18, etc.) y debe tener estas columnas en la <strong>primera fila</strong> (encabezados):</p>
+                                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
                                     <div class="bg-white rounded-lg px-3 py-2 border border-blue-100">
-                                        <p class="text-[10px] font-bold text-blue-500 uppercase">Columna</p>
+                                        <p class="text-[10px] font-bold text-blue-500 uppercase">Col. A</p>
                                         <p class="text-xs font-semibold text-blue-900">N° DE CAJA</p>
                                     </div>
                                     <div class="bg-white rounded-lg px-3 py-2 border border-blue-100">
-                                        <p class="text-[10px] font-bold text-blue-500 uppercase">Columna</p>
+                                        <p class="text-[10px] font-bold text-blue-500 uppercase">Col. B</p>
+                                        <p class="text-xs font-semibold text-blue-900">N° DE CARPETA</p>
+                                    </div>
+                                    <div class="bg-white rounded-lg px-3 py-2 border border-blue-100">
+                                        <p class="text-[10px] font-bold text-blue-500 uppercase">Col. C-D</p>
                                         <p class="text-xs font-semibold text-blue-900">N° DE DOCUMENTO</p>
                                     </div>
                                     <div class="bg-white rounded-lg px-3 py-2 border border-blue-100">
-                                        <p class="text-[10px] font-bold text-blue-500 uppercase">Columna</p>
-                                        <p class="text-xs font-semibold text-blue-900">FECHA de recepción</p>
+                                        <p class="text-[10px] font-bold text-blue-500 uppercase">Col. E</p>
+                                        <p class="text-xs font-semibold text-blue-900">FECHA recepción</p>
                                     </div>
                                     <div class="bg-white rounded-lg px-3 py-2 border border-blue-100">
-                                        <p class="text-[10px] font-bold text-blue-500 uppercase">Columna</p>
+                                        <p class="text-[10px] font-bold text-blue-500 uppercase">Col. F</p>
                                         <p class="text-xs font-semibold text-blue-900">REFERENCIA</p>
                                     </div>
                                     <div class="bg-white rounded-lg px-3 py-2 border border-blue-100">
-                                        <p class="text-[10px] font-bold text-blue-500 uppercase">Columna</p>
-                                        <p class="text-xs font-semibold text-blue-900">DOC. ORIGINAL Y/O FOT.</p>
+                                        <p class="text-[10px] font-bold text-blue-500 uppercase">Col. G</p>
+                                        <p class="text-xs font-semibold text-blue-900">DOC. ORIGINAL</p>
                                     </div>
                                     <div class="bg-white rounded-lg px-3 py-2 border border-blue-100">
-                                        <p class="text-[10px] font-bold text-blue-500 uppercase">Columna</p>
+                                        <p class="text-[10px] font-bold text-blue-500 uppercase">Col. H</p>
                                         <p class="text-xs font-semibold text-blue-900">FOJAS</p>
                                     </div>
                                     <div class="bg-white rounded-lg px-3 py-2 border border-blue-100">
-                                        <p class="text-[10px] font-bold text-blue-500 uppercase">Columna</p>
+                                        <p class="text-[10px] font-bold text-blue-500 uppercase">Col. I</p>
                                         <p class="text-xs font-semibold text-blue-900">OBSERVACIONES</p>
                                     </div>
                                     <div class="bg-white rounded-lg px-3 py-2 border border-blue-100">
-                                        <p class="text-[10px] font-bold text-blue-500 uppercase">Columna</p>
-                                        <p class="text-xs font-semibold text-blue-900">TIPO DOCUMENTACIÓN</p>
+                                        <p class="text-[10px] font-bold text-blue-500 uppercase">Col. J</p>
+                                        <p class="text-xs font-semibold text-blue-900">TIPO DOC.</p>
                                     </div>
                                 </div>
                                 <p class="text-xs text-blue-600 mt-3">
-                                    <strong>Nota:</strong> Si la caja no existe en el sistema, se creará automáticamente. Los documentos se importarán con estado <strong>BORRADOR</strong>.
+                                    <strong>Nota:</strong> Se leen <strong>todas las hojas</strong> del archivo automáticamente. Si la caja no existe, se creará. Los documentos se importan con estado <strong>BORRADOR</strong>.
                                 </p>
                             </div>
                         </div>
@@ -188,9 +192,10 @@
                             </thead>
                             <tbody class="divide-y" style="border-color: var(--surface-border);">
                                 <tr><td class="py-2 px-3 font-mono text-xs">N° DE CAJA</td><td class="py-2 px-3">Caja</td><td class="py-2 px-3"><span class="text-emerald-600 font-bold text-xs">SÍ</span></td></tr>
-                                <tr><td class="py-2 px-3 font-mono text-xs">N° DE DOCUMENTO</td><td class="py-2 px-3">N. de CITE</td><td class="py-2 px-3"><span class="text-emerald-600 font-bold text-xs">SÍ</span></td></tr>
-                                <tr><td class="py-2 px-3 font-mono text-xs">FECHA de recepción</td><td class="py-2 px-3">Fecha</td><td class="py-2 px-3"><span class="text-emerald-600 font-bold text-xs">SÍ</span></td></tr>
-                                <tr><td class="py-2 px-3 font-mono text-xs">REFERENCIA</td><td class="py-2 px-3">Referencia</td><td class="py-2 px-3"><span class="text-emerald-600 font-bold text-xs">SÍ</span></td></tr>
+                                <tr><td class="py-2 px-3 font-mono text-xs">N° DE CARPETA</td><td class="py-2 px-3">N° de Carpeta</td><td class="py-2 px-3"><span class="text-gray-400 font-bold text-xs">NO</span></td></tr>
+                                <tr><td class="py-2 px-3 font-mono text-xs">N° DE DOCUMENTO</td><td class="py-2 px-3">N. de CITE</td><td class="py-2 px-3"><span class="text-gray-400 font-bold text-xs">NO</span></td></tr>
+                                <tr><td class="py-2 px-3 font-mono text-xs">FECHA de recepción</td><td class="py-2 px-3">Fecha</td><td class="py-2 px-3"><span class="text-gray-400 font-bold text-xs">NO</span></td></tr>
+                                <tr><td class="py-2 px-3 font-mono text-xs">REFERENCIA</td><td class="py-2 px-3">Referencia</td><td class="py-2 px-3"><span class="text-gray-400 font-bold text-xs">NO</span></td></tr>
                                 <tr><td class="py-2 px-3 font-mono text-xs">DOC. ORIGINAL Y/O FOT.</td><td class="py-2 px-3">Estado del documento</td><td class="py-2 px-3"><span class="text-gray-400 font-bold text-xs">NO</span></td></tr>
                                 <tr><td class="py-2 px-3 font-mono text-xs">FOJAS</td><td class="py-2 px-3">Fojas</td><td class="py-2 px-3"><span class="text-gray-400 font-bold text-xs">NO</span></td></tr>
                                 <tr><td class="py-2 px-3 font-mono text-xs">OBSERVACIONES</td><td class="py-2 px-3">Observaciones</td><td class="py-2 px-3"><span class="text-gray-400 font-bold text-xs">NO</span></td></tr>

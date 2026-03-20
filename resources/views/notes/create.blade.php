@@ -268,7 +268,7 @@
                     </div>
 
                     {{-- Adjuntos --}}
-                    <div class="mt-5" x-data="fileUpload()">
+                    <div class="mt-5" x-data="fileUpload({ maxMB: {{ Auth::user()->isAdmin() ? 500 : 200 }} })">
                         <label class="abc-label">Adjuntar archivos (PDF, JPG, PNG)</label>
 
                         {{-- Aceternity File Upload --}}
@@ -321,7 +321,7 @@
                             {{-- Bottom info --}}
                             <div class="relative z-10 text-center pb-8 px-6">
                                 <p class="text-xs" style="color: var(--text-muted); opacity: 0.6;">
-                                    PDF, JPG, PNG &nbsp;&middot;&nbsp; Máx. 200 MB por archivo &nbsp;&middot;&nbsp; Múltiples archivos
+                                    PDF, JPG, PNG &nbsp;&middot;&nbsp; Máx. {{ Auth::user()->isAdmin() ? '500' : '200' }} MB por archivo &nbsp;&middot;&nbsp; Múltiples archivos
                                 </p>
                             </div>
 

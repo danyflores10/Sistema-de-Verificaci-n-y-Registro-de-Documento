@@ -11,6 +11,42 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased">
+        {{-- ══ Page Loader (Bouncing Balls) ══ --}}
+        <div id="page-loader" aria-hidden="true">
+            <div class="loader-wrapper">
+                <div class="loader-ball blue"></div>
+                <div class="loader-ball red"></div>
+                <div class="loader-ball yellow"></div>
+                <div class="loader-ball green"></div>
+            </div>
+            <p class="loader-text">Cargando...</p>
+        </div>
+        <script>
+            (function () {
+                function hideLoader() {
+                    var el = document.getElementById('page-loader');
+                    if (el) { el.classList.add('loader-hidden'); }
+                }
+                if (document.readyState === 'complete') {
+                    hideLoader();
+                } else {
+                    window.addEventListener('load', hideLoader);
+                    setTimeout(hideLoader, 8000);
+                }
+                document.addEventListener('click', function (e) {
+                    var a = e.target.closest('a');
+                    if (a && a.href && !a.href.startsWith('#') && !a.href.startsWith('javascript') &&
+                        a.target !== '_blank' && a.origin === window.location.origin) {
+                        var el2 = document.getElementById('page-loader');
+                        if (el2) { el2.classList.remove('loader-hidden'); }
+                    }
+                });
+                document.addEventListener('submit', function () {
+                    var el3 = document.getElementById('page-loader');
+                    if (el3) { el3.classList.remove('loader-hidden'); }
+                });
+            })();
+        </script>
         <div class="login-bg min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
 
             {{-- ── Aceternity Animated Gradient Background ── --}}

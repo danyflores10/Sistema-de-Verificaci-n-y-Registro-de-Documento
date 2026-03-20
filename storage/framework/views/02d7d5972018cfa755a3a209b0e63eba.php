@@ -78,7 +78,7 @@
             </div>
 
             
-            <div class="abc-card overflow-hidden">
+            <div class="abc-card overflow-hidden mobile-hide-table">
                 <div class="overflow-x-auto">
                     <table class="abc-table">
                         <thead>
@@ -184,6 +184,81 @@
                         <?php echo e($logs->links()); ?>
 
                     </div>
+                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+            </div>
+
+            
+            <div class="mobile-show-cards">
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = $logs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $log): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoop($loop->index); ?><?php endif; ?>
+                    <div class="mobile-card-item">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center gap-2">
+                                <div class="w-7 h-7 rounded-full bg-gradient-to-br from-[var(--abc-navy)] to-[var(--abc-sky)] text-white flex items-center justify-center text-xs font-bold flex-shrink-0">
+                                    <?php echo e($log->user ? strtoupper(substr($log->user->name, 0, 1)) : 'S'); ?>
+
+                                </div>
+                                <span class="text-sm font-semibold" style="color: var(--text-primary)"><?php echo e($log->user->name ?? 'Sistema'); ?></span>
+                            </div>
+                            <?php
+                                $actionColors = [
+                                    'CREAR' => 'bg-emerald-100 text-emerald-700',
+                                    'EDITAR' => 'bg-amber-100 text-amber-700',
+                                    'ELIMINAR' => 'bg-red-100 text-red-700',
+                                    'VERIFICAR' => 'bg-emerald-100 text-emerald-700',
+                                    'RECHAZAR' => 'bg-red-100 text-red-700',
+                                    'ENVIAR' => 'bg-sky-100 text-sky-700',
+                                    'LOGIN' => 'bg-indigo-100 text-indigo-700',
+                                ];
+                                $color = 'bg-gray-100 text-gray-700';
+                                foreach ($actionColors as $key => $val) {
+                                    if (str_contains($log->action, $key)) { $color = $val; break; }
+                                }
+                            ?>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold <?php echo e($color); ?>"><?php echo e($log->action); ?></span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-x-4 gap-y-1">
+                            <div class="mobile-card-row">
+                                <span class="mobile-card-label">Fecha</span>
+                                <span class="mobile-card-value text-xs"><?php echo e($log->created_at->format('d/m/Y H:i')); ?></span>
+                            </div>
+                            <div class="mobile-card-row">
+                                <span class="mobile-card-label">Entidad</span>
+                                <span class="mobile-card-value text-xs"><?php echo e($log->entity); ?></span>
+                            </div>
+                            <div class="mobile-card-row">
+                                <span class="mobile-card-label">ID Entidad</span>
+                                <span class="mobile-card-value text-xs font-mono"><?php echo e($log->entity_id); ?></span>
+                            </div>
+                            <div class="mobile-card-row">
+                                <span class="mobile-card-label">IP</span>
+                                <span class="mobile-card-value text-xs font-mono"><?php echo e($log->ip_address ?? '-'); ?></span>
+                            </div>
+                        </div>
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($log->new_values): ?>
+                            <details class="mt-2" x-data="{ open: false }">
+                                <summary @click="open = !open" class="inline-flex items-center gap-1 text-[var(--abc-sky)] text-xs font-medium cursor-pointer">
+                                    <svg class="w-3.5 h-3.5 transition-transform" :class="open ? 'rotate-90' : ''" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>
+                                    Ver cambios
+                                </summary>
+                                <div class="mt-2 text-xs bg-slate-50 dark:bg-slate-800 border p-2 rounded-lg overflow-auto max-h-40">
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($log->old_values): ?>
+                                        <p class="font-semibold text-red-500 mb-1 text-[10px]">Antes:</p>
+                                        <pre class="text-[10px] leading-relaxed mb-2 whitespace-pre-wrap"><?php echo e(json_encode($log->old_values, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)); ?></pre>
+                                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                    <p class="font-semibold text-emerald-600 mb-1 text-[10px]">Después:</p>
+                                    <pre class="text-[10px] leading-relaxed whitespace-pre-wrap"><?php echo e(json_encode($log->new_values, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)); ?></pre>
+                                </div>
+                            </details>
+                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                    </div>
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
+                    <div class="flex flex-col items-center gap-3 py-12">
+                        <svg class="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+                        <p class="text-sm" style="color: var(--text-muted)">No hay registros de auditoría</p>
+                    </div>
+                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($logs->hasPages()): ?>
+                    <div class="mt-4"><?php echo e($logs->links()); ?></div>
                 <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
             </div>
         </div>

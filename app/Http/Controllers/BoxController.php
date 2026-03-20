@@ -35,12 +35,19 @@ class BoxController extends Controller
         $this->authorize('create', Box::class);
 
         $validated = $request->validate([
-            'box_number'  => 'required|string|max:50|unique:boxes,box_number',
+            'box_number'  => 'required|string|max:50',
             'description' => 'nullable|string|max:500',
         ], [
             'box_number.required' => 'El número de caja es obligatorio.',
-            'box_number.unique'   => 'Este número de caja ya existe.',
         ]);
+
+        // Normalizar número de caja: mayúsculas + trim + espacios simples
+        $validated['box_number'] = strtoupper(trim(preg_replace('/\s+/', ' ', $validated['box_number'])));
+
+        // Verificar duplicado (case-insensitive)
+        if (Box::whereRaw('UPPER(box_number) = ?', [$validated['box_number']])->exists()) {
+            return back()->withErrors(['box_number' => 'Este número de caja ya existe.'])->withInput();
+        }
 
         $box = Box::create([
             ...$validated,
@@ -64,9 +71,17 @@ class BoxController extends Controller
         $this->authorize('update', $box);
 
         $validated = $request->validate([
-            'box_number'  => 'required|string|max:50|unique:boxes,box_number,' . $box->id,
+            'box_number'  => 'required|string|max:50',
             'description' => 'nullable|string|max:500',
         ]);
+
+        // Normalizar número de caja
+        $validated['box_number'] = strtoupper(trim(preg_replace('/\s+/', ' ', $validated['box_number'])));
+
+        // Verificar duplicado (case-insensitive, excluyendo la caja actual)
+        if (Box::whereRaw('UPPER(box_number) = ?', [$validated['box_number']])->where('id', '!=', $box->id)->exists()) {
+            return back()->withErrors(['box_number' => 'Este número de caja ya existe.'])->withInput();
+        }
 
         $old = $box->toArray();
         $box->update($validated);

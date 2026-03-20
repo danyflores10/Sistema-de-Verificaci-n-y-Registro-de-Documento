@@ -75,7 +75,7 @@
             </div>
 
             
-            <div class="abc-card">
+            <div class="abc-card mobile-hide-table">
                 <div class="overflow-x-auto">
                     <table class="abc-table">
                         <thead>
@@ -238,6 +238,99 @@
                     <?php echo e($users->links()); ?>
 
                 </div>
+            </div>
+
+            
+            <div class="mobile-show-cards">
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = $users; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $user): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoop($loop->index); ?><?php endif; ?>
+                    <div class="mobile-card-item" x-data="{ showReset: false }">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-10 h-10 rounded-full gradient-navy flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+                                <?php echo e(strtoupper(substr($user->name, 0, 2))); ?>
+
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="font-bold text-sm truncate" style="color: var(--text-primary)"><?php echo e($user->name); ?></p>
+                                <p class="text-xs truncate" style="color: var(--text-muted)"><?php echo e($user->email); ?></p>
+                            </div>
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($user->is_active): ?>
+                                <span class="abc-badge bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px]">Activo</span>
+                            <?php else: ?>
+                                <span class="abc-badge bg-red-50 text-red-700 border border-red-200 text-[10px]">Inactivo</span>
+                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                        </div>
+                        <div class="grid grid-cols-2 gap-x-4 gap-y-1 mb-3">
+                            <div class="mobile-card-row">
+                                <span class="mobile-card-label">Rol</span>
+                                <span class="mobile-card-value">
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($user->role === 'ADMIN'): ?>
+                                        <span class="text-red-600 font-bold text-xs">ADMIN</span>
+                                    <?php else: ?>
+                                        <span class="text-blue-600 font-bold text-xs">USUARIO</span>
+                                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                </span>
+                            </div>
+                            <div class="mobile-card-row">
+                                <span class="mobile-card-label">ID</span>
+                                <span class="mobile-card-value text-xs font-mono"><?php echo e($user->id); ?></span>
+                            </div>
+                        </div>
+                        <div class="mobile-card-actions">
+                            <a href="<?php echo e(route('users.edit', $user)); ?>" class="text-amber-600 bg-amber-50 dark:bg-amber-900/20 dark:text-amber-400 hover:bg-amber-100 rounded-lg">
+                                <svg class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/></svg>
+                                Editar
+                            </a>
+                            <form method="POST" action="<?php echo e(route('users.toggle-active', $user)); ?>" class="flex-1">
+                                <?php echo csrf_field(); ?>
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($user->is_active): ?>
+                                    <button type="submit" class="w-full text-red-600 bg-red-50 dark:bg-red-900/20 dark:text-red-400 hover:bg-red-100 inline-flex items-center justify-center gap-1.5 py-2 rounded-lg text-[11px] font-semibold transition">
+                                        Desactivar
+                                    </button>
+                                <?php else: ?>
+                                    <button type="submit" class="w-full text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 dark:text-emerald-400 hover:bg-emerald-100 inline-flex items-center justify-center gap-1.5 py-2 rounded-lg text-[11px] font-semibold transition">
+                                        Activar
+                                    </button>
+                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                            </form>
+                            <button @click="showReset = !showReset" type="button"
+                                    class="text-amber-600 bg-amber-50 dark:bg-amber-900/20 dark:text-amber-400 hover:bg-amber-100 rounded-lg inline-flex items-center justify-center gap-1.5 py-2 text-[11px] font-semibold transition">
+                                Reset
+                            </button>
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->user()->isAdmin() && $user->id !== auth()->id()): ?>
+                                <form method="POST" action="<?php echo e(route('users.destroy', $user)); ?>" class="inline" id="mobile-delete-user-<?php echo e($user->id); ?>">
+                                    <?php echo csrf_field(); ?>
+                                    <?php echo method_field('DELETE'); ?>
+                                    <button type="button"
+                                            onclick="confirmarEliminarUsuario('<?php echo e(addslashes($user->name)); ?>', 'mobile-delete-user-<?php echo e($user->id); ?>')"
+                                            class="text-white bg-red-600 hover:bg-red-700 rounded-lg inline-flex items-center justify-center gap-1.5 py-2 px-3 text-[11px] font-semibold transition">
+                                        Eliminar
+                                    </button>
+                                </form>
+                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                        </div>
+                        
+                        <div x-show="showReset" x-transition x-cloak class="mt-3 p-3 rounded-xl border border-amber-200 dark:border-amber-800/50" style="background: var(--surface-card);">
+                            <p class="text-xs font-bold text-amber-600 dark:text-amber-400 mb-2">Resetear Contraseña</p>
+                            <form method="POST" action="<?php echo e(route('users.reset-password', $user)); ?>">
+                                <?php echo csrf_field(); ?>
+                                <input type="password" name="password" placeholder="Nueva contraseña" class="abc-input text-xs mb-2" required>
+                                <input type="password" name="password_confirmation" placeholder="Confirmar contraseña" class="abc-input text-xs mb-2" required>
+                                <div class="flex gap-2">
+                                    <button @click="showReset = false" type="button" class="abc-btn abc-btn-ghost !px-3 !py-1.5 text-xs flex-1">Cancelar</button>
+                                    <button type="submit" class="abc-btn abc-btn-warning !px-3 !py-1.5 text-xs flex-1">Cambiar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
+                    <div class="flex flex-col items-center gap-3 py-12">
+                        <svg class="h-12 w-12 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
+                        <p class="font-medium" style="color: var(--text-muted)">No hay usuarios registrados.</p>
+                    </div>
+                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($users->hasPages()): ?>
+                    <div class="mt-4"><?php echo e($users->links()); ?></div>
+                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
             </div>
         </div>
     </div>

@@ -25,18 +25,34 @@ class ImportController extends Controller
         ]);
 
         try {
-            $import = new InternalNotesImport($request->user()->id);
-            Excel::import($import, $request->file('file'));
+            $file = $request->file('file');
+            $filePath = $file->getRealPath();
+
+            $import = new InternalNotesImport($request->user()->id, $filePath);
+            Excel::import($import, $file);
 
             $count = $import->getImportedCount();
+            $skipped = $import->getSkippedCount();
+            $sheets = $import->getSheetsProcessed();
 
             AuditLog::record('IMPORTAR', 'internal_notes', 0, null, [
-                'archivo'  => $request->file('file')->getClientOriginalName(),
+                'archivo'  => $file->getClientOriginalName(),
                 'cantidad' => $count,
+                'omitidos' => $skipped,
+                'hojas'    => $sheets,
             ]);
 
+            $msg = "Se importaron {$count} documentos exitosamente";
+            if ($sheets > 1) {
+                $msg .= " de {$sheets} hojas";
+            }
+            if ($skipped > 0) {
+                $msg .= " ({$skipped} filas omitidas por estar vacías)";
+            }
+            $msg .= '.';
+
             return redirect()->route('import.index')
-                             ->with('success', "Se importaron {$count} documentos exitosamente.");
+                             ->with('success', $msg);
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
             $failures = $e->failures();
             $errors = [];

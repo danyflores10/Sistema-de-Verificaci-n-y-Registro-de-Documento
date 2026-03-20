@@ -129,7 +129,8 @@ window.addEventListener('toast', (e) => {
 /* ============================================
    File Upload Component - ABC
    ============================================ */
-window.fileUpload = function () {
+window.fileUpload = function (options) {
+    const maxMB = (options && options.maxMB) ? options.maxMB : 200;
     return {
         files: [],
         dragging: false,
@@ -137,7 +138,7 @@ window.fileUpload = function () {
         handleFiles(event) {
             const newFiles = Array.from(event.target.files);
             const accepted = ['.pdf', '.jpg', '.jpeg', '.png'];
-            const maxSize = 200 * 1024 * 1024; // 200MB
+            const maxSize = maxMB * 1024 * 1024;
 
             for (const file of newFiles) {
                 const ext = '.' + file.name.split('.').pop().toLowerCase();
@@ -149,7 +150,7 @@ window.fileUpload = function () {
                 }
                 if (file.size > maxSize) {
                     if (Alpine.store('toasts')) {
-                        Alpine.store('toasts').error(`"${file.name}" excede el límite de 200MB.`);
+                        Alpine.store('toasts').error(`"${file.name}" excede el límite de ${maxMB}MB.`);
                     }
                     continue;
                 }

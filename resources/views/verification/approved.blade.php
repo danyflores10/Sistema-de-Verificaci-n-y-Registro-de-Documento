@@ -58,8 +58,8 @@
                 </form>
             </div>
 
-            {{-- Tabla --}}
-            <div class="abc-card animate-fade-in-up">
+            {{-- Tabla (Desktop) --}}
+            <div class="abc-card animate-fade-in-up mobile-hide-table">
                 <div class="overflow-x-auto">
                     <table class="abc-table">
                         <thead style="background: linear-gradient(135deg, #059669, #34d399);">
@@ -138,6 +138,97 @@
 
                 @if($notes->hasPages())
                     <div class="px-5 py-4 border-t" style="border-color: var(--surface-border);">
+                        {{ $notes->links() }}
+                    </div>
+                @endif
+            </div>
+
+            {{-- ═══ MOBILE CARDS VIEW ═══ --}}
+            <div class="mobile-show-cards">
+                @forelse($notes as $note)
+                    <div class="mobile-card-item">
+                        {{-- Header --}}
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="text-xs font-bold px-2 py-0.5 rounded-md" style="background: linear-gradient(135deg, #059669, #34d399); color: white;">
+                                    {{ $note->box->box_number ?? '-' }}
+                                </span>
+                                <a href="{{ route('notes.show', $note) }}" class="text-sm font-bold hover:underline text-emerald-600">
+                                    {{ $note->internal_number }}
+                                </a>
+                            </div>
+                            <span class="text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md">
+                                ✓ Aprobado
+                            </span>
+                        </div>
+
+                        {{-- Referencia --}}
+                        <p class="text-xs mb-2 line-clamp-2" style="color: var(--text-secondary);" title="{{ $note->reference }}">
+                            {{ $note->reference }}
+                        </p>
+
+                        {{-- Info grid --}}
+                        <div class="grid grid-cols-2 gap-x-4 gap-y-1">
+                            <div class="mobile-card-row">
+                                <span class="mobile-card-label">Fecha Doc.</span>
+                                <span class="mobile-card-value text-xs">{{ $note->note_date->format('d/m/Y') }}</span>
+                            </div>
+                            <div class="mobile-card-row">
+                                <span class="mobile-card-label">Fojas</span>
+                                <span class="mobile-card-value text-xs font-semibold">{{ $note->pages }}</span>
+                            </div>
+                            @if($note->remitente)
+                            <div class="mobile-card-row">
+                                <span class="mobile-card-label">Remitente</span>
+                                <span class="mobile-card-value text-xs truncate">{{ $note->remitente }}</span>
+                            </div>
+                            @endif
+                            @if($note->destinatario)
+                            <div class="mobile-card-row">
+                                <span class="mobile-card-label">Destinatario</span>
+                                <span class="mobile-card-value text-xs truncate">{{ $note->destinatario }}</span>
+                            </div>
+                            @endif
+                            <div class="mobile-card-row">
+                                <span class="mobile-card-label">Aprobado por</span>
+                                <span class="mobile-card-value text-xs">{{ $note->verifier->name ?? '-' }}</span>
+                            </div>
+                            <div class="mobile-card-row">
+                                <span class="mobile-card-label">Fecha Aprob.</span>
+                                <span class="mobile-card-value text-xs">{{ $note->verified_at ? $note->verified_at->format('d/m/Y') : '-' }}</span>
+                            </div>
+                        </div>
+
+                        {{-- Acciones --}}
+                        <div class="mobile-card-actions">
+                            <a href="{{ route('notes.show', $note) }}" class="text-emerald-600 bg-emerald-50 hover:bg-emerald-100">
+                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+                                </svg>
+                                Ver Documento
+                            </a>
+                        </div>
+                    </div>
+                @empty
+                    <div class="flex flex-col items-center gap-3 py-12">
+                        <div class="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center">
+                            <svg class="w-7 h-7 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+                            </svg>
+                        </div>
+                        <p class="font-semibold text-sm" style="color: var(--text-muted);">
+                            @if(request('date_from') || request('date_to') || request('search'))
+                                No se encontraron documentos con esos filtros
+                            @else
+                                No hay documentos aprobados aún
+                            @endif
+                        </p>
+                    </div>
+                @endforelse
+
+                @if($notes->hasPages())
+                    <div class="mt-4">
                         {{ $notes->links() }}
                     </div>
                 @endif

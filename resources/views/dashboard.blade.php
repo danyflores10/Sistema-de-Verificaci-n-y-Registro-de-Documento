@@ -184,6 +184,7 @@
                     <thead>
                         <tr>
                             <th>N° Caja</th>
+                            <th>N° Carpeta</th>
                             <th>N. de CITE</th>
                             <th>Fecha</th>
                             <th>Referencia</th>
@@ -199,6 +200,9 @@
                                         <svg class="w-3.5 h-3.5 opacity-40" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" /></svg>
                                         {{ $note->box->box_number ?? '-' }}
                                     </span>
+                                </td>
+                                <td>
+                                    <span class="text-sm tabular-nums" style="color: var(--text-secondary)">{{ $note->folder_number ?? '-' }}</span>
                                 </td>
                                 <td>
                                     <a href="{{ route('notes.show', $note) }}" class="font-bold text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 hover:underline transition-colors">
@@ -223,7 +227,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center py-12">
+                                <td colspan="7" class="text-center py-12">
                                     <div class="flex flex-col items-center gap-3">
                                         <div class="w-16 h-16 rounded-2xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
                                             <svg class="w-8 h-8 text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" /></svg>

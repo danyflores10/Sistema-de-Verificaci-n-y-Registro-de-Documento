@@ -34,12 +34,62 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased">
+
+        {{-- ══ Page Loader (Bouncing Balls) ══ --}}
+        <div id="page-loader" aria-hidden="true">
+            <div class="loader-wrapper">
+                <div class="loader-ball blue"></div>
+                <div class="loader-ball red"></div>
+                <div class="loader-ball yellow"></div>
+                <div class="loader-ball green"></div>
+            </div>
+            <p class="loader-text">Cargando...</p>
+        </div>
+
+        <script>
+            // Ocultar loader cuando la página termina de cargar
+            (function () {
+                function hideLoader() {
+                    var el = document.getElementById('page-loader');
+                    if (el) { el.classList.add('loader-hidden'); }
+                }
+                if (document.readyState === 'complete') {
+                    hideLoader();
+                } else {
+                    window.addEventListener('load', hideLoader);
+                    // Fallback: máximo 8 segundos para conexiones lentas
+                    setTimeout(hideLoader, 8000);
+                }
+                // Mostrar loader en navegación (links internos)
+                document.addEventListener('click', function (e) {
+                    var a = e.target.closest('a');
+                    if (a && a.href && !a.href.startsWith('#') && !a.href.startsWith('javascript') &&
+                        a.target !== '_blank' && a.origin === window.location.origin &&
+                        !a.hasAttribute('data-no-loader')) {
+                        var el2 = document.getElementById('page-loader');
+                        if (el2) { el2.classList.remove('loader-hidden'); }
+                    }
+                });
+                // Mostrar loader en submit de formularios
+                document.addEventListener('submit', function (e) {
+                    if (!e.target.hasAttribute('data-no-loader')) {
+                        var el3 = document.getElementById('page-loader');
+                        if (el3) { el3.classList.remove('loader-hidden'); }
+                    }
+                });
+            })();
+        </script>
+
         <div class="min-h-screen flex" x-data="{ sidebarOpen: window.innerWidth >= 1024, mobileSidebar: false }">
 
-            {{-- Mobile overlay --}}
+            {{-- Mobile overlay (solo 1, z-40 para que quede debajo del sidebar z-50) --}}
             <div x-show="mobileSidebar"
+                 x-transition:enter="transition-opacity ease-out duration-300"
+                 x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+                 x-transition:leave="transition-opacity ease-in duration-200"
+                 x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
                  @click="mobileSidebar = false"
-                 class="fixed inset-0 bg-black/60 z-30 lg:hidden"
+                 class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
                  x-cloak></div>
 
             {{-- Sidebar --}}
@@ -247,13 +297,6 @@
                 </footer>
             </div>
 
-            {{-- Mobile sidebar overlay --}}
-            <div x-show="mobileSidebar" x-transition:enter="transition-opacity ease-out duration-300"
-                 x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
-                 x-transition:leave="transition-opacity ease-in duration-200"
-                 x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
-                 @click="mobileSidebar = false"
-                 class="fixed inset-0 bg-black/50 z-40 lg:hidden" style="display:none"></div>
         </div>
 
         {{-- Toast Notification Container --}}
@@ -264,49 +307,30 @@
                     'abc-toast-' + toast.type,
                     toast.removing ? 'abc-toast-exit' : ''
                 ]">
-                    {{-- Icon with colored background --}}
-                    <div class="flex-shrink-0">
+                    {{-- Simple icon --}}
+                    <div class="flex-shrink-0 mt-0.5">
                         <template x-if="toast.type === 'success'">
-                            <div class="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center">
-                                <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
-                            </div>
+                            <svg class="w-5 h-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
                         </template>
                         <template x-if="toast.type === 'error'">
-                            <div class="w-10 h-10 rounded-xl bg-red-100 dark:bg-red-900/40 flex items-center justify-center">
-                                <svg class="w-5 h-5 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" /></svg>
-                            </div>
+                            <svg class="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" /></svg>
                         </template>
                         <template x-if="toast.type === 'warning'">
-                            <div class="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center">
-                                <svg class="w-5 h-5 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" /></svg>
-                            </div>
+                            <svg class="w-5 h-5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" /></svg>
                         </template>
                         <template x-if="toast.type === 'info'">
-                            <div class="w-10 h-10 rounded-xl bg-sky-100 dark:bg-sky-900/40 flex items-center justify-center">
-                                <svg class="w-5 h-5 text-sky-600 dark:text-sky-400" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" /></svg>
-                            </div>
+                            <svg class="w-5 h-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" /></svg>
                         </template>
                     </div>
                     {{-- Content --}}
                     <div class="flex-1 min-w-0">
-                        <p class="text-sm font-bold leading-tight" x-text="toast.title"></p>
-                        <p class="text-xs mt-0.5 opacity-80 leading-snug" x-text="toast.message"></p>
+                        <p class="text-sm font-semibold leading-tight" x-text="toast.title"></p>
+                        <p class="text-xs mt-0.5 opacity-75 leading-snug" x-text="toast.message"></p>
                     </div>
                     {{-- Close button --}}
-                    <button @click="$store.toasts.remove(toast.id)" class="flex-shrink-0 p-1 rounded-lg opacity-40 hover:opacity-100 transition-all hover:bg-black/5 dark:hover:bg-white/10">
+                    <button @click="$store.toasts.remove(toast.id)" class="flex-shrink-0 p-1 rounded opacity-40 hover:opacity-100 transition-opacity">
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
                     </button>
-                    {{-- Progress bar --}}
-                    <div class="absolute bottom-0 left-0 right-0 h-1 rounded-b-xl overflow-hidden" style="background: rgba(0,0,0,0.06);">
-                        <div class="h-full rounded-b-xl transition-all duration-100 ease-linear"
-                             :class="{
-                                 'bg-emerald-500': toast.type === 'success',
-                                 'bg-red-500': toast.type === 'error',
-                                 'bg-amber-500': toast.type === 'warning',
-                                 'bg-sky-500': toast.type === 'info'
-                             }"
-                             :style="'width: ' + toast.progress + '%'"></div>
-                    </div>
                 </div>
             </template>
         </div>
