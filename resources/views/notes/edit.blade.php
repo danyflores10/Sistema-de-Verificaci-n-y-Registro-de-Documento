@@ -294,7 +294,7 @@
                     @endif
 
                     {{-- Nuevos adjuntos --}}
-                    <div class="mt-5" x-data="fileUpload({ maxMB: {{ Auth::user()->isAdmin() ? 500 : 200 }} })">
+                    <div class="mt-5" x-data="fileUpload({ maxMB: 500 })">
                         <label class="abc-label">Agregar nuevos adjuntos</label>
                         <div class="mt-1 border-2 border-dashed rounded-xl p-6 text-center transition-all duration-200 cursor-pointer"
                              :class="dragging ? 'border-blue-400 bg-blue-50/50 dark:bg-blue-900/20 scale-[1.01]' : 'border-gray-200 dark:border-gray-700 hover:border-blue-300 hover:bg-blue-50/30 dark:hover:bg-blue-900/10'"

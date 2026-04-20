@@ -17,11 +17,11 @@ class ImportController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'file' => 'required|file|mimes:xlsx,xls,csv|max:204800',
+            'file' => 'required|file|mimes:xlsx,xls,csv|max:512000',
         ], [
             'file.required' => 'Debe seleccionar un archivo Excel.',
             'file.mimes'    => 'El archivo debe ser de tipo: xlsx, xls o csv.',
-            'file.max'      => 'El archivo no debe superar los 200 MB.',
+            'file.max'      => 'El archivo no debe superar los 500 MB.',
         ]);
 
         try {

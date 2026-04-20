@@ -76,7 +76,7 @@ class InternalNoteController extends Controller
             'pages'           => 'required|integer|min:1',
             'observations'    => 'nullable|string|max:2000',
             'attachments'     => 'nullable|array',
-            'attachments.*'   => 'file|mimes:pdf,jpg,jpeg,png|max:' . ($request->user()->isAdmin() ? 512000 : 204800),
+            'attachments.*'   => 'file|mimes:pdf,jpg,jpeg,png|max:512000',
         ], [
             'box_id.required'          => 'La caja es obligatoria.',
             'internal_number.required' => 'El CITE es obligatorio.',
@@ -170,7 +170,7 @@ class InternalNoteController extends Controller
             'pages'           => 'required|integer|min:1',
             'observations'    => 'nullable|string|max:2000',
             'attachments'     => 'nullable|array',
-            'attachments.*'   => 'file|mimes:pdf,jpg,jpeg,png|max:' . ($request->user()->isAdmin() ? 512000 : 204800),
+            'attachments.*'   => 'file|mimes:pdf,jpg,jpeg,png|max:512000',
         ], [
             'remitente.required'    => 'El remitente es obligatorio.',
             'destinatario.required' => 'El destinatario es obligatorio.',

@@ -128,7 +128,7 @@
                                     </div>
                                     <div>
                                         <p class="text-sm font-semibold text-gray-700">Arrastre y suelte el archivo aquí</p>
-                                        <p class="text-xs text-gray-400 mt-1">o haga clic para seleccionar &mdash; Formatos: .xlsx, .xls, .csv (máx. 200MB)</p>
+                                        <p class="text-xs text-gray-400 mt-1">o haga clic para seleccionar &mdash; Formatos: .xlsx, .xls, .csv (máx. 500MB)</p>
                                     </div>
                                 </div>
 

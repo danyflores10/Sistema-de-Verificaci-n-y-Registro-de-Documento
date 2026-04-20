@@ -268,7 +268,7 @@
                     </div>
 
                     {{-- Adjuntos --}}
-                    <div class="mt-5" x-data="fileUpload({ maxMB: {{ Auth::user()->isAdmin() ? 500 : 200 }} })">
+                    <div class="mt-5" x-data="fileUpload({ maxMB: 500 })">
                         <label class="abc-label">Adjuntar archivos (PDF, JPG, PNG)</label>
 
                         {{-- Aceternity File Upload --}}
