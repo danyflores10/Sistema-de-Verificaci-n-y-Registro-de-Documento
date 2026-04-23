@@ -87,17 +87,19 @@ class InternalNotesImport implements WithMultipleSheets
 
 /**
  * Importador por hoja individual.
- * Mapea las columnas del Excel exactamente:
- *   A: N° DE CAJA
- *   B: N° DE CARPETA
- *   C: N° DE DOCUMENTO  (no hay C en el screenshot original, es C en la columna)
- *   D: (vacío o N° DE DOCUMENTO)
- *   E: FECHA de recepción
- *   F: REFERENCIA
- *   G: DOC. ORIGINAL Y/O FOT.
- *   H: FOJAS
- *   I: OBSERVACIONES
- *   J: TIPO DOCUMENTACIÓN
+ * Mapea las columnas del Excel en este orden exacto:
+ *   A: N°                      → se ignora (número de fila)
+ *   B: N° caja                 → box_number (REQUERIDO)
+ *   C: N° DE Carpeta           → folder_number
+ *   D: N° DE DOCUMENTO         → internal_number
+ *   E: FECHA de recepción      → note_date
+ *   F: REFERENCIA              → reference
+ *   G: DOC. ORIGINAL Y/O FOT. → doc_type
+ *   H: FOJAS                   → pages
+ *   I: OBSERVACIONES           → observations
+ *   J: TIPO DOCUMENTACIÓN      → note_type
+ *   K: TIPOLOGIA               → tipologia
+ *   L: ESTADO DE CONSERVACIÓN  → estado_conservacion
  */
 class InternalNotesSheetImport implements ToModel, WithHeadingRow, SkipsEmptyRows
 {
@@ -211,7 +213,7 @@ class InternalNotesSheetImport implements ToModel, WithHeadingRow, SkipsEmptyRow
         // ── OBSERVACIONES ──
         $observations = trim($this->findValue($row, ['observaciones', 'observacion', 'obs']));
 
-        // ── TIPO DOCUMENTACIÓN ──
+        // ── TIPO DOCUMENTACIÓN (col J) ──
         $rawNoteType = strtoupper(trim($this->findValue($row, [
             'tipo_documentacion', 'tipo_doc', 'tipo', 'documentacion',
         ])));
@@ -224,6 +226,14 @@ class InternalNotesSheetImport implements ToModel, WithHeadingRow, SkipsEmptyRow
             default => 'NOTA INTERNA',
         };
 
+        // ── TIPOLOGIA (col K) ──
+        $tipologia = trim($this->findValue($row, ['tipologia', 'tipolog'])) ?: null;
+
+        // ── ESTADO DE CONSERVACIÓN (col L) ──
+        $estadoConservacion = trim($this->findValue($row, [
+            'estado_de_conservacion', 'estado_conservacion', 'conservacion',
+        ])) ?: null;
+
         // ── REMITENTE / DESTINATARIO / VIA (opcionales en el Excel) ──
         $remitente = trim($this->findValue($row, ['remitente', 'de', 'from']));
         $destinatario = trim($this->findValue($row, ['destinatario', 'para', 'to']));
@@ -232,20 +242,22 @@ class InternalNotesSheetImport implements ToModel, WithHeadingRow, SkipsEmptyRow
         $this->imported++;
 
         return new InternalNote([
-            'box_id'          => self::$boxCache[$boxNumber],
-            'folder_number'   => $folderNumber ?: null,
-            'internal_number' => $internalNumber ?: ('IMP-' . $this->imported),
-            'note_date'       => $noteDate,
-            'reference'       => $reference ?: 'Sin referencia',
-            'doc_type'        => $docType,
-            'note_type'       => $noteType,
-            'pages'           => $pages,
-            'observations'    => $observations ?: null,
-            'remitente'       => $remitente ?: 'Importado',
-            'destinatario'    => $destinatario ?: 'Importado',
-            'via'             => $via ?: null,
-            'status'          => 'BORRADOR',
-            'created_by'      => $this->userId,
+            'box_id'              => self::$boxCache[$boxNumber],
+            'folder_number'       => $folderNumber ?: null,
+            'internal_number'     => $internalNumber ?: ('IMP-' . $this->imported),
+            'note_date'           => $noteDate,
+            'reference'           => $reference ?: 'Sin referencia',
+            'doc_type'            => $docType,
+            'note_type'           => $noteType,
+            'tipologia'           => $tipologia,
+            'estado_conservacion' => $estadoConservacion,
+            'pages'               => $pages,
+            'observations'        => $observations ?: null,
+            'remitente'           => $remitente ?: 'Importado',
+            'destinatario'        => $destinatario ?: 'Importado',
+            'via'                 => $via ?: null,
+            'status'              => 'BORRADOR',
+            'created_by'          => $this->userId,
         ]);
     }
 
@@ -258,7 +270,7 @@ class InternalNotesSheetImport implements ToModel, WithHeadingRow, SkipsEmptyRow
         if (is_numeric($rawDate)) {
             try {
                 return Date::excelToDateTimeObject((int) $rawDate)->format('Y-m-d');
-            } catch (\Exception $e) {
+            } catch (\Exception) {
                 return now()->format('Y-m-d');
             }
         }
@@ -275,7 +287,7 @@ class InternalNotesSheetImport implements ToModel, WithHeadingRow, SkipsEmptyRow
 
         try {
             return \Carbon\Carbon::parse($rawDate)->format('Y-m-d');
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return now()->format('Y-m-d');
         }
     }

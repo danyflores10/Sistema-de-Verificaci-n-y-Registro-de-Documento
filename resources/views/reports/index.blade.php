@@ -155,10 +155,13 @@
                     @php $maxTotal = $dailyCounts->max('total') ?: 1; @endphp
                     <div class="flex items-end gap-1 h-48 overflow-x-auto pb-2">
                         @foreach($dailyCounts->reverse() as $day)
-                            <div class="flex flex-col items-center flex-shrink-0 group" style="min-width: 36px;">
+                            @php
+                                $barHeight = number_format(($day->total / $maxTotal) * 100, 2, '.', '');
+                            @endphp
+                            <div class="flex min-w-[36px] flex-col items-center flex-shrink-0 group">
                                 <span class="text-[10px] font-bold text-[var(--abc-navy)] opacity-0 group-hover:opacity-100 transition-opacity mb-1">{{ $day->total }}</span>
-                                <div class="w-7 rounded-t transition-all duration-300 group-hover:opacity-80"
-                                     style="height: {{ ($day->total / $maxTotal) * 100 }}%; min-height: 4px; background: linear-gradient(to top, var(--abc-navy), var(--abc-sky));"
+                                <div class="abc-daily-bar w-7 min-h-[4px] rounded-t transition-all duration-300 group-hover:opacity-80 bg-gradient-to-t from-[var(--abc-navy)] to-[var(--abc-sky)]"
+                                     data-height="{{ $barHeight }}"
                                      title="{{ \Carbon\Carbon::parse($day->fecha)->format('d/m/Y') }}: {{ $day->total }} docs"></div>
                                 <span class="text-[9px] text-gray-400 mt-1 rotate-[-45deg] origin-top-left whitespace-nowrap">{{ \Carbon\Carbon::parse($day->fecha)->format('d/m') }}</span>
                             </div>
@@ -202,6 +205,14 @@
     </div>
 
     <script>
+        function applyDailyBarHeights() {
+            document.querySelectorAll('.abc-daily-bar').forEach((bar) => {
+                const raw = Number.parseFloat(bar.dataset.height || '0');
+                const height = Number.isFinite(raw) ? Math.max(raw, 4) : 4;
+                bar.style.height = `${height}%`;
+            });
+        }
+
         function exportData(type) {
             const form = document.getElementById('export-form');
             const formData = new FormData(form);
@@ -212,6 +223,12 @@
             } else {
                 window.location.href = '{{ route("reports.export.pdf") }}?' + params;
             }
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', applyDailyBarHeights);
+        } else {
+            applyDailyBarHeights();
         }
     </script>
 </x-app-layout>

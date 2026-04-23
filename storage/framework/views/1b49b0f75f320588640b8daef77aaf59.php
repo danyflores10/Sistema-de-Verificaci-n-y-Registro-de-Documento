@@ -33,46 +33,48 @@
     </div>
 
     <div class="py-6">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+        <div class="max-w-[96rem] mx-auto px-3 sm:px-4 lg:px-6 xl:px-8 space-y-6">
 
             
             <div class="abc-card animate-fade-in-up mobile-hide-table">
                 <div class="overflow-x-auto">
-                    <table class="abc-table">
+                    <table class="abc-table verification-table min-w-[1260px] w-full">
                         <thead style="background: linear-gradient(135deg, #f4b223, #ffd166);">
                             <tr>
-                                <th class="!text-gray-900">#</th>
-                                <th class="!text-gray-900">N. Caja</th>
-                                <th class="!text-gray-900">N. de CITE</th>
-                                <th class="!text-gray-900">Fecha</th>
-                                <th class="!text-gray-900">Referencia</th>
-                                <th class="!text-gray-900 text-center">Fojas</th>
-                                <th class="!text-gray-900">Creado por</th>
-                                <th class="!text-gray-900 text-center">Acciones</th>
+                                <th class="!text-gray-900 whitespace-nowrap text-center w-14">#</th>
+                                <th class="!text-gray-900 whitespace-nowrap w-28">N° Caja</th>
+                                <th class="!text-gray-900 whitespace-nowrap w-[290px]">N° de Documento</th>
+                                <th class="!text-gray-900 whitespace-nowrap w-28">Fecha</th>
+                                <th class="!text-gray-900 whitespace-nowrap w-[320px]">Referencia</th>
+                                <th class="!text-gray-900 text-center whitespace-nowrap w-24">Fojas</th>
+                                <th class="!text-gray-900 whitespace-nowrap w-44">Creado por</th>
+                                <th class="!text-gray-900 text-center whitespace-nowrap w-[260px]">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = $notes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $note): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoop($loop->index); ?><?php endif; ?>
                                 <tr x-data="{ showReject: false }">
-                                    <td class="font-mono text-xs" style="color: var(--text-muted)"><?php echo e($note->id); ?></td>
+                                    <td class="font-mono text-sm text-center" style="color: var(--text-muted)"><?php echo e($note->id); ?></td>
                                     <td class="font-semibold" style="color: var(--text-primary)"><?php echo e($note->box->box_number ?? '-'); ?></td>
                                     <td>
-                                        <a href="<?php echo e(route('notes.show', $note)); ?>" class="text-blue-600 hover:text-blue-800 hover:underline font-medium">
+                                        <a href="<?php echo e(route('notes.show', $note)); ?>" class="line-clamp-2 text-blue-600 hover:text-blue-800 hover:underline font-semibold" title="<?php echo e($note->internal_number); ?>">
                                             <?php echo e($note->internal_number); ?>
 
                                         </a>
                                     </td>
-                                    <td style="color: var(--text-secondary)"><?php echo e($note->note_date->format('d/m/Y')); ?></td>
-                                    <td class="max-w-xs truncate" style="color: var(--text-secondary)"><?php echo e($note->reference); ?></td>
+                                    <td class="whitespace-nowrap font-medium" style="color: var(--text-secondary)"><?php echo e($note->note_date->format('d/m/Y')); ?></td>
+                                    <td class="max-w-[320px]">
+                                        <span class="line-clamp-2" style="color: var(--text-secondary)" title="<?php echo e($note->reference); ?>"><?php echo e($note->reference); ?></span>
+                                    </td>
                                     <td class="text-center">
                                         <span class="abc-badge bg-indigo-50 text-indigo-700 border border-indigo-200">
                                             <?php echo e($note->pages); ?>
 
                                         </span>
                                     </td>
-                                    <td style="color: var(--text-secondary)"><?php echo e($note->creator->name ?? '-'); ?></td>
+                                    <td class="whitespace-nowrap font-medium" style="color: var(--text-secondary)"><?php echo e($note->creator->name ?? '-'); ?></td>
                                     <td>
-                                        <div class="flex justify-center gap-2">
+                                        <div class="flex justify-center gap-2 flex-nowrap">
                                             <a href="<?php echo e(route('notes.show', $note)); ?>" class="abc-btn abc-btn-ghost !px-3 !py-1.5 text-xs">
                                                 <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
                                                 Ver Detalle
@@ -256,6 +258,16 @@
             });
         }
     </script>
+
+    <style>
+        .verification-table thead th {
+            letter-spacing: .04em;
+        }
+
+        .verification-table tbody td {
+            vertical-align: middle;
+        }
+    </style>
  <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>

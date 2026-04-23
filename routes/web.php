@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\BoxController;
-use App\Http\Controllers\CleanupController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ImportController;
 use App\Http\Controllers\InternalNoteController;
@@ -88,12 +87,6 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::get('/permissions', [PermissionController::class, 'index'])->name('permissions.index');
         Route::put('/permissions/{user}/modules', [PermissionController::class, 'updateModules'])->name('permissions.update-modules');
 
-        // Limpieza masiva de documentos
-        Route::get('/cleanup', [CleanupController::class, 'index'])->name('cleanup.index');
-        Route::post('/cleanup/selected', [CleanupController::class, 'destroySelected'])->name('cleanup.destroy-selected');
-        Route::post('/cleanup/all', [CleanupController::class, 'destroyAll'])->name('cleanup.destroy-all');
-        Route::post('/cleanup/system', [CleanupController::class, 'destroySystem'])->name('cleanup.destroy-system');
-
         // Pulse Monitor (embebido)
         Route::get('/admin/pulse', function () {
             return view('admin.pulse');
@@ -107,4 +100,3 @@ Route::middleware(['auth', 'active'])->group(function () {
 });
 
 require __DIR__.'/auth.php';
-

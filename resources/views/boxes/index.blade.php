@@ -17,7 +17,7 @@
         </div>
 
     <div class="py-6">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+        <div class="max-w-[96rem] mx-auto px-3 sm:px-4 lg:px-6 xl:px-8 space-y-6">
 
             {{-- Filtro de busqueda --}}
             <div class="abc-filter-bar">
@@ -55,36 +55,38 @@
             {{-- Tabla (Desktop) --}}
             <div class="abc-card mobile-hide-table">
                 <div class="overflow-x-auto">
-                    <table class="abc-table">
+                    <table class="abc-table boxes-table min-w-[1120px] w-full">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>N Caja</th>
-                                <th>Descripcion</th>
-                                <th class="text-center">Registros</th>
-                                <th>Creado por</th>
-                                <th>Fecha</th>
+                                <th class="text-center whitespace-nowrap w-16">ID</th>
+                                <th class="whitespace-nowrap w-36">N Caja</th>
+                                <th class="whitespace-nowrap w-[420px]">Descripción</th>
+                                <th class="text-center whitespace-nowrap w-32">Registros</th>
+                                <th class="whitespace-nowrap w-56">Creado por</th>
+                                <th class="whitespace-nowrap w-36">Fecha</th>
                                 @can('create', App\Models\Box::class)
-                                    <th class="text-center">Acciones</th>
+                                    <th class="text-center whitespace-nowrap w-56">Acciones</th>
                                 @endcan
                             </tr>
                         </thead>
                         <tbody>
                             @forelse($boxes as $box)
                                 <tr>
-                                    <td class="font-mono text-xs" style="color: var(--text-muted)">{{ $box->id }}</td>
+                                    <td class="font-mono text-sm text-center" style="color: var(--text-muted)">{{ $box->id }}</td>
                                     <td class="font-semibold" style="color: var(--text-primary)">{{ $box->box_number }}</td>
-                                    <td class="max-w-xs truncate" style="color: var(--text-secondary)">{{ $box->description ?? '-' }}</td>
+                                    <td class="max-w-[420px]">
+                                        <span class="line-clamp-2" style="color: var(--text-secondary)" title="{{ $box->description ?? '-' }}">{{ $box->description ?? '-' }}</span>
+                                    </td>
                                     <td class="text-center">
                                         <span class="abc-badge bg-indigo-50 text-indigo-700 border border-indigo-200">
                                             {{ $box->internal_notes_count }}
                                         </span>
                                     </td>
-                                    <td style="color: var(--text-secondary)">{{ $box->creator->name ?? '-' }}</td>
-                                    <td style="color: var(--text-muted)">{{ $box->created_at->format('d/m/Y') }}</td>
+                                    <td class="whitespace-nowrap font-medium" style="color: var(--text-secondary)">{{ $box->creator->name ?? '-' }}</td>
+                                    <td class="whitespace-nowrap" style="color: var(--text-muted)">{{ $box->created_at->format('d/m/Y') }}</td>
                                     @can('create', App\Models\Box::class)
                                         <td>
-                                            <div class="flex justify-center gap-2">
+                                            <div class="flex justify-center gap-2 flex-nowrap">
                                                 <a href="{{ route('boxes.edit', $box) }}" class="abc-btn abc-btn-ghost !px-3 !py-1.5 text-xs" title="Editar">
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
                                                         <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
@@ -175,6 +177,17 @@
             </div>
         </div>
     </div>
+
+<style>
+    .boxes-table thead th {
+        letter-spacing: .04em;
+    }
+
+    .boxes-table tbody td {
+        vertical-align: middle;
+    }
+</style>
+
 @push('scripts')
 <script>
     function confirmarEliminarCaja(boxNumber, notesCount, formId) {

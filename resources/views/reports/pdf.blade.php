@@ -102,7 +102,7 @@
             <tr>
                 <th>N°</th>
                 <th>N° CAJA</th>
-                <th>N. de CITE</th>
+                <th>N° DE DOCUMENTO</th>
                 <th>FECHA</th>
                 <th>REFERENCIA</th>
                 <th>ESTADO DOC.</th>

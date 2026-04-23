@@ -33,22 +33,18 @@
 
             <div>
                 <p class="text-sm text-gray-700 leading-5 dark:text-gray-600">
-                    <?php echo __('Showing'); ?>
-
+                    Mostrando
                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($paginator->firstItem()): ?>
                         <span class="font-medium"><?php echo e($paginator->firstItem()); ?></span>
-                        <?php echo __('to'); ?>
-
+                        a
                         <span class="font-medium"><?php echo e($paginator->lastItem()); ?></span>
                     <?php else: ?>
                         <?php echo e($paginator->count()); ?>
 
                     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-                    <?php echo __('of'); ?>
-
+                    de
                     <span class="font-medium"><?php echo e($paginator->total()); ?></span>
-                    <?php echo __('results'); ?>
-
+                    resultados
                 </p>
             </div>
 

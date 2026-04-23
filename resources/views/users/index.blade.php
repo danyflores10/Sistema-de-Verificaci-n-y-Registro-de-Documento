@@ -20,7 +20,7 @@
         </div>
 
     <div class="py-6">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+        <div class="max-w-[96rem] mx-auto px-3 sm:px-4 lg:px-6 xl:px-8 space-y-6">
 
             {{-- Filtros --}}
             <div class="abc-filter-bar">
@@ -66,21 +66,21 @@
             {{-- Tabla --}}
             <div class="abc-card mobile-hide-table">
                 <div class="overflow-x-auto">
-                    <table class="abc-table">
+                    <table class="abc-table users-table min-w-[1180px] w-full">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Usuario</th>
-                                <th>Email</th>
-                                <th class="text-center">Rol</th>
-                                <th class="text-center">Estado</th>
-                                <th class="text-center">Acciones</th>
+                                <th class="whitespace-nowrap text-center w-16">ID</th>
+                                <th class="whitespace-nowrap w-64">Usuario</th>
+                                <th class="whitespace-nowrap w-[340px]">Email</th>
+                                <th class="text-center whitespace-nowrap w-32">Rol</th>
+                                <th class="text-center whitespace-nowrap w-32">Estado</th>
+                                <th class="text-center whitespace-nowrap w-[360px]">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse($users as $user)
                                 <tr x-data="{ showReset: false }">
-                                    <td class="font-mono text-xs" style="color: var(--text-muted)">{{ $user->id }}</td>
+                                    <td class="font-mono text-sm text-center" style="color: var(--text-muted)">{{ $user->id }}</td>
                                     <td>
                                         <div class="flex items-center gap-3">
                                             <div class="w-9 h-9 rounded-full gradient-navy flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
@@ -89,7 +89,7 @@
                                             <span class="font-semibold" style="color: var(--text-primary)">{{ $user->name }}</span>
                                         </div>
                                     </td>
-                                    <td style="color: var(--text-secondary)">{{ $user->email }}</td>
+                                    <td class="max-w-[340px] truncate" style="color: var(--text-secondary)" title="{{ $user->email }}">{{ $user->email }}</td>
                                     <td class="text-center">
                                         @if($user->role === 'ADMIN')
                                             <span class="abc-badge bg-red-50 text-red-700 border border-red-200">
@@ -125,7 +125,7 @@
                                         @endif
                                     </td>
                                     <td>
-                                        <div class="flex justify-center items-center gap-1.5 flex-wrap">
+                                        <div class="flex justify-center items-center gap-1.5 flex-nowrap">
                                             <a href="{{ route('users.edit', $user) }}" class="abc-btn abc-btn-ghost !px-3 !py-1.5 text-xs">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
                                                     <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
@@ -340,4 +340,14 @@
             });
         }
     </script>
+
+    <style>
+        .users-table thead th {
+            letter-spacing: .04em;
+        }
+
+        .users-table tbody td {
+            vertical-align: middle;
+        }
+    </style>
 </x-app-layout>

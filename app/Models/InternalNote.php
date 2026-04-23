@@ -19,6 +19,8 @@ class InternalNote extends Model
         'reference',
         'doc_type',
         'note_type',
+        'tipologia',
+        'estado_conservacion',
         'pages',
         'observations',
         'status',

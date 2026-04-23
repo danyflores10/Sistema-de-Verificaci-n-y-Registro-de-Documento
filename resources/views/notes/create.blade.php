@@ -53,7 +53,7 @@
                                 this.open = false;
                             }
                         }" @click.outside="open = false" class="relative">
-                            <label for="box_search" class="abc-label">N. de Caja *</label>
+                            <label for="box_search" class="abc-label">N° CAJA *</label>
                             <input type="hidden" name="box_id" :value="selectedId">
                             <input type="text" id="box_search" autocomplete="off"
                                    class="abc-input"
@@ -82,18 +82,19 @@
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
                         </div>
-   {{-- N° de Carpeta --}}
+                        {{-- Col C: N° DE CARPETA --}}
                         <div>
-                            <label for="folder_number" class="abc-label">N° de Carpeta</label>
+                            <label for="folder_number" class="abc-label">N° DE CARPETA</label>
                             <input type="text" name="folder_number" id="folder_number" value="{{ old('folder_number') }}"
                                    class="abc-input" placeholder="Ej: CARP-001">
                             @error('folder_number')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
                         </div>
-                        {{-- N. de CITE --}}
+
+                        {{-- Col D: N° DE DOCUMENTO --}}
                         <div>
-                            <label for="internal_number" class="abc-label">N. de CITE *</label>
+                            <label for="internal_number" class="abc-label">N° DE DOCUMENTO *</label>
                             <input type="text" name="internal_number" id="internal_number" value="{{ old('internal_number') }}"
                                    class="abc-input" placeholder="Ej: NI-2026-001" required>
                             @error('internal_number')
@@ -101,9 +102,9 @@
                             @enderror
                         </div>
 
-                        {{-- Fecha --}}
+                        {{-- Col E: FECHA de recepción --}}
                         <div>
-                            <label for="note_date" class="abc-label">Fecha *</label>
+                            <label for="note_date" class="abc-label">FECHA de recepción *</label>
                             <input type="date" name="note_date" id="note_date" value="{{ old('note_date', date('Y-m-d')) }}"
                                    class="abc-input" required>
                             @error('note_date')
@@ -111,9 +112,9 @@
                             @enderror
                         </div>
 
-                        {{-- Estado del Documento --}}
+                        {{-- Col G: DOC. ORIGINAL Y/O FOT. --}}
                         <div>
-                            <label for="doc_type" class="abc-label">Estado del Documento *</label>
+                            <label for="doc_type" class="abc-label">DOC. ORIGINAL Y/O FOT. *</label>
                             <select name="doc_type" id="doc_type" required class="abc-input">
                                 <option value="">-- Seleccionar --</option>
                                 <option value="ORIGINAL" @selected(old('doc_type') === 'ORIGINAL')>ORIGINAL</option>
@@ -126,11 +127,19 @@
                             @enderror
                         </div>
 
-                     
-
-                        {{-- Nota Interno --}}
+                        {{-- Col H: FOJAS --}}
                         <div>
-                            <label for="note_type" class="abc-label">Nota Interno *</label>
+                            <label for="pages" class="abc-label">FOJAS *</label>
+                            <input type="number" name="pages" id="pages" value="{{ old('pages', 1) }}" min="1"
+                                   class="abc-input" required>
+                            @error('pages')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        {{-- Col J: TIPO DOCUMENTACIÓN --}}
+                        <div>
+                            <label for="note_type" class="abc-label">TIPO DOCUMENTACIÓN *</label>
                             <select name="note_type" id="note_type" required class="abc-input">
                                 <option value="">-- Seleccionar --</option>
                                 <option value="NOTA INTERNA" @selected(old('note_type') === 'NOTA INTERNA')>NOTA INTERNA</option>
@@ -143,22 +152,33 @@
                             @enderror
                         </div>
 
-                        {{-- Fojas --}}
+                        {{-- Col K: TIPOLOGIA --}}
                         <div>
-                            <label for="pages" class="abc-label">Fojas *</label>
-                            <input type="number" name="pages" id="pages" value="{{ old('pages', 1) }}" min="1"
-                                   class="abc-input" required>
-                            @error('pages')
+                            <label for="tipologia" class="abc-label">TIPOLOGIA</label>
+                            <input type="text" name="tipologia" id="tipologia" value="{{ old('tipologia') }}"
+                                   class="abc-input" placeholder="Ej: ADMINISTRATIVA, LEGAL, TÉCNICA..." maxlength="150">
+                            @error('tipologia')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        {{-- Col L: ESTADO DE CONSERVACIÓN --}}
+                        <div>
+                            <label for="estado_conservacion" class="abc-label">ESTADO DE CONSERVACIÓN</label>
+                            <input type="text" name="estado_conservacion" id="estado_conservacion"
+                                   value="{{ old('estado_conservacion') }}"
+                                   class="abc-input" placeholder="Ej: BUENO, REGULAR, MALO..." maxlength="100">
+                            @error('estado_conservacion')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
                         </div>
                     </div>
 
-                    {{-- Referencia --}}
+                    {{-- Col F: REFERENCIA --}}
                     <div class="mt-5">
-                        <label for="reference" class="abc-label">Referencia *</label>
+                        <label for="reference" class="abc-label">REFERENCIA *</label>
                         <textarea name="reference" id="reference" rows="2"
-                                  class="abc-input" placeholder="Descripcion de la referencia..." required>{{ old('reference') }}</textarea>
+                                  class="abc-input" placeholder="Descripción de la referencia..." required>{{ old('reference') }}</textarea>
                         @error('reference')
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                         @enderror
@@ -182,9 +202,9 @@
                                     Remitente *
                                 </label>
                                 <input type="text" name="remitente" id="remitente"
-                                       value="{{ old('remitente', auth()->user()->name) }}"
-                                       class="abc-input !focus:ring-teal-100 !focus:border-teal-400 bg-gray-50 cursor-not-allowed"
-                                       placeholder="Nombre del remitente" readonly required>
+                                       value="{{ old('remitente', '') }}"
+                                       class="abc-input !focus:ring-teal-100 !focus:border-teal-400"
+                                       placeholder="Escriba quién envía el documento" required>
                                 @error('remitente')
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                 @enderror
@@ -193,7 +213,7 @@
                                 open: false,
                                 search: '',
                                 selectedValue: '{{ old('destinatario', '') }}',
-                                users: @js($users->map(fn($u) => ['id' => $u->id, 'label' => $u->name . ' (' . $u->role . ')'])),
+                                users: @js($users->map(fn($u) => ['id' => $u->id, 'name' => $u->name, 'label' => $u->name . ' (' . $u->role . ')'])),
                                 get filtered() {
                                     if (!this.search) return this.users;
                                     let s = this.search.toLowerCase();
@@ -201,11 +221,18 @@
                                 },
                                 init() {
                                     if (this.selectedValue) {
-                                        this.search = this.selectedValue;
+                                        let found = this.users.find(u => u.name.toLowerCase() === this.selectedValue.toLowerCase());
+                                        if (found) {
+                                            this.selectedValue = found.name;
+                                            this.search = found.label;
+                                        } else {
+                                            this.selectedValue = '';
+                                            this.search = '';
+                                        }
                                     }
                                 },
                                 select(user) {
-                                    this.selectedValue = user.label.split(' (')[0];
+                                    this.selectedValue = user.name;
                                     this.search = user.label;
                                     this.open = false;
                                 }
@@ -217,10 +244,10 @@
                                 <input type="hidden" name="destinatario" :value="selectedValue">
                                 <input type="text" id="destinatario_search" autocomplete="off"
                                        class="abc-input"
-                                       placeholder="Buscar destinatario..."
+                                       placeholder="Seleccione a quién se enviará"
                                        x-model="search"
                                        @focus="open = true; search = ''"
-                                       @input="open = true"
+                                       @input="open = true; selectedValue = ''"
                                        @keydown.escape="open = false"
                                        x-init="search = selectedValue">
                                 <div x-show="open && filtered.length > 0" x-cloak x-transition
@@ -229,7 +256,7 @@
                                     <template x-for="user in filtered" :key="user.id">
                                         <div @click="select(user)"
                                              class="px-4 py-2.5 text-sm cursor-pointer hover:bg-teal-50 hover:text-teal-700 transition-colors border-b border-gray-100 last:border-b-0"
-                                             :class="selectedValue == user.label.split(' (')[0] ? 'bg-teal-50 font-semibold text-teal-700' : 'text-gray-700'"
+                                             :class="selectedValue == user.name ? 'bg-teal-50 font-semibold text-teal-700' : 'text-gray-700'"
                                              x-text="user.label"></div>
                                     </template>
                                 </div>
@@ -238,6 +265,10 @@
                                      style="box-shadow: 0 10px 25px rgba(0,0,0,0.15);">
                                     No se encontraron usuarios
                                 </div>
+                                <p class="mt-1 text-[11px] font-medium text-teal-700">
+                                    Se enviará a:
+                                    <span x-text="selectedValue || 'Seleccione un destinatario'" class="font-bold"></span>
+                                </p>
                                 @error('destinatario')
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                 @enderror
@@ -258,8 +289,9 @@
                             </div>
                         </div>
                     </div>
+                    {{-- Col I: OBSERVACIONES --}}
                     <div class="mt-5">
-                        <label for="observations" class="abc-label">Observaciones</label>
+                        <label for="observations" class="abc-label">OBSERVACIONES</label>
                         <textarea name="observations" id="observations" rows="2"
                                   class="abc-input" placeholder="Observaciones adicionales...">{{ old('observations') }}</textarea>
                         @error('observations')
@@ -268,97 +300,67 @@
                     </div>
 
                     {{-- Adjuntos --}}
-                    <div class="mt-5" x-data="fileUpload({ maxMB: 500 })">
-                        <label class="abc-label">Adjuntar archivos (PDF, JPG, PNG)</label>
+                    <div class="mt-5 abc-folder-upload" x-data="fileUpload({ maxMB: 500, acceptedExtensions: ['.pdf'], acceptedLabel: 'PDF' })">
+                        <label class="abc-label">Adjuntar documentos PDF</label>
 
-                        {{-- Aceternity File Upload --}}
-                        <div class="mt-2 relative w-full rounded-xl overflow-hidden cursor-pointer group transition-all duration-300"
-                             :class="dragging
-                                 ? 'ring-2 ring-blue-400/50'
-                                 : ''"
-                             style="background: var(--surface-card); border: 1px dashed var(--surface-border);"
-                             @click="$refs.fileInput.click()"
+                        <div class="abc-folder-dropzone mt-2"
+                             :class="dragging ? 'is-dragging' : ''"
                              @dragover.prevent="dragging = true"
                              @dragleave.prevent="dragging = false"
-                             @drop.prevent="dragging = false; handleDrop($event)">
+                             @drop.prevent="handleDrop($event)">
 
-                            {{-- Dot-grid background --}}
-                            <div class="absolute inset-0 pointer-events-none"
-                                 style="background-image: radial-gradient(circle, rgba(128,128,128,0.12) 1px, transparent 1px); background-size: 16px 16px;"></div>
-
-                            {{-- Radial fade from edges --}}
-                            <div class="absolute inset-0 pointer-events-none"
-                                 style="background: radial-gradient(ellipse at center, transparent 30%, var(--surface-card) 80%);"></div>
-
-                            {{-- Top section: Title + subtitle --}}
-                            <div class="relative z-10 text-center pt-10 pb-2 px-6">
-                                <p class="text-base font-semibold transition-colors duration-300"
-                                   :class="dragging ? 'text-blue-500' : ''"
-                                   style="color: var(--text-primary);">
-                                    <span x-show="!dragging">Subir archivos</span>
-                                    <span x-show="dragging" x-cloak>Suelte los archivos aquí</span>
-                                </p>
-                                <p class="text-sm mt-1.5" style="color: var(--text-muted);">
-                                    Arrastre y suelte, o haga clic para seleccionar
-                                </p>
-                            </div>
-
-                            {{-- Center: Floating card with icon (Aceternity style) --}}
-                            <div class="relative z-10 flex items-center justify-center py-8 px-6">
-                                <div class="aceternity-upload-card relative w-24 h-28 rounded-lg flex flex-col items-center justify-center gap-1 transition-all duration-500"
-                                     :class="dragging
-                                         ? 'border-blue-400 bg-blue-50/70 dark:bg-blue-950/40 shadow-lg shadow-blue-500/10 -translate-y-1'
-                                         : 'border-neutral-300/80 dark:border-neutral-600/60 bg-white dark:bg-neutral-900 shadow-md group-hover:shadow-lg group-hover:-translate-y-0.5'"
-                                     style="border: 1px dashed;">
-                                    <svg class="w-5 h-5 transition-colors duration-300"
-                                         :class="dragging ? 'text-blue-500' : 'text-neutral-400 dark:text-neutral-500'"
-                                         fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"/>
-                                    </svg>
+                            <div class="abc-folder-container" @click="$refs.fileInput.click()">
+                                <div class="abc-folder">
+                                    <div class="abc-front-side">
+                                        <div class="abc-tip"></div>
+                                        <div class="abc-cover"></div>
+                                    </div>
+                                    <div class="abc-back-side abc-cover"></div>
                                 </div>
-                            </div>
 
-                            {{-- Bottom info --}}
-                            <div class="relative z-10 text-center pb-8 px-6">
-                                <p class="text-xs" style="color: var(--text-muted); opacity: 0.6;">
-                                    PDF, JPG, PNG &nbsp;&middot;&nbsp; Máx. {{ Auth::user()->isAdmin() ? '500' : '200' }} MB por archivo &nbsp;&middot;&nbsp; Múltiples archivos
-                                </p>
+                                <label class="abc-custom-file-upload" @click.stop>
+                                    <input class="title"
+                                           x-ref="fileInput"
+                                           type="file"
+                                           name="attachments[]"
+                                           multiple
+                                           accept=".pdf,application/pdf"
+                                           @change="handleFiles($event)" />
+                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V7.5m0 0-3 3m3-3 3 3M6 16.5a4.5 4.5 0 0 1 .386-8.983 5.25 5.25 0 0 1 10.228 1.258A3.75 3.75 0 0 1 16.5 16.5H9.75"/>
+                                    </svg>
+                                    Subir PDF
+                                </label>
                             </div>
-
-                            <input x-ref="fileInput" type="file" name="attachments[]" multiple accept=".pdf,.jpg,.jpeg,.png" class="hidden" @change="handleFiles($event)">
                         </div>
 
-                        {{-- Lista de archivos seleccionados --}}
+                        <div class="mt-3 text-xs" style="color: var(--text-muted);">
+                            Solo archivos PDF (máx. 500MB por archivo)
+                        </div>
+
                         <template x-if="files.length > 0">
-                            <div class="mt-3 space-y-2">
+                            <div class="mt-4 space-y-3">
                                 <div class="flex items-center justify-between">
-                                    <p class="text-xs font-bold" style="color: var(--text-primary);">
-                                        <span x-text="files.length"></span> archivo(s) seleccionado(s)
+                                    <p class="text-sm font-bold flex items-center gap-2" style="color: var(--text-primary);">
+                                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-red-100 text-red-600 text-xs font-bold" x-text="files.length"></span>
+                                        <span>Archivo(s) PDF seleccionado(s)</span>
                                     </p>
-                                    <button type="button" @click="clearAll()" class="text-xs text-red-500 hover:text-red-700 font-medium transition">
+                                    <button type="button" @click="clearAll()" class="text-xs text-red-500 hover:text-red-700 font-semibold transition">
                                         Quitar todos
                                     </button>
                                 </div>
-                                <template x-for="(file, index) in files" :key="index">
-                                    <div class="flex items-center gap-3 p-2.5 rounded-lg border transition-all animate-fade-in-up"
-                                         style="background: var(--surface-input); border-color: var(--surface-border);">
-                                        {{-- Icono según tipo --}}
-                                        <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-                                             :class="file.type.includes('pdf') ? 'bg-red-50 dark:bg-red-900/30' : 'bg-blue-50 dark:bg-blue-900/30'">
-                                            <template x-if="file.type.includes('pdf')">
-                                                <svg class="w-4 h-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" /></svg>
-                                            </template>
-                                            <template x-if="!file.type.includes('pdf')">
-                                                <svg class="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0 0 22.5 18.75V5.25A2.25 2.25 0 0 0 20.25 3H3.75A2.25 2.25 0 0 0 1.5 5.25v13.5A2.25 2.25 0 0 0 3.75 21Z" /></svg>
-                                            </template>
+
+                                <template x-for="(file, index) in files" :key="`${file.name}-${file.lastModified}-${index}`">
+                                    <div class="flex items-center gap-3 p-3 rounded-lg border transition-all"
+                                         style="background: var(--surface-input); border-color: var(--surface-border); border-left: 4px solid #dc2626;">
+                                        <div class="w-9 h-9 rounded-lg bg-red-50 dark:bg-red-900/30 flex items-center justify-center flex-shrink-0">
+                                            <svg class="w-5 h-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" /></svg>
                                         </div>
-                                        {{-- Info --}}
                                         <div class="flex-1 min-w-0">
-                                            <p class="text-sm font-medium truncate" style="color: var(--text-primary);" x-text="file.name"></p>
+                                            <p class="text-sm font-semibold truncate" style="color: var(--text-primary);" x-text="file.name"></p>
                                             <p class="text-xs" style="color: var(--text-muted);" x-text="formatSize(file.size)"></p>
                                         </div>
-                                        {{-- Quitar --}}
-                                        <button type="button" @click="removeFile(index)" class="p-1 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                                        <button type="button" @click="removeFile(index)" class="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition flex-shrink-0">
                                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
                                         </button>
                                     </div>
@@ -366,8 +368,15 @@
                             </div>
                         </template>
 
+                        <template x-if="files.length === 0">
+                            <p class="text-xs mt-3" style="color: var(--text-muted);">Sin archivos PDF seleccionados.</p>
+                        </template>
+
+                        @error('attachments')
+                            <p class="text-red-500 text-xs mt-2">{{ $message }}</p>
+                        @enderror
                         @error('attachments.*')
-                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            <p class="text-red-500 text-xs mt-2">{{ $message }}</p>
                         @enderror
                     </div>
 
@@ -397,4 +406,146 @@
             </div>
         </div>
     </div>
+    <style>
+        .abc-folder-upload .abc-folder-dropzone {
+            border: 1px dashed var(--surface-border);
+            border-radius: 14px;
+            padding: 20px 14px 16px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(248, 250, 252, 0.9));
+            transition: border-color .25s ease, box-shadow .25s ease, transform .25s ease;
+        }
+        .abc-folder-upload .abc-folder-dropzone.is-dragging {
+            border-color: #f87171;
+            box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .abc-folder-upload .abc-folder-container {
+            --transition: 350ms;
+            --folder-W: 120px;
+            --folder-H: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 14px;
+            background: linear-gradient(135deg, #6dd5ed, #2193b0);
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            min-height: calc(var(--folder-H) * 2.1);
+            position: relative;
+            cursor: pointer;
+            overflow: visible;
+        }
+
+        .abc-folder-upload .abc-folder {
+            position: absolute;
+            top: 8px;
+            left: calc(50% - 60px);
+            animation: abc-folder-float 2.5s infinite ease-in-out;
+            transition: transform var(--transition) ease;
+            z-index: 2;
+        }
+
+        .abc-folder-upload .abc-folder-container:hover .abc-folder,
+        .abc-folder-upload .abc-folder-dropzone.is-dragging .abc-folder {
+            transform: scale(1.05);
+        }
+
+        .abc-folder-upload .abc-folder .abc-front-side,
+        .abc-folder-upload .abc-folder .abc-back-side {
+            position: absolute;
+            transition: transform var(--transition);
+            transform-origin: bottom center;
+        }
+
+        .abc-folder-upload .abc-folder .abc-back-side::before,
+        .abc-folder-upload .abc-folder .abc-back-side::after {
+            content: "";
+            display: block;
+            background-color: #fff;
+            opacity: 0.55;
+            width: var(--folder-W);
+            height: var(--folder-H);
+            position: absolute;
+            transform-origin: bottom center;
+            border-radius: 15px;
+            transition: transform 350ms;
+            z-index: 0;
+        }
+
+        .abc-folder-upload .abc-folder-container:hover .abc-back-side::before,
+        .abc-folder-upload .abc-folder-dropzone.is-dragging .abc-back-side::before {
+            transform: rotateX(-5deg) skewX(5deg);
+        }
+        .abc-folder-upload .abc-folder-container:hover .abc-back-side::after,
+        .abc-folder-upload .abc-folder-dropzone.is-dragging .abc-back-side::after {
+            transform: rotateX(-15deg) skewX(12deg);
+        }
+
+        .abc-folder-upload .abc-folder .abc-front-side {
+            z-index: 1;
+        }
+
+        .abc-folder-upload .abc-folder-container:hover .abc-front-side,
+        .abc-folder-upload .abc-folder-dropzone.is-dragging .abc-front-side {
+            transform: rotateX(-40deg) skewX(15deg);
+        }
+
+        .abc-folder-upload .abc-folder .abc-tip {
+            background: linear-gradient(135deg, #ff9a56, #ff6f56);
+            width: 80px;
+            height: 20px;
+            border-radius: 12px 12px 0 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            position: absolute;
+            top: -10px;
+            z-index: 2;
+        }
+
+        .abc-folder-upload .abc-folder .abc-cover {
+            background: linear-gradient(135deg, #ffe563, #ffc663);
+            width: var(--folder-W);
+            height: var(--folder-H);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+
+        .abc-folder-upload .abc-custom-file-upload {
+            font-size: .95rem;
+            font-weight: 700;
+            color: #fff;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.25);
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+            cursor: pointer;
+            transition: background var(--transition) ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.55rem;
+            width: auto;
+            min-width: 190px;
+            padding: 10px 22px;
+            position: relative;
+            z-index: 3;
+            margin-top: auto;
+        }
+
+        .abc-folder-upload .abc-custom-file-upload:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .abc-folder-upload .abc-custom-file-upload input[type="file"] {
+            display: none;
+        }
+
+        @keyframes abc-folder-float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+    </style>
 </x-app-layout>

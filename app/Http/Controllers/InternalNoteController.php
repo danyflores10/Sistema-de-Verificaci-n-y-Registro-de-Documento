@@ -14,7 +14,7 @@ class InternalNoteController extends Controller
     public function index(Request $request)
     {
         $user  = $request->user();
-        $query = InternalNote::with(['box', 'creator']);
+        $query = InternalNote::with(['box', 'creator', 'verifier', 'attachments']);
 
         // USUARIO solo ve sus registros
         if ($user->isUsuario()) {
@@ -46,8 +46,11 @@ class InternalNoteController extends Controller
 
         $notes = $query->latest('note_date')->paginate(15)->withQueryString();
         $boxes = Box::orderBy('box_number')->get();
+        $users = \App\Models\User::where('is_active', true)
+                                 ->orderBy('name')
+                                 ->get(['id', 'name', 'role']);
 
-        return view('notes.index', compact('notes', 'boxes'));
+        return view('notes.index', compact('notes', 'boxes', 'users'));
     }
 
     public function create()
@@ -63,20 +66,22 @@ class InternalNoteController extends Controller
         $this->authorize('create', InternalNote::class);
 
         $validated = $request->validate([
-            'box_id'          => 'required|exists:boxes,id',
-            'folder_number'   => 'nullable|string|max:60',
-            'internal_number' => 'required|string|max:60',
-            'note_date'       => 'required|date',
-            'remitente'       => 'required|string|max:200',
-            'destinatario'    => 'required|string|max:200',
-            'via'             => 'nullable|string|max:100',
-            'reference'       => 'required|string|max:1000',
-            'doc_type'        => 'required|in:ORIGINAL,FOTOCOPIA,AMBOS,FOTOGRAFÍA',
-            'note_type'       => 'required|in:NOTA INTERNA,NOTA EXTERNA,INFORME,EVALUACIONES Y/O NOTAS DE LA CONTRALORIA GENERAL DEL ESTADO',
-            'pages'           => 'required|integer|min:1',
-            'observations'    => 'nullable|string|max:2000',
-            'attachments'     => 'nullable|array',
-            'attachments.*'   => 'file|mimes:pdf,jpg,jpeg,png|max:512000',
+            'box_id'              => 'required|exists:boxes,id',
+            'folder_number'       => 'nullable|string|max:60',
+            'internal_number'     => 'required|string|max:60',
+            'note_date'           => 'required|date',
+            'remitente'           => 'required|string|max:200',
+            'destinatario'        => 'required|string|max:200',
+            'via'                 => 'nullable|string|max:100',
+            'reference'           => 'required|string|max:1000',
+            'doc_type'            => 'required|in:ORIGINAL,FOTOCOPIA,AMBOS,FOTOGRAFÍA',
+            'note_type'           => 'required|in:NOTA INTERNA,NOTA EXTERNA,INFORME,EVALUACIONES Y/O NOTAS DE LA CONTRALORIA GENERAL DEL ESTADO',
+            'tipologia'           => 'nullable|string|max:150',
+            'estado_conservacion' => 'nullable|string|max:100',
+            'pages'               => 'required|integer|min:1',
+            'observations'        => 'nullable|string|max:2000',
+            'attachments'         => 'nullable|array',
+            'attachments.*'       => 'file|mimes:pdf,jpg,jpeg,png|max:512000',
         ], [
             'box_id.required'          => 'La caja es obligatoria.',
             'internal_number.required' => 'El CITE es obligatorio.',
@@ -89,24 +94,30 @@ class InternalNoteController extends Controller
             'note_type.required'       => 'La nota interno es obligatoria.',
             'note_type.in'             => 'Seleccione un tipo de nota válido.',
             'pages.required'           => 'Las fojas son obligatorias.',
-            'pages.min'               => 'Las fojas deben ser al menos 1.',
+            'pages.min'                => 'Las fojas deben ser al menos 1.',
+            'attachments.array'        => 'La lista de adjuntos no tiene un formato válido.',
+            'attachments.*.file'       => 'Uno de los adjuntos no es un archivo válido.',
+            'attachments.*.mimes'      => 'Solo se permiten archivos PDF, JPG o PNG.',
+            'attachments.*.max'        => 'Cada adjunto no debe superar 500 MB.',
         ]);
 
         $note = InternalNote::create([
-            'box_id'          => $validated['box_id'],
-            'folder_number'   => $validated['folder_number'] ?? null,
-            'internal_number' => $validated['internal_number'],
-            'note_date'       => $validated['note_date'],
-            'remitente'       => $validated['remitente'],
-            'destinatario'    => $validated['destinatario'],
-            'via'             => $validated['via'],
-            'reference'       => $validated['reference'],
-            'doc_type'        => $validated['doc_type'],
-            'note_type'       => $validated['note_type'],
-            'pages'           => $validated['pages'],
-            'observations'    => $validated['observations'] ?? null,
-            'status'          => 'BORRADOR',
-            'created_by'      => $request->user()->id,
+            'box_id'              => $validated['box_id'],
+            'folder_number'       => $validated['folder_number'] ?? null,
+            'internal_number'     => $validated['internal_number'],
+            'note_date'           => $validated['note_date'],
+            'remitente'           => $validated['remitente'],
+            'destinatario'        => $validated['destinatario'],
+            'via'                 => $validated['via'],
+            'reference'           => $validated['reference'],
+            'doc_type'            => $validated['doc_type'],
+            'note_type'           => $validated['note_type'],
+            'tipologia'           => $validated['tipologia'] ?? null,
+            'estado_conservacion' => $validated['estado_conservacion'] ?? null,
+            'pages'               => $validated['pages'],
+            'observations'        => $validated['observations'] ?? null,
+            'status'              => 'BORRADOR',
+            'created_by'          => $request->user()->id,
         ]);
 
         // Guardar adjuntos
@@ -157,41 +168,74 @@ class InternalNoteController extends Controller
         $this->authorize('update', $note);
 
         $validated = $request->validate([
-            'box_id'          => 'required|exists:boxes,id',
-            'folder_number'   => 'nullable|string|max:60',
-            'internal_number' => 'required|string|max:60',
-            'note_date'       => 'required|date',
-            'remitente'       => 'required|string|max:200',
-            'destinatario'    => 'required|string|max:200',
-            'via'             => 'nullable|string|max:100',
-            'reference'       => 'required|string|max:1000',
-            'doc_type'        => 'required|in:ORIGINAL,FOTOCOPIA,AMBOS,FOTOGRAFÍA',
-            'note_type'       => 'required|in:NOTA INTERNA,NOTA EXTERNA,INFORME,EVALUACIONES Y/O NOTAS DE LA CONTRALORIA GENERAL DEL ESTADO',
-            'pages'           => 'required|integer|min:1',
-            'observations'    => 'nullable|string|max:2000',
-            'attachments'     => 'nullable|array',
-            'attachments.*'   => 'file|mimes:pdf,jpg,jpeg,png|max:512000',
+            'box_id'              => 'required|exists:boxes,id',
+            'folder_number'       => 'nullable|string|max:60',
+            'internal_number'     => 'required|string|max:60',
+            'note_date'           => 'required|date',
+            'remitente'           => 'required|string|max:200',
+            'destinatario'        => 'required|string|max:200',
+            'via'                 => 'nullable|string|max:100',
+            'reference'           => 'required|string|max:1000',
+            'doc_type'            => 'required|in:ORIGINAL,FOTOCOPIA,AMBOS,FOTOGRAFÍA',
+            'note_type'           => 'required|in:NOTA INTERNA,NOTA EXTERNA,INFORME,EVALUACIONES Y/O NOTAS DE LA CONTRALORIA GENERAL DEL ESTADO',
+            'tipologia'           => 'nullable|string|max:150',
+            'estado_conservacion' => 'nullable|string|max:100',
+            'pages'               => 'required|integer|min:1',
+            'observations'        => 'nullable|string|max:2000',
+            'attachments'         => 'nullable|array',
+            'attachments.*'       => 'file|mimes:pdf,jpg,jpeg,png|max:512000',
+            'remove_attachment_ids'   => 'nullable|array',
+            'remove_attachment_ids.*' => 'integer',
         ], [
             'remitente.required'    => 'El remitente es obligatorio.',
             'destinatario.required' => 'El destinatario es obligatorio.',
+            'attachments.array'     => 'La lista de adjuntos no tiene un formato válido.',
+            'attachments.*.file'    => 'Uno de los adjuntos no es un archivo válido.',
+            'attachments.*.mimes'   => 'Solo se permiten archivos PDF, JPG o PNG.',
+            'attachments.*.max'     => 'Cada adjunto no debe superar 500 MB.',
+            'remove_attachment_ids.array'     => 'La lista de adjuntos a eliminar no tiene un formato válido.',
+            'remove_attachment_ids.*.integer' => 'Uno de los adjuntos a eliminar no es válido.',
         ]);
 
         $old = $note->toArray();
 
         $note->update([
-            'box_id'          => $validated['box_id'],
-            'folder_number'   => $validated['folder_number'] ?? null,
-            'internal_number' => $validated['internal_number'],
-            'note_date'       => $validated['note_date'],
-            'remitente'       => $validated['remitente'],
-            'destinatario'    => $validated['destinatario'],
-            'via'             => $validated['via'],
-            'reference'       => $validated['reference'],
-            'doc_type'        => $validated['doc_type'],
-            'note_type'       => $validated['note_type'],
-            'pages'           => $validated['pages'],
-            'observations'    => $validated['observations'] ?? null,
+            'box_id'              => $validated['box_id'],
+            'folder_number'       => $validated['folder_number'] ?? null,
+            'internal_number'     => $validated['internal_number'],
+            'note_date'           => $validated['note_date'],
+            'remitente'           => $validated['remitente'],
+            'destinatario'        => $validated['destinatario'],
+            'via'                 => $validated['via'],
+            'reference'           => $validated['reference'],
+            'doc_type'            => $validated['doc_type'],
+            'note_type'           => $validated['note_type'],
+            'tipologia'           => $validated['tipologia'] ?? null,
+            'estado_conservacion' => $validated['estado_conservacion'] ?? null,
+            'pages'               => $validated['pages'],
+            'observations'        => $validated['observations'] ?? null,
         ]);
+
+        $removeAttachmentIds = collect($validated['remove_attachment_ids'] ?? [])
+            ->map(static fn ($id) => (int) $id)
+            ->filter(static fn ($id) => $id > 0)
+            ->unique()
+            ->values();
+
+        if ($removeAttachmentIds->isNotEmpty()) {
+            $attachmentsToDelete = $note->attachments()
+                ->whereIn('id', $removeAttachmentIds)
+                ->get();
+
+            foreach ($attachmentsToDelete as $attachment) {
+                Storage::disk('public')->delete($attachment->file_path);
+                $attachmentOld = $attachment->toArray();
+                $attachmentId  = $attachment->id;
+                $attachment->delete();
+
+                AuditLog::record('ELIMINAR_ADJUNTO', 'note_attachments', $attachmentId, $attachmentOld, null);
+            }
+        }
 
         // Nuevos adjuntos
         if ($request->hasFile('attachments')) {
@@ -252,7 +296,7 @@ class InternalNoteController extends Controller
     /**
      * Eliminar adjunto individual
      */
-    public function deleteAttachment(NoteAttachment $attachment)
+    public function deleteAttachment(Request $request, NoteAttachment $attachment)
     {
         $note = $attachment->internalNote;
         $this->authorize('update', $note);
@@ -262,6 +306,14 @@ class InternalNoteController extends Controller
         $attachment->delete();
 
         AuditLog::record('ELIMINAR_ADJUNTO', 'note_attachments', $attachment->id, $old, null);
+
+        if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'ok'      => true,
+                'message' => 'Adjunto eliminado.',
+                'id'      => $old['id'] ?? null,
+            ]);
+        }
 
         return back()->with('success', 'Adjunto eliminado.');
     }

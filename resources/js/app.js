@@ -129,22 +129,34 @@ window.addEventListener('toast', (e) => {
 /* ============================================
    File Upload Component - ABC
    ============================================ */
-window.fileUpload = function (options) {
-    const maxMB = (options && options.maxMB) ? options.maxMB : 200;
+window.fileUpload = function (options = {}) {
+    const maxMB = options.maxMB ?? 200;
+    const acceptedExtensions = (options.acceptedExtensions ?? ['.pdf', '.jpg', '.jpeg', '.png'])
+        .map((ext) => ext.toLowerCase());
+    const acceptedLabel = options.acceptedLabel
+        ?? acceptedExtensions.map((ext) => ext.replace('.', '').toUpperCase()).join(', ');
+    const existingFiles = Array.isArray(options.existingFiles)
+        ? options.existingFiles.map((file) => ({ ...file }))
+        : [];
+    const deleteUrlTemplate = options.deleteUrlTemplate ?? null;
+    const csrfToken = options.csrfToken ?? null;
+
     return {
         files: [],
+        existingFiles,
+        deletingExistingIds: [],
         dragging: false,
 
         handleFiles(event) {
-            const newFiles = Array.from(event.target.files);
-            const accepted = ['.pdf', '.jpg', '.jpeg', '.png'];
+            const newFiles = Array.from(event?.target?.files ?? []);
             const maxSize = maxMB * 1024 * 1024;
+            let addedCount = 0;
 
             for (const file of newFiles) {
                 const ext = '.' + file.name.split('.').pop().toLowerCase();
-                if (!accepted.includes(ext)) {
+                if (!acceptedExtensions.includes(ext)) {
                     if (Alpine.store('toasts')) {
-                        Alpine.store('toasts').error(`"${file.name}" no es un formato válido. Solo PDF, JPG, PNG.`);
+                        Alpine.store('toasts').error(`"${file.name}" no es un formato válido. Solo ${acceptedLabel}.`);
                     }
                     continue;
                 }
@@ -154,18 +166,36 @@ window.fileUpload = function (options) {
                     }
                     continue;
                 }
+
+                const exists = this.files.some((existingFile) =>
+                    existingFile.name === file.name
+                    && existingFile.size === file.size
+                    && existingFile.lastModified === file.lastModified
+                );
+                if (exists) {
+                    continue;
+                }
+
                 this.files.push(file);
+                addedCount++;
             }
 
-            if (this.files.length > 0) {
-                this.syncInput();
+            // Permite volver a seleccionar el mismo archivo desde el explorador.
+            if (event?.target && typeof event.target.value !== 'undefined') {
+                event.target.value = '';
+            }
+
+            this.syncInput();
+
+            if (addedCount > 0) {
                 if (Alpine.store('toasts')) {
-                    Alpine.store('toasts').success(`${this.files.length} archivo(s) listo(s) para subir.`);
+                    Alpine.store('toasts').success(`${addedCount} archivo(s) listo(s) para subir.`);
                 }
             }
         },
 
         handleDrop(event) {
+            this.dragging = false;
             const fakeEvent = { target: { files: event.dataTransfer.files } };
             this.handleFiles(fakeEvent);
         },
@@ -173,8 +203,74 @@ window.fileUpload = function (options) {
         removeFile(index) {
             const removed = this.files.splice(index, 1);
             this.syncInput();
-            if (Alpine.store('toasts')) {
+            if (removed.length > 0 && Alpine.store('toasts')) {
                 Alpine.store('toasts').info(`"${removed[0].name}" eliminado.`);
+            }
+        },
+
+        async deleteExistingFile(attachmentId) {
+            const targetId = Number.parseInt(attachmentId, 10);
+            const target = this.existingFiles.find((file) => Number.parseInt(file.id, 10) === targetId);
+            if (!target) {
+                return;
+            }
+
+            if (this.deletingExistingIds.includes(targetId)) {
+                return;
+            }
+
+            const removeFromList = () => {
+                const index = this.existingFiles.findIndex((file) => Number.parseInt(file.id, 10) === targetId);
+                if (index !== -1) {
+                    this.existingFiles.splice(index, 1);
+                }
+            };
+
+            const deleteUrl = deleteUrlTemplate
+                ? String(deleteUrlTemplate).replace('__ATTACHMENT_ID__', String(targetId))
+                : null;
+
+            if (!deleteUrl) {
+                removeFromList();
+                if (Alpine.store('toasts')) {
+                    Alpine.store('toasts').success(`"${target.name}" eliminado.`);
+                }
+                return;
+            }
+
+            this.deletingExistingIds.push(targetId);
+            try {
+                const formData = new FormData();
+                formData.append('_method', 'DELETE');
+                if (csrfToken) {
+                    formData.append('_token', csrfToken);
+                }
+
+                const response = await fetch(deleteUrl, {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        ...(csrfToken ? { 'X-CSRF-TOKEN': csrfToken } : {})
+                    },
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                removeFromList();
+                if (Alpine.store('toasts')) {
+                    Alpine.store('toasts').success(`"${target.name}" eliminado.`);
+                }
+            } catch (error) {
+                if (Alpine.store('toasts')) {
+                    Alpine.store('toasts').error('No se pudo quitar el PDF. Inténtalo de nuevo.');
+                }
+            } finally {
+                this.deletingExistingIds = this.deletingExistingIds.filter((id) => id !== targetId);
             }
         },
 
@@ -184,6 +280,9 @@ window.fileUpload = function (options) {
         },
 
         syncInput() {
+            if (!this.$refs.fileInput) {
+                return;
+            }
             // Rebuild the native file input with a DataTransfer
             const dt = new DataTransfer();
             this.files.forEach(f => dt.items.add(f));
@@ -194,6 +293,16 @@ window.fileUpload = function (options) {
             if (bytes < 1024) return bytes + ' B';
             if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
             return (bytes / 1048576).toFixed(1) + ' MB';
+        },
+
+        formatExistingSize(file) {
+            if (file?.size_kb) {
+                return `${file.size_kb} KB`;
+            }
+            if (typeof file?.size === 'number') {
+                return this.formatSize(file.size);
+            }
+            return 'Tamaño no disponible';
         }
     };
 };

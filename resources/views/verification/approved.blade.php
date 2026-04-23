@@ -20,7 +20,7 @@
     </div>
 
     <div class="py-6">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-5">
+        <div class="max-w-[96rem] mx-auto px-3 sm:px-4 lg:px-6 xl:px-8 space-y-5">
 
             {{-- Filtros --}}
             <div class="abc-card p-5 animate-fade-in-up">
@@ -61,47 +61,49 @@
             {{-- Tabla (Desktop) --}}
             <div class="abc-card animate-fade-in-up mobile-hide-table">
                 <div class="overflow-x-auto">
-                    <table class="abc-table">
+                    <table class="abc-table approved-table min-w-[1500px] w-full">
                         <thead style="background: linear-gradient(135deg, #059669, #34d399);">
                             <tr>
-                                <th class="!text-white">#</th>
-                                <th class="!text-white">N. Caja</th>
-                                <th class="!text-white">N. de CITE</th>
-                                <th class="!text-white">Fecha Doc.</th>
-                                <th class="!text-white">Remitente</th>
-                                <th class="!text-white">Destinatario</th>
-                                <th class="!text-white">Referencia</th>
-                                <th class="!text-white text-center">Fojas</th>
-                                <th class="!text-white">Aprobado por</th>
-                                <th class="!text-white">Fecha Aprobación</th>
-                                <th class="!text-white text-center">Acciones</th>
+                                <th class="!text-white whitespace-nowrap text-center w-14">#</th>
+                                <th class="!text-white whitespace-nowrap w-28">N° Caja</th>
+                                <th class="!text-white whitespace-nowrap w-[260px]">N° de Documento</th>
+                                <th class="!text-white whitespace-nowrap w-28">Fecha Doc.</th>
+                                <th class="!text-white whitespace-nowrap w-44">Remitente</th>
+                                <th class="!text-white whitespace-nowrap w-44">Destinatario</th>
+                                <th class="!text-white whitespace-nowrap w-[320px]">Referencia</th>
+                                <th class="!text-white text-center whitespace-nowrap w-24">Fojas</th>
+                                <th class="!text-white whitespace-nowrap w-44">Aprobado por</th>
+                                <th class="!text-white whitespace-nowrap w-40">Fecha Aprobación</th>
+                                <th class="!text-white text-center whitespace-nowrap w-28">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse($notes as $note)
                                 <tr>
-                                    <td class="font-mono text-xs" style="color: var(--text-muted)">{{ $note->id }}</td>
+                                    <td class="font-mono text-sm text-center" style="color: var(--text-muted)">{{ $note->id }}</td>
                                     <td class="font-semibold" style="color: var(--text-primary)">{{ $note->box->box_number ?? '-' }}</td>
                                     <td>
-                                        <a href="{{ route('notes.show', $note) }}" class="text-emerald-600 hover:text-emerald-800 hover:underline font-medium">
+                                        <a href="{{ route('notes.show', $note) }}" class="line-clamp-2 text-emerald-600 hover:text-emerald-800 hover:underline font-semibold" title="{{ $note->internal_number }}">
                                             {{ $note->internal_number }}
                                         </a>
                                     </td>
-                                    <td style="color: var(--text-secondary)">{{ $note->note_date->format('d/m/Y') }}</td>
-                                    <td style="color: var(--text-secondary)">{{ $note->remitente ?? '-' }}</td>
-                                    <td style="color: var(--text-secondary)">{{ $note->destinatario ?? '-' }}</td>
-                                    <td class="max-w-xs truncate" style="color: var(--text-secondary)">{{ $note->reference }}</td>
+                                    <td class="whitespace-nowrap font-medium" style="color: var(--text-secondary)">{{ $note->note_date->format('d/m/Y') }}</td>
+                                    <td class="max-w-[176px] truncate" style="color: var(--text-secondary)" title="{{ $note->remitente ?? '-' }}">{{ $note->remitente ?? '-' }}</td>
+                                    <td class="max-w-[176px] truncate" style="color: var(--text-secondary)" title="{{ $note->destinatario ?? '-' }}">{{ $note->destinatario ?? '-' }}</td>
+                                    <td class="max-w-[320px]">
+                                        <span class="line-clamp-2" style="color: var(--text-secondary)" title="{{ $note->reference }}">{{ $note->reference }}</span>
+                                    </td>
                                     <td class="text-center">
                                         <span class="abc-badge bg-emerald-50 text-emerald-700 border border-emerald-200">
                                             {{ $note->pages }}
                                         </span>
                                     </td>
-                                    <td style="color: var(--text-secondary)">{{ $note->verifier->name ?? '-' }}</td>
-                                    <td style="color: var(--text-secondary)">
+                                    <td class="whitespace-nowrap font-medium" style="color: var(--text-secondary)">{{ $note->verifier->name ?? '-' }}</td>
+                                    <td class="whitespace-nowrap" style="color: var(--text-secondary)">
                                         {{ $note->verified_at ? $note->verified_at->format('d/m/Y H:i') : '-' }}
                                     </td>
                                     <td>
-                                        <div class="flex justify-center">
+                                        <div class="flex justify-center flex-nowrap">
                                             <a href="{{ route('notes.show', $note) }}" class="abc-btn abc-btn-ghost !px-3 !py-1.5 text-xs">
                                                 <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
@@ -236,4 +238,14 @@
 
         </div>
     </div>
+
+    <style>
+        .approved-table thead th {
+            letter-spacing: .04em;
+        }
+
+        .approved-table tbody td {
+            vertical-align: middle;
+        }
+    </style>
 </x-app-layout>

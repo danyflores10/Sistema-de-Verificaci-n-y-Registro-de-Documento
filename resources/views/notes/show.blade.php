@@ -47,109 +47,202 @@
             <div class="abc-card mb-6">
                 <div class="gradient-navy px-6 py-4 flex items-center gap-3">
                     <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>
-                    <h3 class="text-white font-semibold">Detalle del Registro</h3>
+                    <h3 class="text-white font-semibold">Información Completa del Registro</h3>
                 </div>
 
                 <div class="p-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                        <div>
-                            <span class="text-[11px] uppercase font-bold tracking-wider" style="color: var(--text-muted)">N. Caja</span>
-                            <p class="font-semibold mt-0.5" style="color: var(--text-primary)">{{ $note->box->box_number ?? '-' }}</p>
-                        </div>
-                        <div>
-                            <span class="text-[11px] uppercase font-bold tracking-wider" style="color: var(--text-muted)">N° Carpeta</span>
-                            <p class="font-semibold mt-0.5" style="color: var(--text-primary)">{{ $note->folder_number ?? '-' }}</p>
-                        </div>
-                        <div>
-                            <span class="text-[11px] uppercase font-bold tracking-wider" style="color: var(--text-muted)">N. de CITE</span>
-                            <p class="font-semibold mt-0.5" style="color: var(--text-primary)">{{ $note->internal_number }}</p>
-                        </div>
-                        <div>
-                            <span class="text-[11px] uppercase font-bold tracking-wider" style="color: var(--text-muted)">Fecha</span>
-                            <p class="font-semibold mt-0.5" style="color: var(--text-primary)">{{ $note->note_date->format('d/m/Y') }}</p>
-                        </div>
-                        <div>
-                            <span class="text-[11px] uppercase font-bold tracking-wider" style="color: var(--text-muted)">Estado del Documento</span>
-                            <p class="font-semibold mt-0.5" style="color: var(--text-primary)">{{ $note->doc_type }}</p>
-                        </div>
-                        <div>
-                            <span class="text-[11px] uppercase font-bold tracking-wider" style="color: var(--text-muted)">Nota Interno</span>
-                            <p class="font-semibold mt-0.5" style="color: var(--text-primary)">{{ $note->note_type ?? '-' }}</p>
-                        </div>
-                        <div>
-                            <span class="text-[11px] uppercase font-bold tracking-wider" style="color: var(--text-muted)">Fojas</span>
-                            <p class="font-semibold mt-0.5" style="color: var(--text-primary)">{{ $note->pages }}</p>
-                        </div>
-                        <div>
-                            <span class="text-[11px] uppercase font-bold tracking-wider" style="color: var(--text-muted)">Creado por</span>
-                            <p class="font-semibold mt-0.5" style="color: var(--text-primary)">{{ $note->creator->name ?? '-' }}</p>
-                        </div>
-                    </div>
-
-                    {{-- Sección Correspondencia --}}
-                    <div class="mt-5 rounded-xl overflow-hidden border" style="border-color: #0d9488;">
-                        <div class="gradient-teal px-4 py-2.5 flex items-center gap-2">
-                            <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"/></svg>
-                            <span class="text-white font-bold text-sm">Información de Correspondencia</span>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-3" style="background: linear-gradient(135deg, rgba(13,148,136,0.04) 0%, rgba(6,182,212,0.04) 100%);">
-                            <div class="p-4 flex items-start gap-3 border-b md:border-b-0 md:border-r" style="border-color: var(--surface-border);">
-                                <div class="w-8 h-8 rounded-lg bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center flex-shrink-0 mt-0.5">
-                                    <svg class="w-4 h-4 text-teal-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
-                                </div>
-                                <div>
-                                    <span class="text-[11px] uppercase font-bold tracking-wider text-teal-600 dark:text-teal-400">Remitente</span>
-                                    <p class="font-semibold mt-0.5" style="color: var(--text-primary)">{{ $note->remitente ?? '-' }}</p>
-                                </div>
+                    {{-- Fila 1: Identificación --}}
+                    <div class="mb-6">
+                        <h4 class="text-sm font-bold uppercase tracking-wide mb-3 flex items-center gap-2" style="color: var(--accent-primary)">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/>
+                            </svg>
+                            <span>Identificación del Documento</span>
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div class="p-3 rounded-lg" style="background-color: var(--surface-card-hover);">
+                                <span class="text-xs uppercase font-bold tracking-wider" style="color: var(--text-muted)">N° CAJA</span>
+                                <p class="font-semibold mt-1" style="color: var(--text-primary)">{{ $note->box->box_number ?? '-' }}</p>
                             </div>
-                            <div class="p-4 flex items-start gap-3 border-b md:border-b-0 md:border-r" style="border-color: var(--surface-border);">
-                                <div class="w-8 h-8 rounded-lg bg-cyan-100 dark:bg-cyan-900/30 flex items-center justify-center flex-shrink-0 mt-0.5">
-                                    <svg class="w-4 h-4 text-cyan-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"/></svg>
-                                </div>
-                                <div>
-                                    <span class="text-[11px] uppercase font-bold tracking-wider text-cyan-600 dark:text-cyan-400">Destinatario</span>
-                                    <p class="font-semibold mt-0.5" style="color: var(--text-primary)">{{ $note->destinatario ?? '-' }}</p>
-                                </div>
+                            <div class="p-3 rounded-lg" style="background-color: var(--surface-card-hover);">
+                                <span class="text-xs uppercase font-bold tracking-wider" style="color: var(--text-muted)">N° DE CARPETA</span>
+                                <p class="font-semibold mt-1" style="color: var(--text-primary)">{{ $note->folder_number ?? '-' }}</p>
                             </div>
-                            <div class="p-4 flex items-start gap-3">
-                                <div class="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center flex-shrink-0 mt-0.5">
-                                    <svg class="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5"/></svg>
-                                </div>
-                                <div>
-                                    <span class="text-[11px] uppercase font-bold tracking-wider text-emerald-600 dark:text-emerald-400">Vía</span>
-                                    <p class="font-semibold mt-0.5" style="color: var(--text-primary)">{{ $note->via ?? '-' }}</p>
-                                </div>
+                            <div class="p-3 rounded-lg" style="background-color: var(--surface-card-hover);">
+                                <span class="text-xs uppercase font-bold tracking-wider" style="color: var(--text-muted)">N° DE DOCUMENTO</span>
+                                <p class="font-semibold mt-1" style="color: var(--text-primary)">{{ $note->internal_number }}</p>
+                            </div>
+                            <div class="p-3 rounded-lg" style="background-color: var(--surface-card-hover);">
+                                <span class="text-xs uppercase font-bold tracking-wider" style="color: var(--text-muted)">FECHA RECEPCIÓN</span>
+                                <p class="font-semibold mt-1" style="color: var(--text-primary)">{{ $note->note_date->format('d/m/Y') }}</p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="mt-5 pt-5" style="border-top: 1px solid var(--border-primary)">
-                        <span class="text-[11px] uppercase font-bold tracking-wider" style="color: var(--text-muted)">Referencia</span>
-                        <p class="mt-1" style="color: var(--text-secondary)">{{ $note->reference }}</p>
+                    {{-- Fila 2: Tipos y Características --}}
+                    <div class="mb-6">
+                        <h4 class="text-sm font-bold uppercase tracking-wide mb-3 flex items-center gap-2" style="color: var(--accent-primary)">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m4.5-3.75v13.5A2.25 2.25 0 0 1 17.25 21.75H6.75A2.25 2.25 0 0 1 4.5 19.5V6A2.25 2.25 0 0 1 6.75 3.75h2.25A2.25 2.25 0 0 0 11.25 6h1.5A2.25 2.25 0 0 0 15 3.75h2.25A2.25 2.25 0 0 1 19.5 6Z"/>
+                            </svg>
+                            <span>Características del Documento</span>
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div class="p-3 rounded-lg" style="background-color: var(--surface-card-hover);">
+                                <span class="text-xs uppercase font-bold tracking-wider" style="color: var(--text-muted)">DOC. ORIGINAL/FOT.</span>
+                                <p class="font-semibold mt-1" style="color: var(--text-primary);">
+                                    <span class="inline-block px-2 py-1 rounded text-xs font-bold"
+                                          :class="'{{ $note->doc_type }}' === 'ORIGINAL' ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700'">
+                                        {{ $note->doc_type }}
+                                    </span>
+                                </p>
+                            </div>
+                            <div class="p-3 rounded-lg" style="background-color: var(--surface-card-hover);">
+                                <span class="text-xs uppercase font-bold tracking-wider" style="color: var(--text-muted)">FOJAS</span>
+                                <p class="font-semibold mt-1" style="color: var(--text-primary);">
+                                    <span class="inline-block px-3 py-1 bg-amber-100 text-amber-700 rounded-lg font-bold text-center">{{ $note->pages }}</span>
+                                </p>
+                            </div>
+                            <div class="p-3 rounded-lg" style="background-color: var(--surface-card-hover);">
+                                <span class="text-xs uppercase font-bold tracking-wider" style="color: var(--text-muted)">TIPO DOCUMENTACIÓN</span>
+                                <p class="font-semibold mt-1" style="color: var(--text-primary)">{{ $note->note_type ?? '-' }}</p>
+                            </div>
+                            <div class="p-3 rounded-lg" style="background-color: var(--surface-card-hover);">
+                                <span class="text-xs uppercase font-bold tracking-wider" style="color: var(--text-muted)">TIPOLOGÍA</span>
+                                <p class="font-semibold mt-1" style="color: var(--text-primary)">{{ $note->tipologia ?? '-' }}</p>
+                            </div>
+                        </div>
                     </div>
 
-                    @if($note->observations)
-                        <div class="mt-5 pt-5" style="border-top: 1px solid var(--border-primary)">
-                            <span class="text-[11px] uppercase font-bold tracking-wider" style="color: var(--text-muted)">Observaciones</span>
-                            <p class="mt-1" style="color: var(--text-secondary)">{{ $note->observations }}</p>
+                    {{-- Fila 3: Estado --}}
+                    <div class="mb-6">
+                        <h4 class="text-sm font-bold uppercase tracking-wide mb-3 flex items-center gap-2" style="color: var(--accent-primary)">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m9 12.75 2.25 2.25 3.75-3.75M12 3c-1.77 0-3.45.402-4.95 1.122A12.06 12.06 0 0 1 3 6c0 6.075 3.433 11.348 9 13.5 5.567-2.152 9-7.425 9-13.5a12.06 12.06 0 0 1-4.05-1.878A11.96 11.96 0 0 0 12 3Z"/>
+                            </svg>
+                            <span>Estado y Conservación</span>
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="p-3 rounded-lg" style="background-color: var(--surface-card-hover);">
+                                <span class="text-xs uppercase font-bold tracking-wider" style="color: var(--text-muted)">ESTADO DE CONSERVACIÓN</span>
+                                <p class="font-semibold mt-1" style="color: var(--text-primary);">
+                                    <span class="inline-block px-2 py-1 rounded text-xs font-bold"
+                                          :class="'{{ $note->estado_conservacion }}' === 'BUENA' ? 'bg-emerald-100 text-emerald-700' : (('{{ $note->estado_conservacion }}' === 'REGULAR' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'))">
+                                        {{ $note->estado_conservacion ?? '-' }}
+                                    </span>
+                                </p>
+                            </div>
+                            <div class="p-3 rounded-lg" style="background-color: var(--surface-card-hover);">
+                                <span class="text-xs uppercase font-bold tracking-wider" style="color: var(--text-muted)">CREADO POR</span>
+                                <p class="font-semibold mt-1" style="color: var(--text-primary)">{{ $note->creator->name ?? '-' }}</p>
+                            </div>
+                            <div class="p-3 rounded-lg" style="background-color: var(--surface-card-hover);">
+                                <span class="text-xs uppercase font-bold tracking-wider" style="color: var(--text-muted)">CREADO EL</span>
+                                <p class="font-semibold mt-1" style="color: var(--text-primary)">{{ $note->created_at->format('d/m/Y H:i') }}</p>
+                            </div>
                         </div>
-                    @endif
+                    </div>
 
+                    {{-- Sección Correspondencia Mejorada --}}
+                    <div class="mt-6">
+                        <h4 class="text-sm font-bold uppercase tracking-wide mb-3 flex items-center gap-2" style="color: var(--accent-primary)">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"/>
+                            </svg>
+                            <span>Información de Correspondencia</span>
+                        </h4>
+                        <div class="rounded-xl overflow-hidden border" style="border-color: #0d9488;">
+                            <div class="gradient-teal px-4 py-2.5 flex items-center gap-2">
+                                <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"/></svg>
+                                <span class="text-white font-bold text-sm">Datos de Remitente, Destinatario y Vía</span>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-5" style="background: linear-gradient(135deg, rgba(13,148,136,0.04) 0%, rgba(6,182,212,0.04) 100%);">
+                                <div class="p-4 rounded-lg" style="background-color: var(--surface-card-hover); border: 1px solid var(--surface-border);">
+                                    <span class="text-xs uppercase font-bold tracking-wider text-teal-600 dark:text-teal-400 flex items-center gap-1">
+                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0"/>
+                                        </svg>
+                                        Remitente
+                                    </span>
+                                    <p class="font-semibold mt-2" style="color: var(--text-primary)">{{ $note->remitente ?? '-' }}</p>
+                                </div>
+                                <div class="p-4 rounded-lg" style="background-color: var(--surface-card-hover); border: 1px solid var(--surface-border);">
+                                    <span class="text-xs uppercase font-bold tracking-wider text-cyan-600 dark:text-cyan-400 flex items-center gap-1">
+                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.742-.478 3 3 0 0 0-4.682-2.72m.94 3.198v.001c0 .687-.041 1.365-.12 2.03m.12-2.03a8.966 8.966 0 0 1-5.379 2.078 8.966 8.966 0 0 1-5.379-2.078m10.758 0a8.966 8.966 0 0 0-10.758 0m10.758 0A9.094 9.094 0 0 1 21 12.75a9.094 9.094 0 0 1-.489 2.97M3 12.75a9.094 9.094 0 0 1 .489-2.97m0 0a9.094 9.094 0 0 1 3.742.478m-3.742-.478A3 3 0 0 1 8.17 12.5m0 0a3 3 0 0 1-4.681 2.72M8.17 12.5a3 3 0 1 0 5.66 0 3 3 0 0 0-5.66 0Zm9.66-2.72a3 3 0 1 0-5.66 0 3 3 0 0 0 5.66 0Z"/>
+                                        </svg>
+                                        Destinatario
+                                    </span>
+                                    <p class="font-semibold mt-2" style="color: var(--text-primary)">{{ $note->destinatario ?? '-' }}</p>
+                                </div>
+                                <div class="p-4 rounded-lg" style="background-color: var(--surface-card-hover); border: 1px solid var(--surface-border);">
+                                    <span class="text-xs uppercase font-bold tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5"/>
+                                        </svg>
+                                        Vía de Envío
+                                    </span>
+                                    <p class="font-semibold mt-2" style="color: var(--text-primary)">{{ $note->via ?? '-' }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Sección Referencias y Observaciones --}}
+                    <div class="mt-6">
+                        <h4 class="text-sm font-bold uppercase tracking-wide mb-3 flex items-center gap-2" style="color: var(--accent-primary)">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 7.125 16.862 4.487"/>
+                            </svg>
+                            <span>Contenido del Registro</span>
+                        </h4>
+                        
+                        <div class="mb-4 p-4 rounded-lg" style="background-color: var(--surface-card-hover); border-left: 4px solid #0d9488;">
+                            <span class="text-xs uppercase font-bold tracking-wider" style="color: var(--text-muted)">REFERENCIA *</span>
+                            <p class="mt-2 leading-relaxed" style="color: var(--text-secondary); white-space: pre-wrap; word-break: break-word;">{{ $note->reference }}</p>
+                        </div>
+
+                        @if($note->observations)
+                            <div class="p-4 rounded-lg" style="background-color: var(--surface-card-hover); border-left: 4px solid #f59e0b;">
+                                <span class="text-xs uppercase font-bold tracking-wider" style="color: var(--text-muted)">OBSERVACIONES</span>
+                                <p class="mt-2 leading-relaxed" style="color: var(--text-secondary); white-space: pre-wrap; word-break: break-word;">{{ $note->observations }}</p>
+                            </div>
+                        @endif
+                    </div>
+
+                    {{-- Sección Verificación --}}
                     @if($note->verifier)
-                        <div class="mt-5 pt-5" style="border-top: 1px solid var(--border-primary)">
-                            <span class="text-[11px] uppercase font-bold tracking-wider" style="color: var(--text-muted)">Verificado por</span>
-                            <p class="font-semibold mt-0.5" style="color: var(--text-primary)">{{ $note->verifier->name }} &mdash; {{ $note->verified_at?->format('d/m/Y H:i') }}</p>
+                        <div class="mt-6">
+                            <h4 class="text-sm font-bold uppercase tracking-wide mb-3 flex items-center gap-2" style="color: var(--accent-primary)">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                                </svg>
+                                <span>Información de Verificación</span>
+                            </h4>
+                            <div class="p-4 rounded-lg" style="background: linear-gradient(135deg, rgba(34,197,94,0.1) 0%, rgba(74,222,128,0.1) 100%); border-left: 4px solid #22c55e;">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <span class="text-xs uppercase font-bold tracking-wider" style="color: var(--text-muted)">Verificado por</span>
+                                        <p class="font-semibold mt-1" style="color: var(--text-primary)">{{ $note->verifier->name }}</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="text-xs uppercase font-bold tracking-wider" style="color: var(--text-muted)">Fecha de Verificación</span>
+                                        <p class="font-semibold mt-1" style="color: var(--text-primary)">{{ $note->verified_at?->format('d/m/Y H:i') }}</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     @endif
 
-                    {{-- Botones de accion de estado --}}
-                    <div class="mt-6 pt-5 flex flex-wrap gap-3" style="border-top: 1px solid var(--border-primary)">
+                    {{-- Botones de acción de estado --}}
+                    <div class="mt-6 pt-5 flex flex-wrap gap-2" style="border-top: 1px solid var(--border-primary)">
                         @can('send', $note)
                             <form method="POST" action="{{ route('notes.send', $note) }}" id="send-form-{{ $note->id }}">
                                 @csrf
-                                <button type="button" onclick="confirmarEnvio('{{ $note->internal_number }}', 'send-form-{{ $note->id }}')" class="abc-btn abc-btn-primary">
+                                <button type="button" onclick="confirmarEnvio('{{ $note->internal_number }}', 'send-form-{{ $note->id }}')" class="abc-btn abc-btn-primary flex items-center gap-1.5">
                                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5"/></svg>
-                                    Enviar para Revisión
+                                    <span>Enviar para Revisión</span>
                                 </button>
                             </form>
                         @endcan
@@ -157,16 +250,16 @@
                         @can('verify', $note)
                             <form method="POST" action="{{ route('verification.verify', $note) }}" id="verify-form-{{ $note->id }}">
                                 @csrf
-                                <button type="button" onclick="confirmarAprobacion('{{ $note->internal_number }}', 'verify-form-{{ $note->id }}')" class="abc-btn abc-btn-success">
+                                <button type="button" onclick="confirmarAprobacion('{{ $note->internal_number }}', 'verify-form-{{ $note->id }}')" class="abc-btn abc-btn-success flex items-center gap-1.5">
                                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
-                                    Verificar / Aprobar
+                                    <span>Aprobar</span>
                                 </button>
                             </form>
 
                             <div x-data="{ showReject: false }">
-                                <button @click="showReject = !showReject" type="button" class="abc-btn abc-btn-danger">
+                                <button @click="showReject = !showReject" type="button" class="abc-btn abc-btn-danger flex items-center gap-1.5">
                                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
-                                    Rechazar
+                                    <span>Rechazar</span>
                                 </button>
 
                                 {{-- Formulario de rechazo --}}
@@ -178,17 +271,20 @@
                                     <div class="p-5">
                                         <form method="POST" action="{{ route('verification.reject', $note) }}">
                                             @csrf
-                                            <label class="abc-label text-red-700">Motivo de rechazo *</label>
+                                            <label class="abc-label text-red-700 font-bold">Motivo de rechazo *</label>
                                             <textarea name="rejection_reason" rows="3" required
                                                       class="abc-input !border-red-200 !focus:border-red-400 !focus:ring-red-100"
                                                       placeholder="Indique el motivo de rechazo..."></textarea>
                                             @error('rejection_reason')
                                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                             @enderror
-                                            <div class="mt-3 flex justify-end">
-                                                <button type="submit" class="abc-btn abc-btn-danger">
+                                            <div class="mt-4 flex justify-end gap-2">
+                                                <button type="button" @click="showReject = false" class="abc-btn abc-btn-ghost">
+                                                    Cancelar
+                                                </button>
+                                                <button type="submit" class="abc-btn abc-btn-danger flex items-center gap-1.5">
                                                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
-                                                    Confirmar Rechazo
+                                                    <span>Confirmar Rechazo</span>
                                                 </button>
                                             </div>
                                         </form>

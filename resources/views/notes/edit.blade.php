@@ -54,7 +54,7 @@
                                 this.open = false;
                             }
                         }" @click.outside="open = false" class="relative">
-                            <label for="box_search" class="abc-label">N. de Caja *</label>
+                            <label for="box_search" class="abc-label">N° CAJA *</label>
                             <input type="hidden" name="box_id" :value="selectedId">
                             <input type="text" id="box_search" autocomplete="off"
                                    class="abc-input"
@@ -83,8 +83,20 @@
                             @enderror
                         </div>
 
+                        {{-- Col C: N° DE CARPETA --}}
                         <div>
-                            <label for="internal_number" class="abc-label">N. de CITE *</label>
+                            <label for="folder_number" class="abc-label">N° DE CARPETA</label>
+                            <input type="text" name="folder_number" id="folder_number"
+                                   value="{{ old('folder_number', $note->folder_number) }}"
+                                   class="abc-input" placeholder="Ej: CARP-001">
+                            @error('folder_number')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        {{-- Col D: N° DE DOCUMENTO --}}
+                        <div>
+                            <label for="internal_number" class="abc-label">N° DE DOCUMENTO *</label>
                             <input type="text" name="internal_number" id="internal_number"
                                    value="{{ old('internal_number', $note->internal_number) }}"
                                    class="abc-input" required>
@@ -93,8 +105,9 @@
                             @enderror
                         </div>
 
+                        {{-- Col E: FECHA de recepción --}}
                         <div>
-                            <label for="note_date" class="abc-label">Fecha *</label>
+                            <label for="note_date" class="abc-label">FECHA de recepción *</label>
                             <input type="date" name="note_date" id="note_date"
                                    value="{{ old('note_date', $note->note_date->format('Y-m-d')) }}"
                                    class="abc-input" required>
@@ -103,8 +116,9 @@
                             @enderror
                         </div>
 
+                        {{-- Col G: DOC. ORIGINAL Y/O FOT. --}}
                         <div>
-                            <label for="doc_type" class="abc-label">Estado del Documento *</label>
+                            <label for="doc_type" class="abc-label">DOC. ORIGINAL Y/O FOT. *</label>
                             <select name="doc_type" id="doc_type" required class="abc-input">
                                 <option value="ORIGINAL" @selected(old('doc_type', $note->doc_type) === 'ORIGINAL')>ORIGINAL</option>
                                 <option value="FOTOCOPIA" @selected(old('doc_type', $note->doc_type) === 'FOTOCOPIA')>FOTOCOPIA</option>
@@ -116,20 +130,19 @@
                             @enderror
                         </div>
 
-                        {{-- N° de Carpeta --}}
+                        {{-- Col H: FOJAS --}}
                         <div>
-                            <label for="folder_number" class="abc-label">N° de Carpeta</label>
-                            <input type="text" name="folder_number" id="folder_number"
-                                   value="{{ old('folder_number', $note->folder_number) }}"
-                                   class="abc-input" placeholder="Ej: CARP-001">
-                            @error('folder_number')
+                            <label for="pages" class="abc-label">FOJAS *</label>
+                            <input type="number" name="pages" id="pages" value="{{ old('pages', $note->pages) }}" min="1"
+                                   class="abc-input" required>
+                            @error('pages')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
                         </div>
 
-                        {{-- Nota Interno --}}
+                        {{-- Col J: TIPO DOCUMENTACIÓN --}}
                         <div>
-                            <label for="note_type" class="abc-label">Nota Interno *</label>
+                            <label for="note_type" class="abc-label">TIPO DOCUMENTACIÓN *</label>
                             <select name="note_type" id="note_type" required class="abc-input">
                                 <option value="">-- Seleccionar --</option>
                                 <option value="NOTA INTERNA" @selected(old('note_type', $note->note_type) === 'NOTA INTERNA')>NOTA INTERNA</option>
@@ -142,18 +155,32 @@
                             @enderror
                         </div>
 
+                        {{-- Col K: TIPOLOGIA --}}
                         <div>
-                            <label for="pages" class="abc-label">Fojas *</label>
-                            <input type="number" name="pages" id="pages" value="{{ old('pages', $note->pages) }}" min="1"
-                                   class="abc-input" required>
-                            @error('pages')
+                            <label for="tipologia" class="abc-label">TIPOLOGIA</label>
+                            <input type="text" name="tipologia" id="tipologia"
+                                   value="{{ old('tipologia', $note->tipologia) }}"
+                                   class="abc-input" placeholder="Ej: ADMINISTRATIVA, LEGAL, TÉCNICA..." maxlength="150">
+                            @error('tipologia')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        {{-- Col L: ESTADO DE CONSERVACIÓN --}}
+                        <div>
+                            <label for="estado_conservacion" class="abc-label">ESTADO DE CONSERVACIÓN</label>
+                            <input type="text" name="estado_conservacion" id="estado_conservacion"
+                                   value="{{ old('estado_conservacion', $note->estado_conservacion) }}"
+                                   class="abc-input" placeholder="Ej: BUENO, REGULAR, MALO..." maxlength="100">
+                            @error('estado_conservacion')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
                         </div>
                     </div>
 
+                    {{-- Col F: REFERENCIA --}}
                     <div class="mt-5">
-                        <label for="reference" class="abc-label">Referencia *</label>
+                        <label for="reference" class="abc-label">REFERENCIA *</label>
                         <textarea name="reference" id="reference" rows="2"
                                   class="abc-input" required>{{ old('reference', $note->reference) }}</textarea>
                         @error('reference')
@@ -179,9 +206,9 @@
                                     Remitente *
                                 </label>
                                 <input type="text" name="remitente" id="remitente"
-                                       value="{{ old('remitente', $note->remitente) }}"
+                                       value="{{ old('remitente', '') }}"
                                        class="abc-input"
-                                       placeholder="Nombre del remitente" required>
+                                       placeholder="Escriba quién envía el documento" required>
                                 @error('remitente')
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                 @enderror
@@ -190,7 +217,7 @@
                                 open: false,
                                 search: '',
                                 selectedValue: '{{ old('destinatario', $note->destinatario) }}',
-                                users: @js($users->map(fn($u) => ['id' => $u->id, 'label' => $u->name . ' (' . $u->role . ')'])),
+                                users: @js($users->map(fn($u) => ['id' => $u->id, 'name' => $u->name, 'label' => $u->name . ' (' . $u->role . ')'])),
                                 get filtered() {
                                     if (!this.search) return this.users;
                                     let s = this.search.toLowerCase();
@@ -198,11 +225,18 @@
                                 },
                                 init() {
                                     if (this.selectedValue) {
-                                        this.search = this.selectedValue;
+                                        let found = this.users.find(u => u.name.toLowerCase() === this.selectedValue.toLowerCase());
+                                        if (found) {
+                                            this.selectedValue = found.name;
+                                            this.search = found.label;
+                                        } else {
+                                            this.selectedValue = '';
+                                            this.search = '';
+                                        }
                                     }
                                 },
                                 select(user) {
-                                    this.selectedValue = user.label.split(' (')[0];
+                                    this.selectedValue = user.name;
                                     this.search = user.label;
                                     this.open = false;
                                 }
@@ -214,10 +248,10 @@
                                 <input type="hidden" name="destinatario" :value="selectedValue">
                                 <input type="text" id="destinatario_search" autocomplete="off"
                                        class="abc-input"
-                                       placeholder="Buscar destinatario..."
+                                       placeholder="Seleccione a quién se enviará"
                                        x-model="search"
                                        @focus="open = true; search = ''"
-                                       @input="open = true"
+                                       @input="open = true; selectedValue = ''"
                                        @keydown.escape="open = false"
                                        x-init="search = selectedValue">
                                 <div x-show="open && filtered.length > 0" x-cloak x-transition
@@ -226,7 +260,7 @@
                                     <template x-for="user in filtered" :key="user.id">
                                         <div @click="select(user)"
                                              class="px-4 py-2.5 text-sm cursor-pointer hover:bg-teal-50 hover:text-teal-700 transition-colors border-b border-gray-100 last:border-b-0"
-                                             :class="selectedValue == user.label.split(' (')[0] ? 'bg-teal-50 font-semibold text-teal-700' : 'text-gray-700'"
+                                             :class="selectedValue == user.name ? 'bg-teal-50 font-semibold text-teal-700' : 'text-gray-700'"
                                              x-text="user.label"></div>
                                     </template>
                                 </div>
@@ -235,6 +269,10 @@
                                      style="box-shadow: 0 10px 25px rgba(0,0,0,0.15);">
                                     No se encontraron usuarios
                                 </div>
+                                <p class="mt-1 text-[11px] font-medium text-teal-700">
+                                    Se enviará a:
+                                    <span x-text="selectedValue || 'Seleccione un destinatario'" class="font-bold"></span>
+                                </p>
                                 @error('destinatario')
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                 @enderror
@@ -256,11 +294,11 @@
                         </div>
                     </div>
 
-                    {{-- Observaciones --}}
+                    {{-- Col I: OBSERVACIONES --}}
                     <div class="mt-5">
-                        <label for="observations" class="abc-label">Observaciones</label>
+                        <label for="observations" class="abc-label">OBSERVACIONES</label>
                         <textarea name="observations" id="observations" rows="2"
-                                  class="abc-input">{{ old('observations', $note->observations) }}</textarea>
+                                  class="abc-input" placeholder="Observaciones adicionales...">{{ old('observations', $note->observations) }}</textarea>
                     </div>
 
                     {{-- Adjuntos existentes --}}

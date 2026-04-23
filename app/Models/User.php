@@ -48,7 +48,6 @@ class User extends Authenticatable
         'users'        => 'Usuarios',
         'audit'        => 'Auditoría',
         'permissions'  => 'Permisos',
-        'cleanup'      => 'Limpieza',
         'pulse'        => 'Pulse Monitor',
         'log-viewer'   => 'Log Viewer',
     ];
@@ -61,7 +60,20 @@ class User extends Authenticatable
      */
     public function getAllowedModules(): array
     {
-        return $this->allowed_modules ?? array_keys(self::ALL_MODULES);
+        $availableModules = array_keys(self::ALL_MODULES);
+
+        if (is_null($this->allowed_modules)) {
+            return $availableModules;
+        }
+
+        $allowed = is_array($this->allowed_modules) ? $this->allowed_modules : [];
+        $filtered = array_values(array_intersect($allowed, $availableModules));
+
+        if (!in_array('dashboard', $filtered, true)) {
+            array_unshift($filtered, 'dashboard');
+        }
+
+        return array_values(array_unique($filtered));
     }
 
     /**
@@ -69,14 +81,11 @@ class User extends Authenticatable
      */
     public function hasModule(string $module): bool
     {
-        $allowed = $this->allowed_modules;
-
-        // Si nunca se configuraron módulos, tiene todos
-        if (is_null($allowed)) {
-            return true;
+        if (!array_key_exists($module, self::ALL_MODULES)) {
+            return false;
         }
 
-        return in_array($module, $allowed);
+        return in_array($module, $this->getAllowedModules(), true);
     }
 
     /* ---- Helpers de rol ---- */

@@ -16,7 +16,7 @@
     </div>
 
     <div class="py-6">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-[96rem] mx-auto px-3 sm:px-4 lg:px-6 xl:px-8">
 
             {{-- Filtros --}}
             <div class="abc-filter-bar">
@@ -69,16 +69,16 @@
             {{-- Tabla de auditoría --}}
             <div class="abc-card overflow-hidden mobile-hide-table">
                 <div class="overflow-x-auto">
-                    <table class="abc-table">
+                    <table class="abc-table audit-table min-w-[1360px] w-full">
                         <thead>
                             <tr>
-                                <th>Fecha / Hora</th>
-                                <th>Usuario</th>
-                                <th>Acción</th>
-                                <th>Entidad</th>
-                                <th class="text-center">ID</th>
-                                <th>IP</th>
-                                <th>Detalles</th>
+                                <th class="whitespace-nowrap w-44">Fecha / Hora</th>
+                                <th class="whitespace-nowrap w-64">Usuario</th>
+                                <th class="whitespace-nowrap w-48">Acción</th>
+                                <th class="whitespace-nowrap w-52">Entidad</th>
+                                <th class="text-center whitespace-nowrap w-20">ID</th>
+                                <th class="whitespace-nowrap w-32">IP</th>
+                                <th class="whitespace-nowrap w-[360px]">Detalles</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -248,5 +248,15 @@
             </div>
         </div>
     </div>
+
+    <style>
+        .audit-table thead th {
+            letter-spacing: .04em;
+        }
+
+        .audit-table tbody td {
+            vertical-align: middle;
+        }
+    </style>
 </x-app-layout>
 
