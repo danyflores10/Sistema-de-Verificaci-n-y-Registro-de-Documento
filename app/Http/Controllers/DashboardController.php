@@ -33,7 +33,17 @@ class DashboardController extends Controller
             ->paginate(20, ['*'], 'pagina')
             ->withQueryString();
 
-        $totalPages = (int) ((clone $scopedNotes)->sum('pages') ?? 0);
+        // Extrae el primer número del campo pages para cálculos numéricos
+        // Maneja tanto valores simples ("12") como rangos ("12 - 233")
+        // Compatible con MySQL y PostgreSQL
+        $sqlDialect = config('database.default');
+        if ($sqlDialect === 'pgsql') {
+            $totalPages = (int) ((clone $scopedNotes)->selectRaw('COALESCE(SUM(CAST(SPLIT_PART(pages, \'-\', 1) AS INTEGER)), 0) as total')
+                ->first()?->total ?? 0);
+        } else {
+            $totalPages = (int) ((clone $scopedNotes)->selectRaw('COALESCE(SUM(CAST(SUBSTRING_INDEX(pages, \'-\', 1) AS UNSIGNED)), 0) as total')
+                ->first()?->total ?? 0);
+        }
         $averagePages = $totalNotes > 0 ? round($totalPages / $totalNotes, 1) : 0;
         $verificationRate = $totalNotes > 0 ? round(($verificados / $totalNotes) * 100, 1) : 0;
         $rejectionRate = $totalNotes > 0 ? round(($rechazados / $totalNotes) * 100, 1) : 0;
@@ -46,9 +56,15 @@ class DashboardController extends Controller
             ->get();
 
         $topBoxes = (clone $scopedNotes)
-            ->join('boxes', 'internal_notes.box_id', '=', 'boxes.id')
-            ->selectRaw('boxes.box_number as box_number, COUNT(*) as total_documentos, COALESCE(SUM(internal_notes.pages), 0) as total_fojas')
-            ->groupBy('boxes.box_number')
+            ->join('boxes', 'internal_notes.box_id', '=', 'boxes.id');
+        
+        if ($sqlDialect === 'pgsql') {
+            $topBoxes = $topBoxes->selectRaw('boxes.box_number as box_number, COUNT(*) as total_documentos, COALESCE(SUM(CAST(SPLIT_PART(internal_notes.pages, \'-\', 1) AS INTEGER)), 0) as total_fojas');
+        } else {
+            $topBoxes = $topBoxes->selectRaw('boxes.box_number as box_number, COUNT(*) as total_documentos, COALESCE(SUM(CAST(SUBSTRING_INDEX(internal_notes.pages, \'-\', 1) AS UNSIGNED)), 0) as total_fojas');
+        }
+        
+        $topBoxes = $topBoxes->groupBy('boxes.box_number')
             ->orderByDesc('total_documentos')
             ->limit(6)
             ->get();

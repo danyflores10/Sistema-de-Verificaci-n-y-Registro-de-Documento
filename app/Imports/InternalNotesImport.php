@@ -208,7 +208,10 @@ class InternalNotesSheetImport implements ToModel, WithHeadingRow, SkipsEmptyRow
         };
 
         // ── FOJAS ──
-        $pages = max(1, (int) ($this->findValue($row, ['fojas', 'foja', 'hojas', 'paginas'], '1')));
+        // Captura el valor completo incluyendo rangos como "12 - 233"
+        $pagesRaw = trim($this->findValue($row, ['fojas', 'foja', 'hojas', 'paginas'], '1'));
+        // Si está vacío o es solo espacios, usar '1' como valor por defecto
+        $pages = !empty($pagesRaw) ? $pagesRaw : '1';
 
         // ── OBSERVACIONES ──
         $observations = trim($this->findValue($row, ['observaciones', 'observacion', 'obs']));

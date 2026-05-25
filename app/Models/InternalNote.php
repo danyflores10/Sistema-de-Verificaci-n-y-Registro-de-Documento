@@ -35,7 +35,7 @@ class InternalNote extends Model
         return [
             'note_date'   => 'date',
             'verified_at' => 'datetime',
-            'pages'       => 'integer',
+            'pages'       => 'string',
         ];
     }
 
