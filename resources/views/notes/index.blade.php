@@ -118,7 +118,7 @@
                                         'note_date_display'   => $note->note_date->format('d/m/Y'),
                                         'reference'           => $note->reference,
                                         'doc_type'            => $note->doc_type,
-                                        'pages'               => (int) $note->pages,
+                                        'pages'               => (string) $note->pages,
                                         'observations'        => $note->observations,
                                         'note_type'           => $note->note_type,
                                         'tipologia'           => $note->tipologia,
@@ -286,7 +286,7 @@
                             'note_date_display'   => $note->note_date->format('d/m/Y'),
                             'reference'           => $note->reference,
                             'doc_type'            => $note->doc_type,
-                            'pages'               => (int) $note->pages,
+                            'pages'               => (string) $note->pages,
                             'observations'        => $note->observations,
                             'note_type'           => $note->note_type,
                             'tipologia'           => $note->tipologia,
@@ -737,7 +737,7 @@
                             {{-- FOJAS --}}
                             <div>
                                 <label class="abc-label">FOJAS *</label>
-                                <input type="number" name="pages" class="abc-input" min="1" x-model="editing.pages" required>
+                                <input type="text" name="pages" class="abc-input" placeholder="Ej: 12 o 12 - 233" x-model="editing.pages" required>
                             </div>
 
                             {{-- TIPO DOCUMENTACIÓN --}}

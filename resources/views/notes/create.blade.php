@@ -130,8 +130,8 @@
                         {{-- Col H: FOJAS --}}
                         <div>
                             <label for="pages" class="abc-label">FOJAS *</label>
-                            <input type="number" name="pages" id="pages" value="{{ old('pages', 1) }}" min="1"
-                                   class="abc-input" required>
+                            <input type="text" name="pages" id="pages" value="{{ old('pages', 1) }}"
+                                   class="abc-input" placeholder="Ej: 12 ó 12 - 233" required>
                             @error('pages')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
