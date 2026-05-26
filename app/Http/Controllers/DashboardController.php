@@ -27,12 +27,6 @@ class DashboardController extends Controller
         $rechazados = (clone $scopedNotes)->where('status', InternalNote::STATUS_RECHAZADO)->count();
         $pendientesRevision = $enviados;
 
-        $recentNotes = (clone $scopedNotes)
-            ->with(['box', 'creator'])
-            ->latest()
-            ->paginate(20, ['*'], 'pagina')
-            ->withQueryString();
-
         // Extrae el primer número del campo pages para cálculos numéricos
         // Maneja tanto valores simples ("12") como rangos ("12 - 233")
         // Compatible con MySQL y PostgreSQL
@@ -115,7 +109,6 @@ class DashboardController extends Controller
             'verificados',
             'rechazados',
             'pendientesRevision',
-            'recentNotes',
             'totalPages',
             'averagePages',
             'verificationRate',

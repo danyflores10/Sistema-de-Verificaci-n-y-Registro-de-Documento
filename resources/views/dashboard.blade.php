@@ -31,7 +31,7 @@
     <div class="px-2 lg:px-0 -mt-6 relative z-10">
         @php
             $statusChart = [
-                ['label' => 'Borradores', 'value' => $borradores, 'color' => '#64748b'],
+                ['label' => 'Borradores', 'value' => $borradores, 'color' => '#f59e0b'],
                 ['label' => 'Enviados', 'value' => $enviados, 'color' => '#0ea5e9'],
                 ['label' => 'Verificados', 'value' => $verificados, 'color' => '#10b981'],
                 ['label' => 'Rechazados', 'value' => $rechazados, 'color' => '#ef4444'],
@@ -259,26 +259,21 @@
             </div>
         </div>
 
-        {{-- ═══ Charts + Ranking ═══ --}}
+        {{-- ═══ Charts + Ranking (ApexCharts estilo shadcn) ═══ --}}
         <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-6">
+            {{-- Donut Estado --}}
             <div class="abc-card p-6 border border-slate-200/70 dark:border-slate-700/60">
-                <div class="flex items-center justify-between gap-2 mb-4">
+                <div class="flex items-center justify-between gap-2 mb-2">
                     <h3 class="text-base font-extrabold" style="color: var(--text-primary)">Distribución por Estado</h3>
                     <span class="text-xs px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 font-semibold" style="color: var(--text-muted)">
                         <span class="dashboard-count" data-count-to="{{ $totalNotes }}">{{ number_format($totalNotes) }}</span> docs
                     </span>
                 </div>
+                <p class="text-xs mb-2" style="color: var(--text-muted)">Composición actual del total registrado.</p>
 
-                <div class="dashboard-donut" style="background: conic-gradient({{ $statusGradient }});">
-                    <div class="dashboard-donut-center">
-                        <span class="text-xs font-semibold uppercase tracking-wider" style="color: var(--text-muted)">Total</span>
-                        <span class="text-2xl font-black" style="color: var(--text-primary)">
-                            <span class="dashboard-count" data-count-to="{{ $totalNotes }}">{{ number_format($totalNotes) }}</span>
-                        </span>
-                    </div>
-                </div>
+                <div id="chart-estado" class="apex-chart-wrap"></div>
 
-                <div class="mt-5 grid grid-cols-1 gap-2.5">
+                <div class="mt-4 grid grid-cols-1 gap-2.5">
                     @foreach($statusChart as $item)
                         <div class="flex items-center justify-between text-sm">
                             <div class="flex items-center gap-2.5">
@@ -293,24 +288,19 @@
                 </div>
             </div>
 
+            {{-- Donut Tipología --}}
             <div class="abc-card p-6 border border-slate-200/70 dark:border-slate-700/60">
-                <div class="flex items-center justify-between gap-2 mb-4">
+                <div class="flex items-center justify-between gap-2 mb-2">
                     <h3 class="text-base font-extrabold" style="color: var(--text-primary)">Distribución por Tipología</h3>
                     <span class="text-xs px-2.5 py-1 rounded-full bg-indigo-50 dark:bg-indigo-900/30 font-semibold text-indigo-600 dark:text-indigo-300">
                         Top 6
                     </span>
                 </div>
+                <p class="text-xs mb-2" style="color: var(--text-muted)">Tipos documentales más frecuentes.</p>
 
-                <div class="dashboard-donut" style="background: conic-gradient({{ $tipologiaGradient }});">
-                    <div class="dashboard-donut-center">
-                        <span class="text-xs font-semibold uppercase tracking-wider" style="color: var(--text-muted)">Tipologías</span>
-                        <span class="text-2xl font-black" style="color: var(--text-primary)">
-                            <span class="dashboard-count" data-count-to="{{ count($tipologiaChart) }}">{{ number_format(count($tipologiaChart)) }}</span>
-                        </span>
-                    </div>
-                </div>
+                <div id="chart-tipologia" class="apex-chart-wrap"></div>
 
-                <div class="mt-5 grid grid-cols-1 gap-2.5">
+                <div class="mt-4 grid grid-cols-1 gap-2.5">
                     @forelse($tipologiaChart as $item)
                         <div class="flex items-center justify-between text-sm">
                             <div class="flex items-center gap-2.5 min-w-0">
@@ -327,219 +317,36 @@
                 </div>
             </div>
 
+            {{-- Bar horizontal: Ranking Cajas --}}
             <div class="abc-card p-6 border border-slate-200/70 dark:border-slate-700/60">
-                <div class="flex items-center justify-between gap-2 mb-4">
+                <div class="flex items-center justify-between gap-2 mb-2">
                     <h3 class="text-base font-extrabold" style="color: var(--text-primary)">Ranking de Cajas</h3>
                     <span class="text-xs px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-900/30 font-semibold text-emerald-600 dark:text-emerald-300">
                         Más activas
                     </span>
                 </div>
+                <p class="text-xs mb-2" style="color: var(--text-muted)">Documentos por caja, ordenados.</p>
 
-                <div class="space-y-4">
-                    @forelse($topBoxes as $box)
-                        @php
-                            $boxWidth = $topBoxesMax > 0 ? round(($box->total_documentos / $topBoxesMax) * 100, 2) : 0;
-                        @endphp
-                        <div>
-                            <div class="flex items-center justify-between text-sm mb-1.5">
-                                <span class="font-bold" style="color: var(--text-primary)">{{ $box->box_number }}</span>
-                                <span class="font-semibold" style="color: var(--text-secondary)">
-                                    <span class="dashboard-count" data-count-to="{{ $box->total_documentos }}">{{ number_format($box->total_documentos) }}</span> docs
-                                </span>
-                            </div>
-                            <div class="h-2 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
-                                <div class="h-full rounded-full" style="width: {{ $boxWidth }}%; background: linear-gradient(90deg, #0ea5e9 0%, #22c55e 100%);"></div>
-                            </div>
-                            <p class="text-[11px] mt-1.5" style="color: var(--text-muted)">
-                                <span class="dashboard-count" data-count-to="{{ $box->total_fojas }}">{{ number_format($box->total_fojas) }}</span> fojas acumuladas
-                            </p>
-                        </div>
-                    @empty
-                        <p class="text-sm text-center py-6" style="color: var(--text-muted)">No hay cajas con actividad registrada.</p>
-                    @endforelse
-                </div>
+                @if(count($topBoxes) > 0)
+                    <div id="chart-cajas" class="apex-chart-wrap apex-chart-wrap-tall"></div>
+                @else
+                    <p class="text-sm text-center py-12" style="color: var(--text-muted)">No hay cajas con actividad registrada.</p>
+                @endif
             </div>
         </div>
 
-        {{-- ═══ Monthly Trend ═══ --}}
+        {{-- ═══ Monthly Trend (Bar agrupado con labels arriba) ═══ --}}
         <div class="abc-card p-6 mb-6 border border-slate-200/70 dark:border-slate-700/60">
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-2">
                 <div>
                     <h3 class="text-base font-extrabold" style="color: var(--text-primary)">Evolución de Documentos (Últimos 6 meses)</h3>
                     <p class="text-xs mt-1" style="color: var(--text-muted)">Comparativa mensual de documentos registrados, verificados y rechazados.</p>
                 </div>
-                <div class="flex items-center gap-3 text-xs font-semibold">
-                    <span class="inline-flex items-center gap-1.5"><span class="dashboard-legend-dot" style="background:#0ea5e9"></span>Total</span>
-                    <span class="inline-flex items-center gap-1.5"><span class="dashboard-legend-dot" style="background:#10b981"></span>Verificados</span>
-                    <span class="inline-flex items-center gap-1.5"><span class="dashboard-legend-dot" style="background:#ef4444"></span>Rechazados</span>
-                </div>
             </div>
 
-            <div class="dashboard-month-grid">
-                @foreach($monthlyStats as $month)
-                    @php
-                        $totalHeight = $monthlyMax > 0 ? round(($month['total'] / $monthlyMax) * 100, 2) : 0;
-                        $verifiedHeight = $monthlyMax > 0 ? round(($month['verificados'] / $monthlyMax) * 100, 2) : 0;
-                        $rejectedHeight = $monthlyMax > 0 ? round(($month['rechazados'] / $monthlyMax) * 100, 2) : 0;
-                    @endphp
-                    <div class="rounded-xl p-3 border border-slate-200/70 dark:border-slate-700/60 bg-white/60 dark:bg-slate-900/20">
-                        <div class="dashboard-month-bars">
-                            <div class="dashboard-month-bar" style="height: {{ $totalHeight }}%; background: #0ea5e9;"></div>
-                            <div class="dashboard-month-bar" style="height: {{ $verifiedHeight }}%; background: #10b981;"></div>
-                            <div class="dashboard-month-bar" style="height: {{ $rejectedHeight }}%; background: #ef4444;"></div>
-                        </div>
-                        <p class="text-xs font-bold text-center mt-2" style="color: var(--text-primary)">{{ $month['label'] }}</p>
-                        <p class="text-[11px] text-center mt-0.5" style="color: var(--text-muted)">{{ number_format($month['total']) }} docs</p>
-                    </div>
-                @endforeach
-            </div>
+            <div id="chart-mensual" class="apex-chart-wrap-large"></div>
         </div>
 
-        {{-- ═══ Recent Records ═══ --}}
-        @php
-            $currentPage = $recentNotes->currentPage();
-            $lastPage = $recentNotes->lastPage();
-            $startPage = max(1, $currentPage - 2);
-            $endPage = min($lastPage, $currentPage + 2);
-
-            if (($endPage - $startPage) < 4) {
-                $startPage = max(1, $endPage - 4);
-                $endPage = min($lastPage, $startPage + 4);
-            }
-        @endphp
-        <div class="abc-card overflow-hidden shadow-lg">
-            <div class="px-6 py-5 flex items-center justify-between" style="border-bottom: 1px solid var(--surface-border);">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, var(--accent-primary), var(--accent-light));">
-                        <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
-                    </div>
-                    <div>
-                        <h3 class="text-lg font-bold" style="color: var(--text-primary)">Últimos Registros</h3>
-                        <p class="text-xs" style="color: var(--text-muted)">
-                            Mostrando {{ $recentNotes->firstItem() ?? 0 }} a {{ $recentNotes->lastItem() ?? 0 }} de {{ $recentNotes->total() }} registros
-                        </p>
-                    </div>
-                </div>
-                <a href="{{ route('notes.index') }}"
-                   class="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 hover:-translate-x-0.5"
-                   style="color: var(--accent-primary); background: var(--accent-primary)10;">
-                    Ver todos
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
-                </a>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="abc-table">
-                    <thead>
-                        <tr>
-                            <th>N° Caja</th>
-                            <th>N° Carpeta</th>
-                            <th>N° de Documento</th>
-                            <th>Fecha</th>
-                            <th>Referencia</th>
-                            <th>Estado</th>
-                            <th>Creado por</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($recentNotes as $note)
-                            <tr class="group hover:bg-gray-50/50 dark:hover:bg-gray-800/30 transition-colors">
-                                <td>
-                                    <span class="inline-flex items-center gap-1.5 font-bold text-sm" style="color: var(--text-primary)">
-                                        <svg class="w-3.5 h-3.5 opacity-40" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" /></svg>
-                                        {{ $note->box->box_number ?? '-' }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="text-sm tabular-nums" style="color: var(--text-secondary)">{{ $note->folder_number ?? '-' }}</span>
-                                </td>
-                                <td>
-                                    <a href="{{ route('notes.show', $note) }}" class="font-bold text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 hover:underline transition-colors">
-                                        {{ $note->internal_number }}
-                                    </a>
-                                </td>
-                                <td>
-                                    <span class="text-sm tabular-nums" style="color: var(--text-secondary)">{{ $note->note_date->format('d/m/Y') }}</span>
-                                </td>
-                                <td>
-                                    <span class="max-w-xs block truncate text-sm" style="color: var(--text-secondary)">{{ $note->reference }}</span>
-                                </td>
-                                <td>@include('partials.status-badge', ['status' => $note->status])</td>
-                                <td>
-                                    <div class="flex items-center gap-2.5">
-                                        <div class="w-7 h-7 rounded-lg flex items-center justify-center text-white text-[10px] font-bold shadow-sm" style="background: linear-gradient(135deg, var(--accent-primary), var(--accent-light));">
-                                            {{ strtoupper(substr($note->creator->name ?? '-', 0, 1)) }}
-                                        </div>
-                                        <span class="text-sm font-medium" style="color: var(--text-secondary)">{{ $note->creator->name ?? '-' }}</span>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="7" class="text-center py-12">
-                                    <div class="flex flex-col items-center gap-3">
-                                        <div class="w-16 h-16 rounded-2xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                                            <svg class="w-8 h-8 text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" /></svg>
-                                        </div>
-                                        <p class="font-semibold text-sm" style="color: var(--text-muted)">No hay registros aún</p>
-                                        <a href="{{ route('notes.create') }}" class="text-xs font-semibold px-3 py-1.5 rounded-lg transition" style="color: var(--accent-primary); background: var(--accent-primary)10;">
-                                            + Crear primer documento
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-
-            @if($recentNotes->hasPages())
-                <div class="px-6 py-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between" style="border-top: 1px solid var(--surface-border);">
-                    <p class="text-xs sm:text-sm font-semibold" style="color: var(--text-muted)">
-                        Página {{ $recentNotes->currentPage() }} de {{ $recentNotes->lastPage() }}
-                    </p>
-                    <div class="dashboard-pagination-wrap">
-                        @if($recentNotes->onFirstPage())
-                            <span class="dashboard-pagination-link is-disabled">Anterior</span>
-                        @else
-                            <a href="{{ $recentNotes->previousPageUrl() }}" class="dashboard-pagination-link">Anterior</a>
-                        @endif
-
-                        @if($startPage > 1)
-                            <a href="{{ $recentNotes->url(1) }}" class="dashboard-pagination-link {{ $currentPage === 1 ? 'is-active' : '' }}">1</a>
-                            @if($startPage > 2)
-                                <span class="dashboard-pagination-dots">...</span>
-                            @endif
-                        @endif
-
-                        @for($page = $startPage; $page <= $endPage; $page++)
-                            <a href="{{ $recentNotes->url($page) }}" class="dashboard-pagination-link {{ $currentPage === $page ? 'is-active' : '' }}">
-                                {{ $page }}
-                            </a>
-                        @endfor
-
-                        @if($endPage < $lastPage)
-                            @if($endPage < ($lastPage - 1))
-                                <span class="dashboard-pagination-dots">...</span>
-                            @endif
-                            <a href="{{ $recentNotes->url($lastPage) }}" class="dashboard-pagination-link {{ $currentPage === $lastPage ? 'is-active' : '' }}">
-                                {{ $lastPage }}
-                            </a>
-                        @endif
-
-                        @if($recentNotes->hasMorePages())
-                            <a href="{{ $recentNotes->nextPageUrl() }}" class="dashboard-pagination-link">Siguiente</a>
-                        @else
-                            <span class="dashboard-pagination-link is-disabled">Siguiente</span>
-                        @endif
-                    </div>
-                </div>
-            @endif
-
-            {{-- Mobile: Ver todos link --}}
-            <div class="sm:hidden px-6 py-3 text-center" style="border-top: 1px solid var(--surface-border);">
-                <a href="{{ route('notes.index') }}" class="text-sm font-semibold" style="color: var(--accent-primary)">Ver todos los documentos →</a>
-            </div>
-        </div>
     </div>
 
     <style>
@@ -547,34 +354,50 @@
             font-variant-numeric: tabular-nums;
         }
 
-        .dashboard-donut {
-            width: 210px;
-            height: 210px;
-            border-radius: 9999px;
-            position: relative;
-            margin: 0 auto;
-            box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.25);
+        .apex-chart-wrap {
+            min-height: 240px;
         }
 
-        .dashboard-donut::after {
-            content: "";
-            position: absolute;
-            inset: 22%;
-            border-radius: 9999px;
-            background: var(--surface-card, #ffffff);
-            box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.2);
+        .apex-chart-wrap-tall {
+            min-height: 320px;
         }
 
-        .dashboard-donut-center {
-            position: absolute;
-            inset: 0;
-            z-index: 2;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            line-height: 1.2;
+        .apex-chart-wrap-large {
+            min-height: 360px;
+        }
+
+        /* Estilo shadcn-blocks para los tooltips de ApexCharts */
+        .apexcharts-tooltip.apexcharts-theme-light {
+            border: 1px solid rgba(148, 163, 184, 0.35) !important;
+            box-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.25) !important;
+            border-radius: 12px !important;
+            overflow: hidden;
+        }
+
+        .apexcharts-tooltip.apexcharts-theme-light .apexcharts-tooltip-title {
+            background: rgba(248, 250, 252, 0.95) !important;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.25) !important;
+            font-weight: 700 !important;
+        }
+
+        html.dark .apexcharts-tooltip.apexcharts-theme-light {
+            background: #0f172a !important;
+            border-color: rgba(71, 85, 105, 0.55) !important;
+            color: #e2e8f0 !important;
+        }
+
+        html.dark .apexcharts-tooltip.apexcharts-theme-light .apexcharts-tooltip-title {
+            background: #1e293b !important;
+            border-bottom-color: rgba(71, 85, 105, 0.55) !important;
+            color: #e2e8f0 !important;
+        }
+
+        html.dark .apexcharts-text tspan,
+        html.dark .apexcharts-legend-text,
+        html.dark .apexcharts-datalabel-label,
+        html.dark .apexcharts-datalabel-value {
+            fill: #cbd5e1 !important;
+            color: #cbd5e1 !important;
         }
 
         .dashboard-legend-dot {
@@ -582,29 +405,6 @@
             width: 0.7rem;
             height: 0.7rem;
             border-radius: 9999px;
-        }
-
-        .dashboard-month-grid {
-            display: grid;
-            grid-template-columns: repeat(6, minmax(0, 1fr));
-            gap: 1rem;
-            align-items: stretch;
-        }
-
-        .dashboard-month-bars {
-            min-height: 180px;
-            height: 180px;
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-            gap: 0.4rem;
-        }
-
-        .dashboard-month-bar {
-            width: 12px;
-            min-height: 0;
-            border-radius: 9999px 9999px 5px 5px;
-            transition: all 0.25s ease;
         }
 
         .dashboard-pagination-wrap {
@@ -659,22 +459,7 @@
             padding: 0 0.1rem;
         }
 
-        @media (max-width: 1200px) {
-            .dashboard-month-grid {
-                grid-template-columns: repeat(3, minmax(0, 1fr));
-            }
-        }
-
         @media (max-width: 768px) {
-            .dashboard-donut {
-                width: 180px;
-                height: 180px;
-            }
-
-            .dashboard-month-grid {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
-
             .dashboard-pagination-wrap {
                 justify-content: flex-start;
             }
@@ -732,4 +517,236 @@
             });
         })();
     </script>
+
+    @php
+        $dashboardChartPayload = [
+            'estado'    => collect($statusChart)->values()->all(),
+            'tipologia' => collect($tipologiaChart)->values()->all(),
+            'cajas'     => collect($topBoxes)->map(function ($b) {
+                return [
+                    'box_number'       => $b->box_number,
+                    'total_documentos' => (int) $b->total_documentos,
+                    'total_fojas'      => (int) $b->total_fojas,
+                ];
+            })->values()->all(),
+            'mensual'   => collect($monthlyStats)->values()->all(),
+        ];
+    @endphp
+
+    @push('scripts')
+        <script id="dashboard-chart-data" type="application/json">{!! json_encode($dashboardChartPayload, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE) !!}</script>
+        <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.49.1/dist/apexcharts.min.js"></script>
+        <script>
+            (function () {
+                const dataEl = document.getElementById('dashboard-chart-data');
+                const payload = dataEl ? JSON.parse(dataEl.textContent) : {};
+                const estadoData    = payload.estado    || [];
+                const tipologiaData = payload.tipologia || [];
+                const cajasData     = payload.cajas     || [];
+                const mensualData   = payload.mensual   || [];
+
+                const isDark = () => document.documentElement.classList.contains('dark');
+                const textColor = () => isDark() ? '#cbd5e1' : '#475569';
+                const gridColor = () => isDark() ? 'rgba(148,163,184,0.18)' : 'rgba(148,163,184,0.25)';
+
+                const baseFont = "'Inter', system-ui, -apple-system, sans-serif";
+
+                const charts = {};
+
+                const numberFmt = new Intl.NumberFormat('es-BO');
+
+                const donutBaseOptions = (data, centerLabel) => ({
+                    chart: {
+                        type: 'donut',
+                        height: 280,
+                        fontFamily: baseFont,
+                        animations: { speed: 700, animateGradually: { enabled: true, delay: 80 } },
+                    },
+                    series: data.map(d => d.value),
+                    labels: data.map(d => d.label),
+                    colors: data.map(d => d.color),
+                    stroke: { width: 3, colors: ['var(--surface-card, #ffffff)'] },
+                    dataLabels: { enabled: false },
+                    legend: { show: false },
+                    plotOptions: {
+                        pie: {
+                            expandOnClick: true,
+                            donut: {
+                                size: '72%',
+                                background: 'transparent',
+                                labels: {
+                                    show: true,
+                                    name: {
+                                        show: true,
+                                        fontSize: '11px',
+                                        fontWeight: 700,
+                                        letterSpacing: '0.08em',
+                                        color: isDark() ? '#94a3b8' : '#64748b',
+                                        offsetY: 22,
+                                        formatter: () => centerLabel.toUpperCase(),
+                                    },
+                                    value: {
+                                        show: true,
+                                        fontSize: '34px',
+                                        fontWeight: 800,
+                                        color: textColor(),
+                                        offsetY: -10,
+                                        formatter: (v) => numberFmt.format(v),
+                                    },
+                                    total: {
+                                        show: true,
+                                        showAlways: true,
+                                        label: centerLabel.toUpperCase(),
+                                        color: isDark() ? '#94a3b8' : '#64748b',
+                                        fontSize: '11px',
+                                        fontWeight: 700,
+                                        formatter: (w) => numberFmt.format(
+                                            w.globals.seriesTotals.reduce((a, b) => a + b, 0)
+                                        ),
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    states: {
+                        hover:  { filter: { type: 'lighten', value: 0.08 } },
+                        active: { filter: { type: 'darken',  value: 0.10 } },
+                    },
+                    tooltip: {
+                        fillSeriesColor: false,
+                        y: { formatter: (v) => `${numberFmt.format(v)} docs` },
+                    },
+                });
+
+                /* === 1. Donut ESTADO === */
+                if (estadoData.some(d => d.value > 0)) {
+                    charts.estado = new ApexCharts(
+                        document.querySelector('#chart-estado'),
+                        donutBaseOptions(estadoData, 'Total')
+                    );
+                    charts.estado.render();
+                } else {
+                    document.querySelector('#chart-estado').innerHTML =
+                        '<p class="text-sm text-center py-12" style="color: var(--text-muted)">Sin datos registrados.</p>';
+                }
+
+                /* === 2. Donut TIPOLOGIA === */
+                if (tipologiaData.length > 0 && tipologiaData.some(d => d.value > 0)) {
+                    charts.tipologia = new ApexCharts(
+                        document.querySelector('#chart-tipologia'),
+                        donutBaseOptions(tipologiaData, 'Tipologías')
+                    );
+                    charts.tipologia.render();
+                } else {
+                    document.querySelector('#chart-tipologia').innerHTML =
+                        '<p class="text-sm text-center py-12" style="color: var(--text-muted)">Sin datos de tipología aún.</p>';
+                }
+
+                /* === 3. Bar HORIZONTAL Ranking Cajas === */
+                if (cajasData.length > 0) {
+                    const opts = {
+                        chart: { type: 'bar', height: 320, fontFamily: baseFont, toolbar: { show: false }, animations: { speed: 700 } },
+                        series: [{ name: 'Documentos', data: cajasData.map(c => c.total_documentos) }],
+                        colors: ['#ea580c'],
+                        plotOptions: {
+                            bar: {
+                                horizontal: true,
+                                borderRadius: 6,
+                                borderRadiusApplication: 'end',
+                                barHeight: '70%',
+                                dataLabels: { position: 'top' },
+                            },
+                        },
+                        dataLabels: {
+                            enabled: true,
+                            offsetX: 28,
+                            style: { fontSize: '12px', fontWeight: 700, colors: [textColor()] },
+                            formatter: (v) => new Intl.NumberFormat('es-BO').format(v),
+                        },
+                        xaxis: {
+                            categories: cajasData.map(c => c.box_number),
+                            labels: { style: { colors: textColor(), fontSize: '11px', fontWeight: 600 } },
+                            axisBorder: { show: false },
+                            axisTicks: { show: false },
+                        },
+                        yaxis: { labels: { style: { colors: textColor(), fontSize: '12px', fontWeight: 700 } } },
+                        grid: { borderColor: gridColor(), strokeDashArray: 4, padding: { right: 40 } },
+                        tooltip: {
+                            y: {
+                                formatter: (v, opts) => {
+                                    const fojas = cajasData[opts.dataPointIndex]?.total_fojas ?? 0;
+                                    return `${new Intl.NumberFormat('es-BO').format(v)} docs · ${new Intl.NumberFormat('es-BO').format(fojas)} fojas`;
+                                },
+                            },
+                        },
+                    };
+                    charts.cajas = new ApexCharts(document.querySelector('#chart-cajas'), opts);
+                    charts.cajas.render();
+                }
+
+                /* === 4. Bar AGRUPADO Mensual con labels === */
+                {
+                    const opts = {
+                        chart: { type: 'bar', height: 360, fontFamily: baseFont, toolbar: { show: false }, animations: { speed: 700 } },
+                        series: [
+                            { name: 'Total',       data: mensualData.map(m => m.total) },
+                            { name: 'Verificados', data: mensualData.map(m => m.verificados) },
+                            { name: 'Rechazados',  data: mensualData.map(m => m.rechazados) },
+                        ],
+                        colors: ['#0ea5e9', '#10b981', '#ef4444'],
+                        plotOptions: {
+                            bar: {
+                                borderRadius: 6,
+                                borderRadiusApplication: 'end',
+                                columnWidth: '60%',
+                                dataLabels: { position: 'top' },
+                            },
+                        },
+                        dataLabels: {
+                            enabled: true,
+                            offsetY: -22,
+                            style: { fontSize: '11px', fontWeight: 700, colors: [textColor()] },
+                            formatter: (v) => v > 0 ? new Intl.NumberFormat('es-BO').format(v) : '',
+                            background: { enabled: false },
+                        },
+                        xaxis: {
+                            categories: mensualData.map(m => m.label),
+                            labels: { style: { colors: textColor(), fontSize: '12px', fontWeight: 600 } },
+                            axisBorder: { show: false },
+                            axisTicks: { show: false },
+                        },
+                        yaxis: { labels: { style: { colors: textColor(), fontSize: '11px' } } },
+                        legend: {
+                            position: 'top',
+                            horizontalAlign: 'right',
+                            fontSize: '12px',
+                            fontWeight: 600,
+                            labels: { colors: textColor() },
+                            markers: { width: 12, height: 12, radius: 6 },
+                        },
+                        grid: { borderColor: gridColor(), strokeDashArray: 4, padding: { top: 30 } },
+                        tooltip: { y: { formatter: (v) => `${new Intl.NumberFormat('es-BO').format(v)} docs` } },
+                    };
+                    charts.mensual = new ApexCharts(document.querySelector('#chart-mensual'), opts);
+                    charts.mensual.render();
+                }
+
+                /* Re-render al cambiar dark/light para refrescar colores */
+                const observer = new MutationObserver(() => {
+                    const color = textColor();
+                    const grid  = gridColor();
+                    Object.values(charts).forEach(c => {
+                        c.updateOptions({
+                            xaxis: { labels: { style: { colors: color } } },
+                            yaxis: { labels: { style: { colors: color } } },
+                            dataLabels: { style: { colors: [color] } },
+                            grid: { borderColor: grid },
+                            legend: { labels: { colors: color } },
+                        }, false, true);
+                    });
+                });
+                observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+            })();
+        </script>
+    @endpush
 </x-app-layout>

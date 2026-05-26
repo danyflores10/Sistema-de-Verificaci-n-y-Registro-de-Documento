@@ -118,36 +118,53 @@
 
                     {{-- Formulario de carga --}}
                     <form action="{{ route('import.store') }}" method="POST" enctype="multipart/form-data"
-                          x-data="{ fileName: '', uploading: false }"
-                          @submit="uploading = true">
+                          x-data="excelImport()"
+                          @submit="onSubmit($event)">
                         @csrf
 
                         <div class="mb-6">
                             <label class="abc-label text-base font-semibold mb-3 block">Seleccionar archivo Excel</label>
 
-                            <div class="import-upload-wrap rounded-xl border border-emerald-100 bg-gradient-to-b from-emerald-50/80 to-white p-6">
+                            <div class="import-upload-wrap rounded-xl border border-emerald-100 bg-gradient-to-b from-emerald-50/80 to-white p-6 transition-all"
+                                 :class="dragging ? 'is-dragging' : ''"
+                                 @dragover.prevent="dragging = true"
+                                 @dragenter.prevent="dragging = true"
+                                 @dragleave.prevent="dragging = false"
+                                 @drop.prevent="handleDrop($event)">
+
                                 <div class="flex justify-center">
                                     <label class="container-btn-file">
                                         <svg fill="#fff" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
                                             <path d="M14 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zm0 1.5L18.5 8H14zM8.75 13.5h6.5v1.5h-6.5zm0 3h6.5V18h-6.5zm0-6h3.5V12h-3.5z"/>
                                         </svg>
-                                        Subir archivo Excel
+                                        <span x-text="fileName ? 'Cambiar archivo' : 'Subir archivo Excel'"></span>
                                         <input class="file"
                                                type="file"
                                                name="file"
                                                accept=".xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv"
                                                x-ref="fileInput"
-                                               @change="fileName = $refs.fileInput.files[0]?.name || ''" />
+                                               @change="handlePick($event)" />
                                     </label>
                                 </div>
 
                                 <p class="mt-3 text-center text-xs text-gray-500">
-                                    Formatos permitidos: <strong>.xlsx</strong>, <strong>.xls</strong>, <strong>.csv</strong> (máx. 500MB)
+                                    Arrastra el archivo aquí o haz clic en el botón. Formatos: <strong>.xlsx</strong>, <strong>.xls</strong>, <strong>.csv</strong> (máx. 500MB)
                                 </p>
 
-                                <div x-show="fileName" x-cloak class="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3">
-                                    <p class="text-xs font-semibold text-emerald-700">Archivo seleccionado:</p>
-                                    <p class="text-xs text-emerald-600 font-mono mt-1 break-all" x-text="fileName"></p>
+                                <div x-show="fileName" x-cloak class="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 flex items-center gap-3">
+                                    <div class="w-9 h-9 rounded-lg bg-emerald-100 flex items-center justify-center flex-shrink-0">
+                                        <svg class="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                                        </svg>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-xs font-semibold text-emerald-700">Archivo seleccionado:</p>
+                                        <p class="text-xs text-emerald-600 font-mono mt-1 break-all" x-text="fileName"></p>
+                                        <p class="text-[10px] text-emerald-500 mt-0.5" x-text="fileSizeLabel"></p>
+                                    </div>
+                                    <button type="button" @click="clearFile()" class="p-1.5 rounded-lg text-emerald-500 hover:text-red-600 hover:bg-red-50 transition flex-shrink-0" title="Quitar">
+                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+                                    </button>
                                 </div>
                             </div>
 
@@ -271,5 +288,100 @@
         .container-btn-file:hover::before {
             width: 100%;
         }
+
+        .import-upload-wrap.is-dragging {
+            border-color: #10b981 !important;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+            transform: translateY(-1px);
+            background: linear-gradient(180deg, rgba(209, 250, 229, 0.9), rgba(236, 253, 245, 0.95));
+        }
     </style>
+
+    <script>
+        function excelImport() {
+            const allowedExt = ['xlsx', 'xls', 'csv'];
+            const maxBytes = 500 * 1024 * 1024;
+
+            const notify = (type, message) => {
+                if (window.Alpine && Alpine.store('toasts')) {
+                    Alpine.store('toasts')[type](message);
+                } else {
+                    alert(message);
+                }
+            };
+
+            const formatBytes = (bytes) => {
+                if (!bytes && bytes !== 0) return '';
+                const units = ['B', 'KB', 'MB', 'GB'];
+                let i = 0;
+                let value = bytes;
+                while (value >= 1024 && i < units.length - 1) {
+                    value /= 1024;
+                    i++;
+                }
+                return `${value.toFixed(value >= 10 || i === 0 ? 0 : 1)} ${units[i]}`;
+            };
+
+            return {
+                fileName: '',
+                fileSizeLabel: '',
+                dragging: false,
+                uploading: false,
+
+                assignFile(file) {
+                    if (!file) return false;
+
+                    const ext = file.name.split('.').pop().toLowerCase();
+                    if (!allowedExt.includes(ext)) {
+                        notify('error', `"${file.name}" no es un formato válido. Solo .xlsx, .xls o .csv.`);
+                        return false;
+                    }
+
+                    if (file.size > maxBytes) {
+                        notify('error', `"${file.name}" supera el límite de 500MB.`);
+                        return false;
+                    }
+
+                    const dt = new DataTransfer();
+                    dt.items.add(file);
+                    this.$refs.fileInput.files = dt.files;
+
+                    this.fileName = file.name;
+                    this.fileSizeLabel = formatBytes(file.size);
+                    notify('success', 'Archivo listo para importar.');
+                    return true;
+                },
+
+                handlePick(event) {
+                    const file = event.target.files?.[0];
+                    if (!file) return;
+                    if (!this.assignFile(file)) {
+                        event.target.value = '';
+                    }
+                },
+
+                handleDrop(event) {
+                    this.dragging = false;
+                    const file = event.dataTransfer?.files?.[0];
+                    if (!file) return;
+                    this.assignFile(file);
+                },
+
+                clearFile() {
+                    this.fileName = '';
+                    this.fileSizeLabel = '';
+                    this.$refs.fileInput.value = '';
+                },
+
+                onSubmit(event) {
+                    if (!this.fileName) {
+                        event.preventDefault();
+                        notify('error', 'Selecciona un archivo Excel antes de importar.');
+                        return;
+                    }
+                    this.uploading = true;
+                },
+            };
+        }
+    </script>
 </x-app-layout>
