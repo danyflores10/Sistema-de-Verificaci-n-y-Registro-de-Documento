@@ -8,9 +8,12 @@ use App\Models\InternalNote;
 use App\Models\NoteAttachment;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\Rules\Password;
+use Throwable;
 
 class UserController extends Controller
 {
@@ -44,12 +47,15 @@ class UserController extends Controller
         $validated = $request->validate([
             'name'     => 'required|string|max:150',
             'email'    => 'required|email|max:150|unique:users,email',
-            'password' => ['required', 'confirmed', Password::defaults()],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
             'role'     => 'required|in:ADMIN,USUARIO',
         ], [
-            'name.required'  => 'El nombre es obligatorio.',
-            'email.required' => 'El correo electrónico es obligatorio.',
-            'email.unique'   => 'Este correo ya está registrado.',
+            'name.required'      => 'El nombre es obligatorio.',
+            'email.required'     => 'El correo electrónico es obligatorio.',
+            'email.unique'       => 'Este correo ya está registrado.',
+            'password.required'  => 'La contraseña es obligatoria.',
+            'password.min'       => 'La contraseña debe tener al menos 8 caracteres.',
+            'password.confirmed' => 'Las contraseñas no coinciden.',
         ]);
 
         $user = User::create([
@@ -105,12 +111,36 @@ class UserController extends Controller
     public function resetPassword(Request $request, User $user)
     {
         $request->validate([
-            'password' => ['required', 'confirmed', Password::defaults()],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ], [
+            'password.required'  => 'La contraseña es obligatoria.',
+            'password.min'       => 'La contraseña debe tener al menos 8 caracteres.',
+            'password.confirmed' => 'Las contraseñas no coinciden.',
         ]);
 
-        $user->update(['password' => Hash::make($request->password)]);
+        try {
+            DB::transaction(function () use ($request, $user) {
+                $user->forceFill([
+                    'password' => Hash::make($request->password),
+                ])->save();
 
-        AuditLog::record('RESETEAR_PASSWORD', 'users', $user->id, null, null);
+                try {
+                    AuditLog::record('RESETEAR_PASSWORD', 'users', $user->id, null, null);
+                } catch (Throwable $auditError) {
+                    Log::warning('No se pudo registrar auditoría de RESETEAR_PASSWORD: '.$auditError->getMessage(), [
+                        'user_id' => $user->id,
+                    ]);
+                }
+            });
+        } catch (Throwable $e) {
+            Log::error('Error reseteando contraseña: '.$e->getMessage(), [
+                'user_id' => $user->id,
+                'trace'   => $e->getTraceAsString(),
+            ]);
+
+            return redirect()->route('users.index')
+                             ->with('error', 'No se pudo resetear la contraseña. Intente nuevamente.');
+        }
 
         return redirect()->route('users.index')
                          ->with('success', 'Contraseña reseteada exitosamente.');
@@ -119,7 +149,7 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         // No permitir eliminarse a sí mismo
-        if ($user->id === auth()->id()) {
+        if ($user->id === Auth::id()) {
             return redirect()->route('users.index')
                              ->with('error', 'No puede eliminarse a sí mismo.');
         }

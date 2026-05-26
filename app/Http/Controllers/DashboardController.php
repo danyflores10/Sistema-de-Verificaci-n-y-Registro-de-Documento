@@ -16,7 +16,7 @@ class DashboardController extends Controller
         $scopedNotes = InternalNote::query();
 
         if (!$user->isAdmin()) {
-            $scopedNotes->where('created_by', $user->id);
+            $scopedNotes->where('internal_notes.created_by', $user->id);
         }
 
         $totalBoxes = Box::count();
