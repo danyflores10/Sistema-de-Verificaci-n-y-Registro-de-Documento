@@ -463,14 +463,20 @@
             position: relative;
             height: 320px;
             width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            max-width: 100%;
+            overflow: hidden;
         }
 
         .dashboard-chart-canvas {
-            width: 100%;
+            width: 100% !important;
+            max-width: 100% !important;
             height: 100%;
+        }
+
+        /* Forzar que el SVG interno de ApexCharts no se desborde */
+        .dashboard-chart-canvas .apexcharts-canvas,
+        .dashboard-chart-canvas .apexcharts-svg {
+            max-width: 100% !important;
         }
 
         .dashboard-chart-card__legend {
@@ -712,8 +718,11 @@
                     chart: {
                         type: 'donut',
                         height: 320,
+                        width: '100%',
                         fontFamily: baseFont,
                         animations: { speed: 700, animateGradually: { enabled: true, delay: 80 } },
+                        redrawOnParentResize: true,
+                        redrawOnWindowResize: true,
                     },
                     series: data.map(d => d.value),
                     labels: data.map(d => d.label),
@@ -798,7 +807,7 @@
                 /* === 3. Bar HORIZONTAL Ranking Cajas === */
                 if (cajasData.length > 0) {
                     const opts = {
-                        chart: { type: 'bar', height: 320, fontFamily: baseFont, toolbar: { show: false }, animations: { speed: 700 } },
+                        chart: { type: 'bar', height: 320, width: '100%', fontFamily: baseFont, toolbar: { show: false }, animations: { speed: 700 }, redrawOnParentResize: true, redrawOnWindowResize: true },
                         series: [{ name: 'Documentos', data: cajasData.map(c => c.total_documentos) }],
                         colors: ['#ea580c'],
                         plotOptions: {
@@ -846,7 +855,7 @@
                 /* === 4. Bar AGRUPADO Mensual con labels === */
                 {
                     const opts = {
-                        chart: { type: 'bar', height: 320, fontFamily: baseFont, toolbar: { show: false }, animations: { speed: 700 } },
+                        chart: { type: 'bar', height: 320, width: '100%', fontFamily: baseFont, toolbar: { show: false }, animations: { speed: 700 }, redrawOnParentResize: true, redrawOnWindowResize: true },
                         series: [
                             { name: 'Total',       data: mensualData.map(m => m.total) },
                             { name: 'Verificados', data: mensualData.map(m => m.verificados) },
@@ -889,6 +898,19 @@
                     charts.mensual = new ApexCharts(document.querySelector('#chart-mensual'), opts);
                     charts.mensual.render();
                 }
+
+                /* Forzar resize después del primer render para evitar desbordes */
+                requestAnimationFrame(function () {
+                    Object.values(charts).forEach(function (c) {
+                        try {
+                            const el = c.el;
+                            if (el && el.offsetWidth > 0) {
+                                c.updateOptions({ chart: { width: '100%' } }, false, false);
+                            }
+                        } catch (_) { /* noop */ }
+                    });
+                    window.dispatchEvent(new Event('resize'));
+                });
 
                 /* Re-render al cambiar dark/light para refrescar colores */
                 const observer = new MutationObserver(() => {
