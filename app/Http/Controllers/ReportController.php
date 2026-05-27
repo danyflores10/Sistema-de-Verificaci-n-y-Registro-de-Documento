@@ -49,7 +49,7 @@ class ReportController extends Controller
      */
     public function exportPdf(Request $request)
     {
-        $query = InternalNote::with(['box', 'creator']);
+        $query = InternalNote::with(['box', 'creator', 'verifier']);
 
         if ($boxId = $request->get('box_id')) {
             $query->where('box_id', $boxId);
@@ -69,9 +69,50 @@ class ReportController extends Controller
 
         $notes = $query->orderBy('note_date', 'desc')->get();
 
-        $pdf = Pdf::loadView('reports.pdf', compact('notes'))
+        // Resumen por estado
+        $summary = [
+            'total'        => $notes->count(),
+            'borradores'   => $notes->where('status', 'BORRADOR')->count(),
+            'enviados'     => $notes->where('status', 'ENVIADO')->count(),
+            'verificados'  => $notes->where('status', 'VERIFICADO')->count(),
+            'rechazados'   => $notes->where('status', 'RECHAZADO')->count(),
+            'total_fojas'  => $notes->sum(fn ($n) => self::parsePagesValue($n->pages)),
+        ];
+
+        // Información de filtros aplicados (para mostrar en el header del PDF)
+        $appliedFilters = [];
+        if ($boxId = $request->get('box_id')) {
+            $boxName = Box::find($boxId)?->box_number;
+            if ($boxName) $appliedFilters[] = "Caja: {$boxName}";
+        }
+        if ($status = $request->get('status')) {
+            $appliedFilters[] = "Estado: {$status}";
+        }
+        if ($dateFrom = $request->get('date_from')) {
+            $appliedFilters[] = "Desde: " . \Carbon\Carbon::parse($dateFrom)->format('d/m/Y');
+        }
+        if ($dateTo = $request->get('date_to')) {
+            $appliedFilters[] = "Hasta: " . \Carbon\Carbon::parse($dateTo)->format('d/m/Y');
+        }
+
+        $pdf = Pdf::loadView('reports.pdf', compact('notes', 'summary', 'appliedFilters'))
                   ->setPaper('letter', 'landscape');
 
-        return $pdf->download('notas_internas_' . now()->format('Y-m-d_His') . '.pdf');
+        return $pdf->download('reporte_documentos_' . now()->format('Y-m-d_His') . '.pdf');
+    }
+
+    /**
+     * Extrae el primer número del campo "pages".
+     * Soporta valores como "12", "12 - 233", "Folios 12", etc.
+     */
+    public static function parsePagesValue($value): int
+    {
+        if (is_null($value) || $value === '') {
+            return 0;
+        }
+        if (preg_match('/(\d+)/', (string) $value, $m)) {
+            return (int) $m[1];
+        }
+        return 0;
     }
 }
