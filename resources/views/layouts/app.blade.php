@@ -96,7 +96,7 @@
             @include('layouts.navigation')
 
             {{-- Main Content --}}
-            <div class="flex-1 flex flex-col min-h-screen transition-all duration-300"
+            <div class="flex-1 flex flex-col min-h-screen min-w-0 transition-all duration-300"
                  :class="sidebarOpen ? 'lg:ml-64' : 'lg:ml-20'">
 
                 {{-- ═══════ Top Bar ═══════ --}}

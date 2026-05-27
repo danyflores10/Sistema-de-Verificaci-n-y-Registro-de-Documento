@@ -28,7 +28,7 @@
         </div>
     </div>
 
-    <div class="px-2 lg:px-0 -mt-6 relative z-10">
+    <div class="max-w-[96rem] mx-auto px-3 sm:px-4 lg:px-6 xl:px-8 -mt-6 relative z-10">
         @php
             $statusChart = [
                 ['label' => 'Borradores', 'value' => $borradores, 'color' => '#f59e0b'],
@@ -74,8 +74,15 @@
             $topBoxesMax = max(1, (int) collect($topBoxes)->max('total_documentos'));
         @endphp
 
-        {{-- ═══ Stat Cards ═══ --}}
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div class="space-y-6 pt-2">
+
+        {{-- ═══ Sección: Resumen General ═══ --}}
+        <section>
+            <div class="flex items-center gap-2 mb-3">
+                <span class="inline-block w-1 h-5 rounded-full" style="background: linear-gradient(180deg, var(--accent-primary), var(--accent-light));"></span>
+                <h2 class="text-sm font-bold uppercase tracking-widest" style="color: var(--text-secondary)">Resumen General</h2>
+            </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {{-- Total Cajas --}}
             <div class="group relative overflow-hidden rounded-2xl p-5 text-white shadow-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl animate-fade-in-up"
                  style="background: linear-gradient(135deg, #0c2340 0%, #1a3c68 100%);">
@@ -140,7 +147,7 @@
                 </div>
                 <div class="mt-3 flex items-center gap-1.5">
                     <div class="h-1 flex-1 rounded-full bg-white/10 overflow-hidden">
-                        <div class="h-full rounded-full bg-emerald-300/60" style="width: {{ $totalNotes > 0 ? round($verificados / $totalNotes * 100) : 0 }}%"></div>
+                        <div class="h-full rounded-full bg-emerald-300/60" data-width="{{ $totalNotes > 0 ? round($verificados / $totalNotes * 100) : 0 }}%"></div>
                     </div>
                     <span class="text-[10px] font-bold text-white/60">
                         <span class="dashboard-count"
@@ -169,7 +176,7 @@
                 </div>
                 <div class="mt-3 flex items-center gap-1.5">
                     <div class="h-1 flex-1 rounded-full bg-white/10 overflow-hidden">
-                        <div class="h-full rounded-full bg-red-300/60 animate-pulse" style="width: {{ $totalNotes > 0 ? round($pendientesRevision / $totalNotes * 100) : 0 }}%"></div>
+                        <div class="h-full rounded-full bg-red-300/60 animate-pulse" data-width="{{ $totalNotes > 0 ? round($pendientesRevision / $totalNotes * 100) : 0 }}%"></div>
                     </div>
                     <span class="text-[10px] font-bold text-white/60">
                         <span class="dashboard-count" data-count-to="{{ $pendientesRevision }}">{{ number_format($pendientesRevision) }}</span>
@@ -178,9 +185,15 @@
             </div>
             @endif
         </div>
+        </section>
 
-        {{-- ═══ Status Summary ═══ --}}
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+        {{-- ═══ Sección: Estados Documentales ═══ --}}
+        <section>
+            <div class="flex items-center gap-2 mb-3">
+                <span class="inline-block w-1 h-5 rounded-full" style="background: linear-gradient(180deg, var(--accent-primary), var(--accent-light));"></span>
+                <h2 class="text-sm font-bold uppercase tracking-widest" style="color: var(--text-secondary)">Estados Documentales</h2>
+            </div>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
             <div class="abc-card group hover:shadow-lg transition-all duration-300 p-4 flex items-center gap-3.5 border-l-4 border-l-gray-400">
                 <div class="w-11 h-11 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center group-hover:scale-110 transition-transform">
                     <div class="w-3 h-3 rounded-full bg-gray-400"></div>
@@ -226,9 +239,15 @@
                 </div>
             </div>
         </div>
+        </section>
 
-        {{-- ═══ Executive KPIs ═══ --}}
-        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+        {{-- ═══ Sección: Indicadores Clave ═══ --}}
+        <section>
+            <div class="flex items-center gap-2 mb-3">
+                <span class="inline-block w-1 h-5 rounded-full" style="background: linear-gradient(180deg, var(--accent-primary), var(--accent-light));"></span>
+                <h2 class="text-sm font-bold uppercase tracking-widest" style="color: var(--text-secondary)">Indicadores Clave</h2>
+            </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
             <div class="abc-card p-5 border border-slate-200/70 dark:border-slate-700/60">
                 <p class="text-[11px] font-bold uppercase tracking-widest" style="color: var(--text-muted)">Fojas Totales</p>
                 <p class="text-3xl font-black mt-1.5" style="color: var(--text-primary)">
@@ -258,95 +277,127 @@
                 <p class="text-xs mt-2" style="color: var(--text-muted)">Documentos rechazados sobre el total</p>
             </div>
         </div>
+        </section>
 
-        {{-- ═══ Charts + Ranking (ApexCharts estilo shadcn) ═══ --}}
-        <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-6">
-            {{-- Donut Estado --}}
-            <div class="abc-card p-6 border border-slate-200/70 dark:border-slate-700/60">
-                <div class="flex items-center justify-between gap-2 mb-2">
-                    <h3 class="text-base font-extrabold" style="color: var(--text-primary)">Distribución por Estado</h3>
-                    <span class="text-xs px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 font-semibold" style="color: var(--text-muted)">
-                        <span class="dashboard-count" data-count-to="{{ $totalNotes }}">{{ number_format($totalNotes) }}</span> docs
-                    </span>
-                </div>
-                <p class="text-xs mb-2" style="color: var(--text-muted)">Composición actual del total registrado.</p>
+        {{-- ═══ Sección: Análisis Documental ═══ --}}
+        <section>
+            <div class="flex items-center gap-2 mb-3">
+                <span class="inline-block w-1 h-5 rounded-full" style="background: linear-gradient(180deg, var(--accent-primary), var(--accent-light));"></span>
+                <h2 class="text-sm font-bold uppercase tracking-widest" style="color: var(--text-secondary)">Análisis Documental</h2>
+            </div>
 
-                <div id="chart-estado" class="apex-chart-wrap"></div>
-
-                <div class="mt-4 grid grid-cols-1 gap-2.5">
-                    @foreach($statusChart as $item)
-                        <div class="flex items-center justify-between text-sm">
-                            <div class="flex items-center gap-2.5">
-                                <span class="dashboard-legend-dot" style="background: {{ $item['color'] }}"></span>
-                                <span style="color: var(--text-secondary)">{{ $item['label'] }}</span>
-                            </div>
-                            <span class="font-bold" style="color: var(--text-primary)">
-                                <span class="dashboard-count" data-count-to="{{ $item['value'] }}">{{ number_format($item['value']) }}</span>
-                            </span>
+            <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                {{-- Donut Estado --}}
+                <article class="dashboard-chart-card">
+                    <header class="dashboard-chart-card__head">
+                        <div>
+                            <h3 class="dashboard-chart-card__title">Distribución por Estado</h3>
+                            <p class="dashboard-chart-card__subtitle">Composición actual del total registrado.</p>
                         </div>
-                    @endforeach
-                </div>
-            </div>
+                        <span class="dashboard-chart-card__pill" data-bg="rgba(245, 158, 11, 0.12)" style="color: #b45309;">
+                            <span class="dashboard-count" data-count-to="{{ $totalNotes }}">{{ number_format($totalNotes) }}</span> docs
+                        </span>
+                    </header>
 
-            {{-- Donut Tipología --}}
-            <div class="abc-card p-6 border border-slate-200/70 dark:border-slate-700/60">
-                <div class="flex items-center justify-between gap-2 mb-2">
-                    <h3 class="text-base font-extrabold" style="color: var(--text-primary)">Distribución por Tipología</h3>
-                    <span class="text-xs px-2.5 py-1 rounded-full bg-indigo-50 dark:bg-indigo-900/30 font-semibold text-indigo-600 dark:text-indigo-300">
-                        Top 6
-                    </span>
-                </div>
-                <p class="text-xs mb-2" style="color: var(--text-muted)">Tipos documentales más frecuentes.</p>
+                    <div class="dashboard-chart-card__body">
+                        <div id="chart-estado" class="dashboard-chart-canvas"></div>
+                    </div>
 
-                <div id="chart-tipologia" class="apex-chart-wrap"></div>
-
-                <div class="mt-4 grid grid-cols-1 gap-2.5">
-                    @forelse($tipologiaChart as $item)
-                        <div class="flex items-center justify-between text-sm">
-                            <div class="flex items-center gap-2.5 min-w-0">
-                                <span class="dashboard-legend-dot" style="background: {{ $item['color'] }}"></span>
-                                <span class="truncate" style="color: var(--text-secondary)">{{ $item['label'] }}</span>
+                    <footer class="dashboard-chart-card__legend">
+                        @foreach($statusChart as $item)
+                            <div class="dashboard-legend-row">
+                                <span class="dashboard-legend-dot" data-bg="{{ $item['color'] }}"></span>
+                                <span class="dashboard-legend-row__label">{{ $item['label'] }}</span>
+                                <span class="dashboard-legend-row__value">
+                                    <span class="dashboard-count" data-count-to="{{ $item['value'] }}">{{ number_format($item['value']) }}</span>
+                                </span>
                             </div>
-                            <span class="font-bold ml-2" style="color: var(--text-primary)">
-                                <span class="dashboard-count" data-count-to="{{ $item['value'] }}">{{ number_format($item['value']) }}</span>
-                            </span>
+                        @endforeach
+                    </footer>
+                </article>
+
+                {{-- Donut Tipología --}}
+                <article class="dashboard-chart-card">
+                    <header class="dashboard-chart-card__head">
+                        <div>
+                            <h3 class="dashboard-chart-card__title">Distribución por Tipología</h3>
+                            <p class="dashboard-chart-card__subtitle">Tipos documentales más frecuentes.</p>
                         </div>
-                    @empty
-                        <p class="text-sm text-center py-6" style="color: var(--text-muted)">Sin datos de tipología aún.</p>
-                    @endforelse
-                </div>
+                        <span class="dashboard-chart-card__pill" data-bg="rgba(99, 102, 241, 0.12)" style="color: #4338ca;">
+                            Top 6
+                        </span>
+                    </header>
+
+                    <div class="dashboard-chart-card__body">
+                        <div id="chart-tipologia" class="dashboard-chart-canvas"></div>
+                    </div>
+
+                    <footer class="dashboard-chart-card__legend">
+                        @forelse($tipologiaChart as $item)
+                            <div class="dashboard-legend-row">
+                                <span class="dashboard-legend-dot" data-bg="{{ $item['color'] }}"></span>
+                                <span class="dashboard-legend-row__label">{{ $item['label'] }}</span>
+                                <span class="dashboard-legend-row__value">
+                                    <span class="dashboard-count" data-count-to="{{ $item['value'] }}">{{ number_format($item['value']) }}</span>
+                                </span>
+                            </div>
+                        @empty
+                            <p class="text-sm text-center py-3 col-span-full" style="color: var(--text-muted)">Sin datos de tipología aún.</p>
+                        @endforelse
+                    </footer>
+                </article>
+            </div>
+        </section>
+
+        {{-- ═══ Sección: Tendencias y Ranking ═══ --}}
+        <section>
+            <div class="flex items-center gap-2 mb-3">
+                <span class="inline-block w-1 h-5 rounded-full" style="background: linear-gradient(180deg, var(--accent-primary), var(--accent-light));"></span>
+                <h2 class="text-sm font-bold uppercase tracking-widest" style="color: var(--text-secondary)">Tendencias y Ranking</h2>
             </div>
 
-            {{-- Bar horizontal: Ranking Cajas --}}
-            <div class="abc-card p-6 border border-slate-200/70 dark:border-slate-700/60">
-                <div class="flex items-center justify-between gap-2 mb-2">
-                    <h3 class="text-base font-extrabold" style="color: var(--text-primary)">Ranking de Cajas</h3>
-                    <span class="text-xs px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-900/30 font-semibold text-emerald-600 dark:text-emerald-300">
-                        Más activas
-                    </span>
-                </div>
-                <p class="text-xs mb-2" style="color: var(--text-muted)">Documentos por caja, ordenados.</p>
+            <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                {{-- Ranking Cajas --}}
+                <article class="dashboard-chart-card">
+                    <header class="dashboard-chart-card__head">
+                        <div>
+                            <h3 class="dashboard-chart-card__title">Ranking de Cajas</h3>
+                            <p class="dashboard-chart-card__subtitle">Documentos por caja, ordenados de mayor a menor.</p>
+                        </div>
+                        <span class="dashboard-chart-card__pill" data-bg="rgba(16, 185, 129, 0.12)" style="color: #047857;">
+                            Más activas
+                        </span>
+                    </header>
 
-                @if(count($topBoxes) > 0)
-                    <div id="chart-cajas" class="apex-chart-wrap apex-chart-wrap-tall"></div>
-                @else
-                    <p class="text-sm text-center py-12" style="color: var(--text-muted)">No hay cajas con actividad registrada.</p>
-                @endif
+                    <div class="dashboard-chart-card__body">
+                        @if(count($topBoxes) > 0)
+                            <div id="chart-cajas" class="dashboard-chart-canvas"></div>
+                        @else
+                            <p class="text-sm text-center" style="color: var(--text-muted)">No hay cajas con actividad registrada.</p>
+                        @endif
+                    </div>
+                </article>
+
+                {{-- Evolución Mensual --}}
+                <article class="dashboard-chart-card">
+                    <header class="dashboard-chart-card__head">
+                        <div>
+                            <h3 class="dashboard-chart-card__title">Evolución (Últimos 6 meses)</h3>
+                            <p class="dashboard-chart-card__subtitle">Documentos registrados, verificados y rechazados.</p>
+                        </div>
+                        <span class="dashboard-chart-card__pill" data-bg="rgba(14, 165, 233, 0.12)" style="color: #0369a1;">
+                            6 meses
+                        </span>
+                    </header>
+
+                    <div class="dashboard-chart-card__body">
+                        <div id="chart-mensual" class="dashboard-chart-canvas"></div>
+                    </div>
+                </article>
             </div>
-        </div>
+        </section>
 
-        {{-- ═══ Monthly Trend (Bar agrupado con labels arriba) ═══ --}}
-        <div class="abc-card p-6 mb-6 border border-slate-200/70 dark:border-slate-700/60">
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-2">
-                <div>
-                    <h3 class="text-base font-extrabold" style="color: var(--text-primary)">Evolución de Documentos (Últimos 6 meses)</h3>
-                    <p class="text-xs mt-1" style="color: var(--text-muted)">Comparativa mensual de documentos registrados, verificados y rechazados.</p>
-                </div>
-            </div>
-
-            <div id="chart-mensual" class="apex-chart-wrap-large"></div>
-        </div>
-
+      </div>
     </div>
 
     <style>
@@ -354,16 +405,111 @@
             font-variant-numeric: tabular-nums;
         }
 
-        .apex-chart-wrap {
-            min-height: 240px;
+        /* === Cards de gráficos estilo shadcn === */
+        .dashboard-chart-card {
+            display: flex;
+            flex-direction: column;
+            background: var(--surface-card, #ffffff);
+            border: 1px solid var(--surface-border, rgba(148, 163, 184, 0.25));
+            border-radius: 1rem;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.06);
+            padding: 1.5rem;
+            transition: box-shadow .25s ease, transform .25s ease, border-color .25s ease;
         }
 
-        .apex-chart-wrap-tall {
-            min-height: 320px;
+        .dashboard-chart-card:hover {
+            box-shadow: 0 10px 25px -8px rgba(15, 23, 42, 0.12), 0 4px 10px -4px rgba(15, 23, 42, 0.08);
+            border-color: rgba(99, 102, 241, 0.25);
         }
 
-        .apex-chart-wrap-large {
-            min-height: 360px;
+        html.dark .dashboard-chart-card {
+            background: var(--surface-card, #0f172a);
+            border-color: rgba(71, 85, 105, 0.45);
+        }
+
+        .dashboard-chart-card__head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .dashboard-chart-card__title {
+            font-size: 1rem;
+            font-weight: 800;
+            line-height: 1.3;
+            color: var(--text-primary);
+        }
+
+        .dashboard-chart-card__subtitle {
+            font-size: 0.75rem;
+            line-height: 1.4;
+            margin-top: 0.25rem;
+            color: var(--text-muted);
+        }
+
+        .dashboard-chart-card__pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.6rem;
+            border-radius: 9999px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .dashboard-chart-card__body {
+            position: relative;
+            height: 320px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .dashboard-chart-canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .dashboard-chart-card__legend {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.5rem 1.25rem;
+            padding-top: 1rem;
+            margin-top: 1rem;
+            border-top: 1px solid var(--surface-border, rgba(148, 163, 184, 0.18));
+        }
+
+        .dashboard-legend-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.825rem;
+            min-width: 0;
+        }
+
+        .dashboard-legend-row__label {
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .dashboard-legend-row__value {
+            font-weight: 700;
+            color: var(--text-primary);
+            font-variant-numeric: tabular-nums;
+            flex-shrink: 0;
+        }
+
+        @media (max-width: 640px) {
+            .dashboard-chart-card { padding: 1.1rem; }
+            .dashboard-chart-card__body { height: 280px; }
+            .dashboard-chart-card__legend { grid-template-columns: 1fr; }
         }
 
         /* Estilo shadcn-blocks para los tooltips de ApexCharts */
@@ -534,12 +680,19 @@
     @endphp
 
     @push('scripts')
-        <script id="dashboard-chart-data" type="application/json">{!! json_encode($dashboardChartPayload, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE) !!}</script>
+        <meta id="dashboard-chart-data" name="dashboard-chart-data" content="{{ json_encode($dashboardChartPayload, JSON_UNESCAPED_UNICODE) }}">
         <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.49.1/dist/apexcharts.min.js"></script>
         <script>
             (function () {
+                document.querySelectorAll('[data-bg]').forEach(function (el) {
+                    el.style.background = el.getAttribute('data-bg');
+                });
+                document.querySelectorAll('[data-width]').forEach(function (el) {
+                    el.style.width = el.getAttribute('data-width');
+                });
+
                 const dataEl = document.getElementById('dashboard-chart-data');
-                const payload = dataEl ? JSON.parse(dataEl.textContent) : {};
+                const payload = dataEl ? JSON.parse(dataEl.getAttribute('content')) : {};
                 const estadoData    = payload.estado    || [];
                 const tipologiaData = payload.tipologia || [];
                 const cajasData     = payload.cajas     || [];
@@ -558,7 +711,7 @@
                 const donutBaseOptions = (data, centerLabel) => ({
                     chart: {
                         type: 'donut',
-                        height: 280,
+                        height: 320,
                         fontFamily: baseFont,
                         animations: { speed: 700, animateGradually: { enabled: true, delay: 80 } },
                     },
@@ -653,7 +806,7 @@
                                 horizontal: true,
                                 borderRadius: 6,
                                 borderRadiusApplication: 'end',
-                                barHeight: '70%',
+                                barHeight: cajasData.length === 1 ? '32%' : (cajasData.length <= 3 ? '50%' : '70%'),
                                 dataLabels: { position: 'top' },
                             },
                         },
@@ -670,7 +823,13 @@
                             axisTicks: { show: false },
                         },
                         yaxis: { labels: { style: { colors: textColor(), fontSize: '12px', fontWeight: 700 } } },
-                        grid: { borderColor: gridColor(), strokeDashArray: 4, padding: { right: 40 } },
+                        grid: {
+                            borderColor: gridColor(),
+                            strokeDashArray: 4,
+                            padding: cajasData.length === 1
+                                ? { right: 40, top: 80, bottom: 60 }
+                                : (cajasData.length <= 3 ? { right: 40, top: 30, bottom: 20 } : { right: 40 }),
+                        },
                         tooltip: {
                             y: {
                                 formatter: (v, opts) => {
@@ -687,7 +846,7 @@
                 /* === 4. Bar AGRUPADO Mensual con labels === */
                 {
                     const opts = {
-                        chart: { type: 'bar', height: 360, fontFamily: baseFont, toolbar: { show: false }, animations: { speed: 700 } },
+                        chart: { type: 'bar', height: 320, fontFamily: baseFont, toolbar: { show: false }, animations: { speed: 700 } },
                         series: [
                             { name: 'Total',       data: mensualData.map(m => m.total) },
                             { name: 'Verificados', data: mensualData.map(m => m.verificados) },
