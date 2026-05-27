@@ -309,3 +309,167 @@ window.fileUpload = function (options = {}) {
 
 window.Alpine = Alpine;
 Alpine.start();
+
+/* ============================================
+   Upload Progress Modal — XHR con porcentaje real
+   ============================================ */
+(function () {
+    const formatBytes = (bytes) => {
+        if (!Number.isFinite(bytes) || bytes <= 0) return '0 B';
+        const units = ['B', 'KB', 'MB', 'GB'];
+        let i = 0;
+        let value = bytes;
+        while (value >= 1024 && i < units.length - 1) {
+            value /= 1024;
+            i++;
+        }
+        return value.toFixed(value >= 10 || i === 0 ? 0 : 1) + ' ' + units[i];
+    };
+
+    const showModal = () => {
+        const m = document.getElementById('upload-progress-modal');
+        if (m) {
+            m.classList.add('is-visible');
+            m.style.display = 'flex';
+        }
+    };
+    const hideModal = () => {
+        const m = document.getElementById('upload-progress-modal');
+        if (m) {
+            m.classList.remove('is-visible');
+            m.style.display = 'none';
+        }
+    };
+
+    const setProgress = (loaded, total, statusText) => {
+        const bar    = document.getElementById('upload-progress-bar');
+        const pct    = document.getElementById('upload-progress-percent');
+        const size   = document.getElementById('upload-progress-size');
+        const status = document.getElementById('upload-progress-status');
+
+        const percent = total > 0 ? Math.min(100, Math.round((loaded / total) * 100)) : 0;
+        if (bar)  bar.style.width = percent + '%';
+        if (pct)  pct.textContent = percent + '%';
+        if (size) size.textContent = total > 0
+            ? formatBytes(loaded) + ' / ' + formatBytes(total)
+            : '';
+        if (status && statusText) status.textContent = statusText;
+    };
+
+    const setHint = (text) => {
+        const h = document.getElementById('upload-progress-hint');
+        if (h) h.textContent = text;
+    };
+
+    function handleSubmit(event) {
+        const form = event.target;
+        if (!(form instanceof HTMLFormElement)) return;
+        if (!form.hasAttribute('data-upload-progress')) return;
+        if (form.dataset.uploadInProgress === '1') return;
+
+        // Detectar si hay archivos seleccionados; si no hay, dejar el submit normal.
+        let totalBytes = 0;
+        const fileInputs = form.querySelectorAll('input[type="file"]');
+        for (const input of fileInputs) {
+            if (input.files && input.files.length > 0) {
+                for (const f of input.files) totalBytes += f.size || 0;
+            }
+        }
+
+        // Si no se está subiendo ningún archivo, dejar submit nativo (más rápido).
+        if (totalBytes === 0) return;
+
+        event.preventDefault();
+        form.dataset.uploadInProgress = '1';
+
+        showModal();
+        setProgress(0, totalBytes, 'Iniciando subida…');
+        setHint('No cierres ni recargues esta ventana hasta que termine.');
+
+        const formData = new FormData(form);
+        const xhr = new XMLHttpRequest();
+
+        xhr.open(form.method || 'POST', form.action, true);
+        xhr.responseType = 'text';
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        xhr.setRequestHeader('Accept', 'text/html,application/xhtml+xml');
+
+        const csrf = document.querySelector('meta[name="csrf-token"]');
+        if (csrf) xhr.setRequestHeader('X-CSRF-TOKEN', csrf.getAttribute('content'));
+
+        xhr.upload.addEventListener('progress', function (e) {
+            if (e.lengthComputable) {
+                setProgress(e.loaded, e.total, e.loaded >= e.total ? 'Procesando en el servidor…' : 'Subiendo archivos…');
+                if (e.loaded >= e.total) {
+                    setHint('La subida terminó. El servidor está procesando los datos.');
+                }
+            }
+        });
+
+        xhr.addEventListener('load', function () {
+            form.dataset.uploadInProgress = '';
+            const status = xhr.status;
+
+            // Redirección típica de Laravel después de un POST exitoso
+            const finalUrl = xhr.responseURL || form.action;
+
+            if (status >= 200 && status < 400) {
+                setProgress(totalBytes, totalBytes, '¡Subida completada!');
+                setTimeout(function () {
+                    window.location.assign(finalUrl);
+                }, 400);
+            } else if (status === 413) {
+                hideModal();
+                if (window.Swal) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Archivo demasiado grande',
+                        text: 'El servidor rechazó la subida (413). Verifica el tamaño máximo permitido o pide al admin que aumente client_max_body_size en nginx.',
+                    });
+                } else {
+                    alert('Error 413: el archivo supera el límite del servidor.');
+                }
+            } else if (status === 422) {
+                // Errores de validación: Laravel devuelve la página con errores; recargamos para mostrarlos.
+                hideModal();
+                document.open();
+                document.write(xhr.responseText);
+                document.close();
+            } else {
+                hideModal();
+                if (window.Swal) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error al subir',
+                        text: 'El servidor respondió con un error (' + status + '). Intenta nuevamente.',
+                    });
+                } else {
+                    alert('Error al subir: ' + status);
+                }
+            }
+        });
+
+        xhr.addEventListener('error', function () {
+            form.dataset.uploadInProgress = '';
+            hideModal();
+            if (window.Swal) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Conexión perdida',
+                    text: 'No se pudo completar la subida. Verifica tu conexión a internet.',
+                });
+            } else {
+                alert('Error de conexión durante la subida.');
+            }
+        });
+
+        xhr.addEventListener('abort', function () {
+            form.dataset.uploadInProgress = '';
+            hideModal();
+        });
+
+        xhr.send(formData);
+    }
+
+    document.addEventListener('submit', handleSubmit, true);
+})();

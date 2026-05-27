@@ -46,6 +46,30 @@
             <p class="loader-text">Cargando...</p>
         </div>
 
+        {{-- ══ Modal de progreso de upload (oculto por defecto, JS lo muestra) ══ --}}
+        <div id="upload-progress-modal" class="upload-progress-modal" aria-hidden="true" style="display: none;">
+            <div class="upload-progress-card">
+                <div class="upload-progress-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 16.5V7.5m0 0-3 3m3-3 3 3M6 16.5a4.5 4.5 0 0 1 .386-8.983 5.25 5.25 0 0 1 10.228 1.258A3.75 3.75 0 0 1 16.5 16.5H9.75"/>
+                    </svg>
+                </div>
+                <h3 class="upload-progress-title">Subiendo documentos…</h3>
+                <p class="upload-progress-subtitle" id="upload-progress-status">Preparando archivos</p>
+
+                <div class="upload-progress-bar-wrap">
+                    <div class="upload-progress-bar" id="upload-progress-bar"></div>
+                </div>
+
+                <div class="upload-progress-meta">
+                    <span class="upload-progress-percent" id="upload-progress-percent">0%</span>
+                    <span class="upload-progress-size" id="upload-progress-size">0 MB / 0 MB</span>
+                </div>
+
+                <p class="upload-progress-hint" id="upload-progress-hint">No cierres ni recargues esta ventana hasta que termine.</p>
+            </div>
+        </div>
+
         <script>
             // Ocultar loader cuando la página termina de cargar
             (function () {
@@ -335,28 +359,28 @@
             </template>
         </div>
 
-        {{-- Flash messages → Toast --}}
+        {{-- Flash messages → Toast (datos en meta, JS los lee sin Blade en el script) --}}
         @if(session('success'))
-            <script>
-                document.addEventListener('alpine:initialized', () => {
-                    Alpine.store('toasts').success(@json(session('success')));
-                });
-            </script>
+            <meta name="flash-toast-success" content="{{ session('success') }}">
         @endif
         @if(session('error'))
-            <script>
-                document.addEventListener('alpine:initialized', () => {
-                    Alpine.store('toasts').error(@json(session('error')));
-                });
-            </script>
+            <meta name="flash-toast-error" content="{{ session('error') }}">
         @endif
         @if(session('warning'))
-            <script>
-                document.addEventListener('alpine:initialized', () => {
-                    Alpine.store('toasts').warning(@json(session('warning')));
-                });
-            </script>
+            <meta name="flash-toast-warning" content="{{ session('warning') }}">
         @endif
+        <script>
+            document.addEventListener('alpine:initialized', function () {
+                ['success', 'error', 'warning'].forEach(function (type) {
+                    var meta = document.querySelector('meta[name="flash-toast-' + type + '"]');
+                    if (!meta) return;
+                    var msg = meta.getAttribute('content');
+                    if (msg && window.Alpine && Alpine.store('toasts') && typeof Alpine.store('toasts')[type] === 'function') {
+                        Alpine.store('toasts')[type](msg);
+                    }
+                });
+            });
+        </script>
         @stack('scripts')
     </body>
 </html>

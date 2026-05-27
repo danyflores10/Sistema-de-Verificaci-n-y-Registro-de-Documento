@@ -24,7 +24,7 @@
                     </div>
                 </div>
 
-                <form method="POST" action="{{ route('notes.store') }}" enctype="multipart/form-data" class="p-6">
+                <form method="POST" action="{{ route('notes.store') }}" enctype="multipart/form-data" class="p-6" data-upload-progress data-no-loader>
                     @csrf
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -300,7 +300,7 @@
                     </div>
 
                     {{-- Adjuntos --}}
-                    <div class="mt-5 abc-folder-upload" x-data="fileUpload({ maxMB: 500, acceptedExtensions: ['.pdf'], acceptedLabel: 'PDF' })">
+                    <div class="mt-5 abc-folder-upload" x-data="fileUpload({ maxMB: 5000, acceptedExtensions: ['.pdf'], acceptedLabel: 'PDF' })">
                         <label class="abc-label">Adjuntar documentos PDF</label>
 
                         <div class="abc-folder-dropzone mt-2"
@@ -335,7 +335,7 @@
                         </div>
 
                         <div class="mt-3 text-xs" style="color: var(--text-muted);">
-                            Solo archivos PDF (máx. 500MB por archivo)
+                            Solo archivos PDF (máx. 5000MB por archivo)
                         </div>
 
                         <template x-if="files.length > 0">

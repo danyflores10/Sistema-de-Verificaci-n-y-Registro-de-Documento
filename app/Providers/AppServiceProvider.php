@@ -21,11 +21,13 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        // Aumentar límites de upload para soportar hasta 500MB
-        @ini_set('upload_max_filesize', '512M');
-        @ini_set('post_max_size', '520M');
-        @ini_set('max_execution_time', '300');
-        @ini_set('max_input_time', '300');
+        // Timeouts extendidos para subidas grandes (hasta 5000MB).
+        // NOTA: upload_max_filesize y post_max_size son PHP_INI_PERDIR — solo
+        // surten efecto desde .user.ini / .htaccess / php.ini, no aquí.
+        @ini_set('max_execution_time', '1800');
+        @ini_set('max_input_time', '1800');
+        @ini_set('memory_limit', '5200M');
+        @set_time_limit(1800);
 
         // Registrar Policies
         Gate::policy(Box::class, BoxPolicy::class);

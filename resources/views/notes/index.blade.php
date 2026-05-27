@@ -688,7 +688,7 @@
                 </div>
 
                 {{-- Form --}}
-                <form :action="`{{ url('/notes') }}/${editing.id}`" method="POST" enctype="multipart/form-data" x-ref="editForm" @submit="submitting = true">
+                <form :action="`{{ url('/notes') }}/${editing.id}`" method="POST" enctype="multipart/form-data" x-ref="editForm" @submit="submitting = true" data-upload-progress data-no-loader>
                     @csrf
                     @method('PATCH')
 
@@ -813,12 +813,12 @@
                             <textarea name="observations" class="abc-input" rows="2" x-model="editing.observations" placeholder="Observaciones adicionales..."></textarea>
                         </div>
 
-                        {{-- CARGA DE DOCUMENTOS PDF 500MB --}}
-                        <div class="mt-5 rounded-xl border overflow-hidden abc-folder-upload" style="border-color: var(--surface-border);" x-data="fileUpload({ maxMB: 500, acceptedExtensions: ['.pdf'], acceptedLabel: 'PDF', existingFiles: editing && editing.attachments ? editing.attachments : [], deleteUrlTemplate: '{{ url('/attachments/__ATTACHMENT_ID__') }}', csrfToken: '{{ csrf_token() }}' })">
+                        {{-- CARGA DE DOCUMENTOS PDF 5000MB --}}
+                        <div class="mt-5 rounded-xl border overflow-hidden abc-folder-upload" style="border-color: var(--surface-border);" x-data="fileUpload({ maxMB: 5000, acceptedExtensions: ['.pdf'], acceptedLabel: 'PDF', existingFiles: editing && editing.attachments ? editing.attachments : [], deleteUrlTemplate: '{{ url('/attachments/__ATTACHMENT_ID__') }}', csrfToken: '{{ csrf_token() }}' })">
                             <div class="gradient-teal px-4 py-2.5 flex items-center gap-2">
                                 <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75l3 3m0 0l3-3m-3 3v-7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                 <span class="text-white font-bold text-xs uppercase tracking-wider">Cargar Documentos PDF</span>
-                                <span class="ml-auto text-white text-[10px] bg-white/20 px-2 py-1 rounded">Hasta 500MB</span>
+                                <span class="ml-auto text-white text-[10px] bg-white/20 px-2 py-1 rounded">Hasta 5000MB</span>
                             </div>
                             <div class="p-4" style="background-color: var(--surface-card);">
                                 <div class="abc-folder-dropzone"
@@ -853,7 +853,7 @@
                                 </div>
 
                                 <div class="mt-3 text-xs" style="color: var(--text-muted);">
-                                    Solo archivos PDF (máx. 500MB por archivo)
+                                    Solo archivos PDF (máx. 5000MB por archivo)
                                 </div>
 
                                 <div class="mt-4 space-y-2 text-xs text-gray-600">

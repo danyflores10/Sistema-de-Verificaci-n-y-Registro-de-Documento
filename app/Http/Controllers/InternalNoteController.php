@@ -81,7 +81,7 @@ class InternalNoteController extends Controller
             'pages'               => 'required|string|max:50',
             'observations'        => 'nullable|string|max:2000',
             'attachments'         => 'nullable|array',
-            'attachments.*'       => 'file|mimes:pdf,jpg,jpeg,png|max:512000',
+            'attachments.*'       => 'file|mimes:pdf,jpg,jpeg,png|max:5120000',
         ], [
             'box_id.required'          => 'La caja es obligatoria.',
             'internal_number.required' => 'El CITE es obligatorio.',
@@ -97,7 +97,7 @@ class InternalNoteController extends Controller
             'attachments.array'        => 'La lista de adjuntos no tiene un formato válido.',
             'attachments.*.file'       => 'Uno de los adjuntos no es un archivo válido.',
             'attachments.*.mimes'      => 'Solo se permiten archivos PDF, JPG o PNG.',
-            'attachments.*.max'        => 'Cada adjunto no debe superar 500 MB.',
+            'attachments.*.max'        => 'Cada adjunto no debe superar 5000 MB.',
         ]);
 
         $note = InternalNote::create([
@@ -182,7 +182,7 @@ class InternalNoteController extends Controller
             'pages'               => 'required|string|max:50',
             'observations'        => 'nullable|string|max:2000',
             'attachments'         => 'nullable|array',
-            'attachments.*'       => 'file|mimes:pdf,jpg,jpeg,png|max:512000',
+            'attachments.*'       => 'file|mimes:pdf,jpg,jpeg,png|max:5120000',
             'remove_attachment_ids'   => 'nullable|array',
             'remove_attachment_ids.*' => 'integer',
         ], [
@@ -192,7 +192,7 @@ class InternalNoteController extends Controller
             'attachments.array'     => 'La lista de adjuntos no tiene un formato válido.',
             'attachments.*.file'    => 'Uno de los adjuntos no es un archivo válido.',
             'attachments.*.mimes'   => 'Solo se permiten archivos PDF, JPG o PNG.',
-            'attachments.*.max'     => 'Cada adjunto no debe superar 500 MB.',
+            'attachments.*.max'     => 'Cada adjunto no debe superar 5000 MB.',
             'remove_attachment_ids.array'     => 'La lista de adjuntos a eliminar no tiene un formato válido.',
             'remove_attachment_ids.*.integer' => 'Uno de los adjuntos a eliminar no es válido.',
         ]);

@@ -24,7 +24,7 @@
                     </div>
                 </div>
 
-                <form id="edit-note-form" method="POST" action="{{ route('notes.update', $note) }}" enctype="multipart/form-data" class="p-6">
+                <form id="edit-note-form" method="POST" action="{{ route('notes.update', $note) }}" enctype="multipart/form-data" class="p-6" data-upload-progress data-no-loader>
                     @csrf
                     @method('PUT')
 
@@ -317,14 +317,12 @@
                                                 <p class="text-xs text-gray-400">({{ number_format($attachment->file_size / 1024, 1) }} KB)</p>
                                             </div>
                                         </div>
-                                        <form method="POST" action="{{ route('attachments.destroy', $attachment) }}" class="inline" id="delete-attachment-{{ $attachment->id }}">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="button" onclick="confirmarEliminarAdjunto('{{ addslashes($attachment->original_name) }}', 'delete-attachment-{{ $attachment->id }}')" class="abc-btn abc-btn-danger text-xs !px-3 !py-1.5">
-                                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/></svg>
-                                                Eliminar
-                                            </button>
-                                        </form>
+                                        <button type="button"
+                                                onclick="eliminarAdjuntoAjax('{{ addslashes($attachment->original_name) }}', '{{ route('attachments.destroy', $attachment) }}', this)"
+                                                class="abc-btn abc-btn-danger text-xs !px-3 !py-1.5">
+                                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/></svg>
+                                            Eliminar
+                                        </button>
                                     </div>
                                 @endforeach
                             </div>
@@ -332,7 +330,7 @@
                     @endif
 
                     {{-- Nuevos adjuntos --}}
-                    <div class="mt-5" x-data="fileUpload({ maxMB: 500 })">
+                    <div class="mt-5" x-data="fileUpload({ maxMB: 5000 })">
                         <label class="abc-label">Agregar nuevos adjuntos</label>
                         <div class="mt-1 border-2 border-dashed rounded-xl p-6 text-center transition-all duration-200 cursor-pointer"
                              :class="dragging ? 'border-blue-400 bg-blue-50/50 dark:bg-blue-900/20 scale-[1.01]' : 'border-gray-200 dark:border-gray-700 hover:border-blue-300 hover:bg-blue-50/30 dark:hover:bg-blue-900/10'"
@@ -410,7 +408,7 @@
     </div>
 
     <script>
-        function confirmarEliminarAdjunto(nombre, formId) {
+        function eliminarAdjuntoAjax(nombre, url, btn) {
             Swal.fire({
                 title: '¿Eliminar adjunto?',
                 html: `Se eliminará el archivo <strong>${nombre}</strong> permanentemente.`,
@@ -422,9 +420,50 @@
                 cancelButtonText: 'Cancelar',
                 reverseButtons: true
             }).then((result) => {
-                if (result.isConfirmed) {
-                    document.getElementById(formId).submit();
-                }
+                if (!result.isConfirmed) return;
+
+                const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+                const original = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = 'Eliminando…';
+
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': csrf,
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json, text/html;q=0.8',
+                    },
+                    body: (function () {
+                        const fd = new FormData();
+                        fd.append('_method', 'DELETE');
+                        fd.append('_token', csrf);
+                        return fd;
+                    })(),
+                    credentials: 'same-origin',
+                }).then(function (res) {
+                    if (res.ok || res.redirected) {
+                        // Quitar el item del DOM
+                        const row = btn.closest('.flex.items-center.justify-between');
+                        if (row) row.remove();
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Adjunto eliminado',
+                            timer: 1500,
+                            showConfirmButton: false,
+                        });
+                    } else {
+                        throw new Error('HTTP ' + res.status);
+                    }
+                }).catch(function (err) {
+                    btn.disabled = false;
+                    btn.innerHTML = original;
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'No se pudo eliminar',
+                        text: 'Error: ' + err.message,
+                    });
+                });
             });
         }
     </script>
