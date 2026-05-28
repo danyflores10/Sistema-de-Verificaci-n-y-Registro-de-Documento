@@ -267,11 +267,11 @@
                                             onmouseover="this.style.backgroundColor='var(--surface-border)'"
                                             onmouseout="this.style.backgroundColor='transparent'">
                                         <div class="w-9 h-9 rounded-lg gradient-navy flex items-center justify-center text-white text-xs font-bold shadow-sm">
-                                            {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
+                                            {{ strtoupper(substr(Auth::user()?->name ?? 'U', 0, 2)) }}
                                         </div>
                                         <div class="hidden md:block text-left">
-                                            <p class="text-sm font-semibold leading-tight" style="color: var(--text-primary);">{{ Auth::user()->name }}</p>
-                                            <p class="text-xs" style="color: var(--text-muted);">{{ Auth::user()->email }}</p>
+                                            <p class="text-sm font-semibold leading-tight" style="color: var(--text-primary);">{{ Auth::user()?->name ?? 'Usuario' }}</p>
+                                            <p class="text-xs" style="color: var(--text-muted);">{{ Auth::user()?->email ?? '' }}</p>
                                         </div>
                                         <svg class="w-4 h-4 hidden md:block" style="color: var(--text-muted);" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
@@ -280,8 +280,8 @@
                                 </x-slot>
                                 <x-slot name="content">
                                     <div class="px-4 py-3 border-b" style="border-color: var(--surface-border);">
-                                        <p class="text-sm font-semibold" style="color: var(--text-primary);">{{ Auth::user()->name }}</p>
-                                        <p class="text-xs" style="color: var(--text-muted);">{{ Auth::user()->email }}</p>
+                                        <p class="text-sm font-semibold" style="color: var(--text-primary);">{{ Auth::user()?->name ?? 'Usuario' }}</p>
+                                        <p class="text-xs" style="color: var(--text-muted);">{{ Auth::user()?->email ?? '' }}</p>
                                     </div>
                                     <x-dropdown-link :href="route('profile.edit')" class="flex items-center gap-2">
                                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0" /></svg>

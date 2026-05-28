@@ -27,17 +27,17 @@ class DashboardController extends Controller
         $rechazados = (clone $scopedNotes)->where('status', InternalNote::STATUS_RECHAZADO)->count();
         $pendientesRevision = $enviados;
 
-        // Extrae el primer número del campo pages para cálculos numéricos
-        // Maneja tanto valores simples ("12") como rangos ("12 - 233")
-        // Compatible con MySQL y PostgreSQL
+        // Extrae el primer número del campo pages para cálculos numéricos.
+        // Maneja valores simples ("12"), rangos ("12 - 233"), espacios y valores
+        // no numéricos sin romper la consulta (sanitiza con regex antes de CAST).
         $sqlDialect = config('database.default');
         if ($sqlDialect === 'pgsql') {
-            $totalPages = (int) ((clone $scopedNotes)->selectRaw('COALESCE(SUM(CAST(SPLIT_PART(pages, \'-\', 1) AS INTEGER)), 0) as total')
-                ->first()?->total ?? 0);
+            // NULLIF evita CAST('' AS INTEGER); regexp_replace deja solo dígitos del primer tramo.
+            $totalPagesExpr = "COALESCE(SUM(CAST(NULLIF(REGEXP_REPLACE(SPLIT_PART(COALESCE(pages, ''), '-', 1), '[^0-9]', '', 'g'), '') AS INTEGER)), 0)";
         } else {
-            $totalPages = (int) ((clone $scopedNotes)->selectRaw('COALESCE(SUM(CAST(SUBSTRING_INDEX(pages, \'-\', 1) AS UNSIGNED)), 0) as total')
-                ->first()?->total ?? 0);
+            $totalPagesExpr = "COALESCE(SUM(CAST(NULLIF(REGEXP_REPLACE(SUBSTRING_INDEX(COALESCE(pages, ''), '-', 1), '[^0-9]', ''), '') AS UNSIGNED)), 0)";
         }
+        $totalPages = (int) ((clone $scopedNotes)->selectRaw($totalPagesExpr . ' as total')->first()?->total ?? 0);
         $averagePages = $totalNotes > 0 ? round($totalPages / $totalNotes, 1) : 0;
         $verificationRate = $totalNotes > 0 ? round(($verificados / $totalNotes) * 100, 1) : 0;
         $rejectionRate = $totalNotes > 0 ? round(($rechazados / $totalNotes) * 100, 1) : 0;
@@ -53,9 +53,9 @@ class DashboardController extends Controller
             ->join('boxes', 'internal_notes.box_id', '=', 'boxes.id');
         
         if ($sqlDialect === 'pgsql') {
-            $topBoxes = $topBoxes->selectRaw('boxes.box_number as box_number, COUNT(*) as total_documentos, COALESCE(SUM(CAST(SPLIT_PART(internal_notes.pages, \'-\', 1) AS INTEGER)), 0) as total_fojas');
+            $topBoxes = $topBoxes->selectRaw("boxes.box_number as box_number, COUNT(*) as total_documentos, COALESCE(SUM(CAST(NULLIF(REGEXP_REPLACE(SPLIT_PART(COALESCE(internal_notes.pages, ''), '-', 1), '[^0-9]', '', 'g'), '') AS INTEGER)), 0) as total_fojas");
         } else {
-            $topBoxes = $topBoxes->selectRaw('boxes.box_number as box_number, COUNT(*) as total_documentos, COALESCE(SUM(CAST(SUBSTRING_INDEX(internal_notes.pages, \'-\', 1) AS UNSIGNED)), 0) as total_fojas');
+            $topBoxes = $topBoxes->selectRaw("boxes.box_number as box_number, COUNT(*) as total_documentos, COALESCE(SUM(CAST(NULLIF(REGEXP_REPLACE(SUBSTRING_INDEX(COALESCE(internal_notes.pages, ''), '-', 1), '[^0-9]', ''), '') AS UNSIGNED)), 0) as total_fojas");
         }
         
         $topBoxes = $topBoxes->groupBy('boxes.box_number')
