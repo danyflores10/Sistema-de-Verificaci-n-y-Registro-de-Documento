@@ -140,6 +140,7 @@ window.fileUpload = function (options = {}) {
         : [];
     const deleteUrlTemplate = options.deleteUrlTemplate ?? null;
     const csrfToken = options.csrfToken ?? null;
+    const maxFiles = Number.isFinite(options.maxFiles) ? options.maxFiles : null;
 
     return {
         files: [],
@@ -152,7 +153,14 @@ window.fileUpload = function (options = {}) {
             const maxSize = maxMB * 1024 * 1024;
             let addedCount = 0;
 
+            let limitReached = false;
+
             for (const file of newFiles) {
+                if (maxFiles !== null && this.files.length >= maxFiles) {
+                    limitReached = true;
+                    break;
+                }
+
                 const ext = '.' + file.name.split('.').pop().toLowerCase();
                 if (!acceptedExtensions.includes(ext)) {
                     if (Alpine.store('toasts')) {
@@ -191,6 +199,10 @@ window.fileUpload = function (options = {}) {
                 if (Alpine.store('toasts')) {
                     Alpine.store('toasts').success(`${addedCount} archivo(s) listo(s) para subir.`);
                 }
+            }
+
+            if (limitReached && Alpine.store('toasts')) {
+                Alpine.store('toasts').error(`Solo puede subir un máximo de ${maxFiles} archivos.`);
             }
         },
 

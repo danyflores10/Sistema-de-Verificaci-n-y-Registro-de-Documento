@@ -11,6 +11,21 @@ use Illuminate\Support\Facades\Storage;
 
 class InternalNoteController extends Controller
 {
+    /**
+     * Tipos MIME aceptados para los adjuntos (PDF, Word, ZIP y RAR).
+     *
+     * Se incluyen variantes reportadas por distintos navegadores/sistemas
+     * operativos (incluido application/octet-stream, que es lo que devuelven
+     * muchos clientes para .rar y .zip) para evitar rechazos falsos.
+     * La validación de extensión (`extensions:`) ya restringe el tipo real.
+     */
+    private const ATTACHMENT_MIME_TYPES = 'application/pdf,'
+        . 'application/msword,application/vnd.ms-office,application/x-ole-storage,application/CDFV2,'
+        . 'application/vnd.openxmlformats-officedocument.wordprocessingml.document,'
+        . 'application/zip,application/x-zip-compressed,application/x-zip,multipart/x-zip,'
+        . 'application/x-rar-compressed,application/vnd.rar,application/x-rar,application/x-compressed,'
+        . 'application/octet-stream';
+
     public function index(Request $request)
     {
         $user  = $request->user();
@@ -80,8 +95,8 @@ class InternalNoteController extends Controller
             'estado_conservacion' => 'nullable|string|max:100',
             'pages'               => 'required|string|max:50',
             'observations'        => 'nullable|string|max:2000',
-            'attachments'         => 'nullable|array',
-            'attachments.*'       => 'file|mimes:pdf,jpg,jpeg,png|max:5120000',
+            'attachments'         => 'nullable|array|max:10',
+            'attachments.*'       => ['file', 'extensions:pdf,doc,docx,zip,rar', 'mimetypes:' . self::ATTACHMENT_MIME_TYPES, 'max:5120000'],
         ], [
             'box_id.required'          => 'La caja es obligatoria.',
             'internal_number.required' => 'El CITE es obligatorio.',
@@ -95,9 +110,11 @@ class InternalNoteController extends Controller
             'note_type.in'             => 'Seleccione un tipo de nota válido.',
             'pages.required'           => 'Las fojas son obligatorias.',
             'attachments.array'        => 'La lista de adjuntos no tiene un formato válido.',
+            'attachments.max'          => 'Solo puede subir un máximo de 10 archivos.',
             'attachments.*.file'       => 'Uno de los adjuntos no es un archivo válido.',
-            'attachments.*.mimes'      => 'Solo se permiten archivos PDF, JPG o PNG.',
-            'attachments.*.max'        => 'Cada adjunto no debe superar 5000 MB.',
+            'attachments.*.extensions' => 'Solo se permiten archivos PDF, Word (DOC/DOCX), ZIP o RAR.',
+            'attachments.*.mimetypes'  => 'Solo se permiten archivos PDF, Word (DOC/DOCX), ZIP o RAR.',
+            'attachments.*.max'        => 'Cada archivo no debe superar 5000 MB.',
         ]);
 
         $note = InternalNote::create([
@@ -181,8 +198,8 @@ class InternalNoteController extends Controller
             'estado_conservacion' => 'nullable|string|max:100',
             'pages'               => 'required|string|max:50',
             'observations'        => 'nullable|string|max:2000',
-            'attachments'         => 'nullable|array',
-            'attachments.*'       => 'file|mimes:pdf,jpg,jpeg,png|max:5120000',
+            'attachments'         => 'nullable|array|max:10',
+            'attachments.*'       => ['file', 'extensions:pdf,doc,docx,zip,rar', 'mimetypes:' . self::ATTACHMENT_MIME_TYPES, 'max:5120000'],
             'remove_attachment_ids'   => 'nullable|array',
             'remove_attachment_ids.*' => 'integer',
         ], [
@@ -190,9 +207,11 @@ class InternalNoteController extends Controller
             'destinatario.required' => 'El destinatario es obligatorio.',
             'pages.required'        => 'Las fojas son obligatorias.',
             'attachments.array'     => 'La lista de adjuntos no tiene un formato válido.',
+            'attachments.max'       => 'Solo puede subir un máximo de 10 archivos.',
             'attachments.*.file'    => 'Uno de los adjuntos no es un archivo válido.',
-            'attachments.*.mimes'   => 'Solo se permiten archivos PDF, JPG o PNG.',
-            'attachments.*.max'     => 'Cada adjunto no debe superar 5000 MB.',
+            'attachments.*.extensions' => 'Solo se permiten archivos PDF, Word (DOC/DOCX), ZIP o RAR.',
+            'attachments.*.mimetypes'  => 'Solo se permiten archivos PDF, Word (DOC/DOCX), ZIP o RAR.',
+            'attachments.*.max'     => 'Cada archivo no debe superar 5000 MB.',
             'remove_attachment_ids.array'     => 'La lista de adjuntos a eliminar no tiene un formato válido.',
             'remove_attachment_ids.*.integer' => 'Uno de los adjuntos a eliminar no es válido.',
         ]);

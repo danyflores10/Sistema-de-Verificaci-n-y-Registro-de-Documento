@@ -813,11 +813,11 @@
                             <textarea name="observations" class="abc-input" rows="2" x-model="editing.observations" placeholder="Observaciones adicionales..."></textarea>
                         </div>
 
-                        {{-- CARGA DE DOCUMENTOS PDF 5000MB --}}
-                        <div class="mt-5 rounded-xl border overflow-hidden abc-folder-upload" style="border-color: var(--surface-border);" x-data="fileUpload({ maxMB: 5000, acceptedExtensions: ['.pdf'], acceptedLabel: 'PDF', existingFiles: editing && editing.attachments ? editing.attachments : [], deleteUrlTemplate: '{{ url('/attachments/__ATTACHMENT_ID__') }}', csrfToken: '{{ csrf_token() }}' })">
+                        {{-- CARGA DE DOCUMENTOS (PDF, Word, ZIP, RAR) 5000MB --}}
+                        <div class="mt-5 rounded-xl border overflow-hidden abc-folder-upload" style="border-color: var(--surface-border);" x-data="fileUpload({ maxMB: 5000, maxFiles: 10, acceptedExtensions: ['.pdf', '.doc', '.docx', '.zip', '.rar'], acceptedLabel: 'PDF, Word, ZIP o RAR', existingFiles: editing && editing.attachments ? editing.attachments : [], deleteUrlTemplate: '{{ url('/attachments/__ATTACHMENT_ID__') }}', csrfToken: '{{ csrf_token() }}' })">
                             <div class="gradient-teal px-4 py-2.5 flex items-center gap-2">
                                 <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75l3 3m0 0l3-3m-3 3v-7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                <span class="text-white font-bold text-xs uppercase tracking-wider">Cargar Documentos PDF</span>
+                                <span class="text-white font-bold text-xs uppercase tracking-wider">Cargar Documentos</span>
                                 <span class="ml-auto text-white text-[10px] bg-white/20 px-2 py-1 rounded">Hasta 5000MB</span>
                             </div>
                             <div class="p-4" style="background-color: var(--surface-card);">
@@ -842,23 +842,23 @@
                                                    type="file"
                                                    name="attachments[]"
                                                    multiple
-                                                   accept=".pdf,application/pdf"
+                                                   accept=".pdf,.doc,.docx,.zip,.rar,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/zip,application/x-zip-compressed,application/x-rar-compressed,application/vnd.rar,application/octet-stream"
                                                    @change="handleFiles($event)" />
                                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V7.5m0 0-3 3m3-3 3 3M6 16.5a4.5 4.5 0 0 1 .386-8.983 5.25 5.25 0 0 1 10.228 1.258A3.75 3.75 0 0 1 16.5 16.5H9.75"/>
                                             </svg>
-                                            Subir PDF
+                                            Subir archivos
                                         </label>
                                     </div>
                                 </div>
 
                                 <div class="mt-3 text-xs" style="color: var(--text-muted);">
-                                    Solo archivos PDF (máx. 5000MB por archivo)
+                                    Archivos permitidos: PDF, Word (DOC/DOCX), ZIP y RAR &mdash; máximo 10 archivos, 5000MB por archivo
                                 </div>
 
                                 <div class="mt-4 space-y-2 text-xs text-gray-600">
                                     <div class="flex items-center justify-between">
-                                        <p class="font-semibold">PDF existentes:</p>
+                                        <p class="font-semibold">Archivos existentes:</p>
                                         <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded" x-text="`${existingFiles.length} guardado(s)`"></span>
                                     </div>
                                     <template x-if="existingFiles.length > 0">
@@ -882,14 +882,14 @@
                                         </div>
                                     </template>
                                     <template x-if="existingFiles.length === 0">
-                                        <p class="text-gray-400">Sin PDF guardados actualmente</p>
+                                        <p class="text-gray-400">Sin archivos guardados actualmente</p>
                                     </template>
                                 </div>
 
                                 <div class="mt-4 space-y-2 text-xs text-gray-600">
                                     <div class="flex items-center justify-between">
-                                        <p class="font-semibold">Nuevos PDF seleccionados:</p>
-                                        <span class="bg-red-100 text-red-700 px-2 py-1 rounded" x-text="`${files.length} PDF(s)`"></span>
+                                        <p class="font-semibold">Nuevos archivos seleccionados:</p>
+                                        <span class="bg-red-100 text-red-700 px-2 py-1 rounded" x-text="`${files.length} archivo(s)`"></span>
                                     </div>
                                     <template x-if="files.length > 0">
                                         <div class="space-y-1 max-h-20 overflow-y-auto">
@@ -902,7 +902,7 @@
                                         </div>
                                     </template>
                                     <template x-if="files.length === 0">
-                                        <p class="text-gray-400">Sin archivos PDF seleccionados</p>
+                                        <p class="text-gray-400">Sin archivos seleccionados</p>
                                     </template>
                                 </div>
 

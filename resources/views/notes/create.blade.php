@@ -300,8 +300,8 @@
                     </div>
 
                     {{-- Adjuntos --}}
-                    <div class="mt-5 abc-folder-upload" x-data="fileUpload({ maxMB: 5000, acceptedExtensions: ['.pdf'], acceptedLabel: 'PDF' })">
-                        <label class="abc-label">Adjuntar documentos PDF</label>
+                    <div class="mt-5 abc-folder-upload" x-data="fileUpload({ maxMB: 5000, maxFiles: 10, acceptedExtensions: ['.pdf', '.doc', '.docx', '.zip', '.rar'], acceptedLabel: 'PDF, Word, ZIP o RAR' })">
+                        <label class="abc-label">Adjuntar documentos (PDF, Word, ZIP, RAR)</label>
 
                         <div class="abc-folder-dropzone mt-2"
                              :class="dragging ? 'is-dragging' : ''"
@@ -324,18 +324,18 @@
                                            type="file"
                                            name="attachments[]"
                                            multiple
-                                           accept=".pdf,application/pdf"
+                                           accept=".pdf,.doc,.docx,.zip,.rar,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/zip,application/x-zip-compressed,application/x-rar-compressed,application/vnd.rar,application/octet-stream"
                                            @change="handleFiles($event)" />
                                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V7.5m0 0-3 3m3-3 3 3M6 16.5a4.5 4.5 0 0 1 .386-8.983 5.25 5.25 0 0 1 10.228 1.258A3.75 3.75 0 0 1 16.5 16.5H9.75"/>
                                     </svg>
-                                    Subir PDF
+                                    Subir archivos
                                 </label>
                             </div>
                         </div>
 
                         <div class="mt-3 text-xs" style="color: var(--text-muted);">
-                            Solo archivos PDF (máx. 5000MB por archivo)
+                            Archivos permitidos: PDF, Word (DOC/DOCX), ZIP y RAR &mdash; máximo 10 archivos, 5000MB por archivo
                         </div>
 
                         <template x-if="files.length > 0">
@@ -343,7 +343,7 @@
                                 <div class="flex items-center justify-between">
                                     <p class="text-sm font-bold flex items-center gap-2" style="color: var(--text-primary);">
                                         <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-red-100 text-red-600 text-xs font-bold" x-text="files.length"></span>
-                                        <span>Archivo(s) PDF seleccionado(s)</span>
+                                        <span>Archivo(s) seleccionado(s)</span>
                                     </p>
                                     <button type="button" @click="clearAll()" class="text-xs text-red-500 hover:text-red-700 font-semibold transition">
                                         Quitar todos
@@ -369,7 +369,7 @@
                         </template>
 
                         <template x-if="files.length === 0">
-                            <p class="text-xs mt-3" style="color: var(--text-muted);">Sin archivos PDF seleccionados.</p>
+                            <p class="text-xs mt-3" style="color: var(--text-muted);">Sin archivos seleccionados.</p>
                         </template>
 
                         @error('attachments')
