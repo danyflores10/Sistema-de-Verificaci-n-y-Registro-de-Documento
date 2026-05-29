@@ -23,9 +23,13 @@ class VerificationController extends Controller
             $query->where('internal_number', 'like', "%{$internalNumber}%");
         }
 
+        // IDs de TODOS los documentos ENVIADO que coinciden con los filtros
+        // actuales (todas las páginas), para permitir "seleccionar todos".
+        $verifiableIds = (clone $query)->pluck('id')->values();
+
         $notes = $query->oldest()->paginate(15)->withQueryString();
 
-        return view('verification.index', compact('notes'));
+        return view('verification.index', compact('notes', 'verifiableIds'));
     }
 
     /**
@@ -83,6 +87,115 @@ class VerificationController extends Controller
 
         return redirect()->route('verification.index')
                          ->with('success', 'Nota rechazada.');
+    }
+
+    /**
+     * Verificación masiva (aprobar) de documentos seleccionados.
+     */
+    public function bulkVerify(Request $request)
+    {
+        $validated = $request->validate([
+            'note_ids'   => 'required|array|min:1',
+            'note_ids.*' => 'integer|exists:internal_notes,id',
+        ], [
+            'note_ids.required' => 'Debe seleccionar al menos un documento.',
+            'note_ids.min'      => 'Debe seleccionar al menos un documento.',
+        ]);
+
+        $notes = InternalNote::whereIn('id', $validated['note_ids'])->get();
+
+        $done    = 0;
+        $skipped = 0;
+
+        foreach ($notes as $note) {
+            if (! $note->isEnviado() || $request->user()->cannot('verify', $note)) {
+                $skipped++;
+                continue;
+            }
+
+            $old = ['status' => $note->status];
+
+            $note->update([
+                'status'           => 'VERIFICADO',
+                'verified_by'      => $request->user()->id,
+                'verified_at'      => now(),
+                'rejection_reason' => null,
+            ]);
+
+            AuditLog::record('VERIFICAR', 'internal_notes', $note->id, $old, [
+                'status'      => 'VERIFICADO',
+                'verified_by' => $request->user()->id,
+            ]);
+
+            $done++;
+        }
+
+        if ($done === 0) {
+            return back()->with('error', 'No se verificó ningún documento. Solo se pueden verificar documentos en estado ENVIADO.');
+        }
+
+        $message = "Se verificaron {$done} documento(s) exitosamente.";
+        if ($skipped > 0) {
+            $message .= " {$skipped} omitido(s) por no estar en estado ENVIADO.";
+        }
+
+        return back()->with('success', $message);
+    }
+
+    /**
+     * Rechazo masivo de documentos seleccionados (mismo motivo para todos).
+     */
+    public function bulkReject(Request $request)
+    {
+        $validated = $request->validate([
+            'note_ids'         => 'required|array|min:1',
+            'note_ids.*'       => 'integer|exists:internal_notes,id',
+            'rejection_reason' => 'required|string|max:1000',
+        ], [
+            'note_ids.required'         => 'Debe seleccionar al menos un documento.',
+            'note_ids.min'              => 'Debe seleccionar al menos un documento.',
+            'rejection_reason.required' => 'Debe indicar el motivo de rechazo.',
+        ]);
+
+        $notes = InternalNote::whereIn('id', $validated['note_ids'])->get();
+
+        $done    = 0;
+        $skipped = 0;
+
+        foreach ($notes as $note) {
+            if (! $note->isEnviado() || $request->user()->cannot('verify', $note)) {
+                $skipped++;
+                continue;
+            }
+
+            $old = ['status' => $note->status];
+
+            $note->update([
+                'status'           => 'RECHAZADO',
+                'rejection_reason' => $validated['rejection_reason'],
+                'verified_by'      => $request->user()->id,
+                'verified_at'      => now(),
+            ]);
+
+            AuditLog::record('RECHAZAR', 'internal_notes', $note->id, $old, [
+                'status'           => 'RECHAZADO',
+                'rejection_reason' => $validated['rejection_reason'],
+                'verified_by'      => $request->user()->id,
+            ]);
+
+            $done++;
+        }
+
+        if ($done === 0) {
+            return back()->with('error', 'No se rechazó ningún documento. Solo se pueden rechazar documentos en estado ENVIADO.');
+        }
+
+        $message = "Se rechazaron {$done} documento(s).";
+        if ($skipped > 0) {
+            $message .= " {$skipped} omitido(s) por no estar en estado ENVIADO.";
+        }
+
+        return back()->with('success', $message);
     }
 
     /**

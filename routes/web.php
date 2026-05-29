@@ -67,6 +67,8 @@ Route::middleware(['auth', 'active'])->group(function () {
     // ========================================
     Route::get('/verification', [VerificationController::class, 'index'])->name('verification.index');
     Route::get('/verification/approved', [VerificationController::class, 'approved'])->name('verification.approved');
+    Route::post('/verification/bulk-verify', [VerificationController::class, 'bulkVerify'])->name('verification.bulk-verify');
+    Route::post('/verification/bulk-reject', [VerificationController::class, 'bulkReject'])->name('verification.bulk-reject');
     Route::post('/verification/{note}/verify', [VerificationController::class, 'verify'])->name('verification.verify');
     Route::post('/verification/{note}/reject', [VerificationController::class, 'reject'])->name('verification.reject');
 
