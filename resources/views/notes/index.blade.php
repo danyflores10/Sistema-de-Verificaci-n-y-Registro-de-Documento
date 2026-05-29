@@ -76,11 +76,32 @@
                 </form>
             </div>
 
-            {{-- Contador de resultados --}}
-            <div class="flex items-center justify-between mb-3 px-1">
+            {{-- Contador de resultados + acciones masivas --}}
+            <div class="flex items-center justify-between mb-3 px-1 gap-3 flex-wrap">
                 <p class="text-sm" style="color: var(--text-muted);">
                     Mostrando <span class="font-semibold" style="color: var(--text-primary);">{{ $notes->count() }}</span> de <span class="font-semibold" style="color: var(--text-primary);">{{ $notes->total() }}</span> registros
                 </p>
+
+                {{-- Barra de envío masivo (visible al seleccionar) --}}
+                <div class="flex items-center gap-3" x-show="selectedIds.length > 0" x-cloak>
+                    <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-blue-100 text-blue-700"
+                          x-text="`${selectedIds.length} de ${sendableIds.length} seleccionado(s)`"></span>
+                    <button type="button" @click="clearSelection()"
+                            class="text-xs font-medium text-gray-500 hover:text-red-600 transition">
+                        Limpiar
+                    </button>
+                    <button type="button" class="abc-send-btn" @click="openSendModal()" title="Enviar para verificación">
+                        <div class="svg-wrapper-1">
+                            <div class="svg-wrapper">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
+                                    <path fill="none" d="M0 0h24v24H0z"></path>
+                                    <path fill="currentColor" d="M1.946 9.315c-.522-.174-.527-.455.01-.634l19.087-6.362c.529-.176.832.12.684.638l-5.454 19.086c-.15.529-.455.547-.679.045L12 14l6-8-8 6-8.054-2.685z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <span>Enviar</span>
+                    </button>
+                </div>
             </div>
 
             {{-- Tabla profesional (Desktop) --}}
@@ -89,6 +110,9 @@
                     <table class="w-full notes-wide-table" style="min-width: 1720px;">
                         <thead>
                             <tr style="background: linear-gradient(135deg, var(--abc-navy) 0%, var(--abc-navy-light) 100%);">
+                                <th class="px-3 py-3 text-center" style="width: 44px;">
+                                    <input type="checkbox" class="abc-checkbox" :checked="allSelected()" @change="toggleAll()" :disabled="sendableIds.length === 0" title="Seleccionar todos los borradores">
+                                </th>
                                 <th class="px-3 py-3 text-left text-[10px] font-bold text-white/90 uppercase tracking-wider" style="width: 40px;">N°</th>
                                 <th class="px-3 py-3 text-left text-[10px] font-bold text-white/90 uppercase tracking-wider" style="width: 80px;">N° CAJA</th>
                                 <th class="px-3 py-3 text-left text-[10px] font-bold text-white/90 uppercase tracking-wider" style="width: 85px;">N° DE CARPETA</th>
@@ -141,7 +165,15 @@
                                         ])->toArray(),
                                     ];
                                 @endphp
-                                <tr class="group transition-colors duration-150 hover:bg-blue-50/40 dark:hover:bg-blue-900/10">
+                                <tr class="group transition-colors duration-150 hover:bg-blue-50/40 dark:hover:bg-blue-900/10"
+                                    :class="isSelected({{ $note->id }}) ? 'bg-blue-50/60 dark:bg-blue-900/20' : ''">
+                                    <td class="px-3 py-2.5 text-center">
+                                        @if($note->isBorrador() && auth()->user()->can('send', $note))
+                                            <input type="checkbox" class="abc-checkbox"
+                                                   :checked="isSelected({{ $note->id }})"
+                                                   @change="toggleOne({{ $note->id }})">
+                                        @endif
+                                    </td>
                                     <td class="px-3 py-2.5 text-xs font-medium" style="color: var(--text-muted);">{{ $notes->firstItem() + $index }}</td>
                                     <td class="px-3 py-2.5 text-xs font-bold" style="color: var(--text-primary);">{{ $note->box->box_number ?? '-' }}</td>
                                     <td class="px-3 py-2.5 text-xs" style="color: var(--text-secondary);">{{ $note->folder_number ?? '-' }}</td>
@@ -246,7 +278,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="14" class="text-center py-16" style="border: none;">
+                                    <td colspan="15" class="text-center py-16" style="border: none;">
                                         <div class="flex flex-col items-center gap-3">
                                             <div class="w-16 h-16 rounded-full flex items-center justify-center" style="background-color: var(--surface-border-light);">
                                                 <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" style="color: var(--text-muted);"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m6.75 12H9.75m3 0H9.75m0 0V18m-6-13.5V18a2.25 2.25 0 0 0 2.25 2.25h9a2.25 2.25 0 0 0 2.25-2.25V6.108c0-.591-.239-1.16-.659-1.575l-2.847-2.784A2.25 2.25 0 0 0 12.172 1.5H8.25A2.25 2.25 0 0 0 6 3.75Z"/></svg>
@@ -313,6 +345,11 @@
                         {{-- Header del card --}}
                         <div class="flex items-center justify-between mb-2">
                             <div class="flex items-center gap-2">
+                                @if($note->isBorrador() && auth()->user()->can('send', $note))
+                                    <input type="checkbox" class="abc-checkbox"
+                                           :checked="isSelected({{ $note->id }})"
+                                           @change="toggleOne({{ $note->id }})">
+                                @endif
                                 <span class="text-xs font-bold px-2 py-0.5 rounded-md" style="background: linear-gradient(135deg, var(--abc-navy), var(--abc-navy-light)); color: white;">
                                     {{ $note->box->box_number ?? '-' }}
                                 </span>
@@ -947,8 +984,6 @@
         </div>
     </div>
 
-</div>
-
     {{-- ═══ Estilos de botones profesionales ═══ --}}
     <style>
         [x-cloak] { display: none !important; }
@@ -1169,10 +1204,137 @@
         .max-h-\[65vh\]::-webkit-scrollbar-thumb { background: rgba(100,116,139,0.35); border-radius: 4px; }
         .max-h-\[70vh\]::-webkit-scrollbar-thumb:hover,
         .max-h-\[65vh\]::-webkit-scrollbar-thumb:hover { background: rgba(100,116,139,0.55); }
+
+        /* Checkbox de selección de documentos */
+        .abc-checkbox {
+            width: 1.05rem;
+            height: 1.05rem;
+            border-radius: 0.3rem;
+            border: 1.5px solid var(--surface-border, #cbd5e1);
+            accent-color: royalblue;
+            cursor: pointer;
+            vertical-align: middle;
+        }
+        .abc-checkbox:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        /* Botón "Enviar" animado (Uiverse by adamgiebl) — scoped a .abc-send-btn */
+        .abc-send-btn {
+            font-family: inherit;
+            font-size: 15px;
+            background: royalblue;
+            color: white;
+            padding: 0.55em 1em;
+            padding-left: 0.85em;
+            display: flex;
+            align-items: center;
+            border: none;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.2s;
+            cursor: pointer;
+            box-shadow: 0 4px 12px -2px rgba(65, 105, 225, 0.45);
+        }
+        .abc-send-btn span {
+            display: block;
+            margin-left: 0.3em;
+            transition: all 0.3s ease-in-out;
+        }
+        .abc-send-btn svg {
+            display: block;
+            transform-origin: center center;
+            transition: transform 0.3s ease-in-out;
+        }
+        .abc-send-btn:hover:not(:disabled) .svg-wrapper {
+            animation: abc-fly-1 0.6s ease-in-out infinite alternate;
+        }
+        .abc-send-btn:hover:not(:disabled) svg {
+            transform: translateX(1.2em) rotate(45deg) scale(1.1);
+        }
+        .abc-send-btn:hover:not(:disabled) span {
+            transform: translateX(5em);
+        }
+        .abc-send-btn:active:not(:disabled) { transform: scale(0.95); }
+        .abc-send-btn:disabled { opacity: 0.55; cursor: not-allowed; box-shadow: none; }
+
+        @keyframes abc-fly-1 {
+            from { transform: translateY(0.1em); }
+            to   { transform: translateY(-0.1em); }
+        }
     </style>
+
+    {{-- ═══ MODAL: ENVIAR PARA VERIFICACIÓN ═══ --}}
+    <div x-show="sendModalOpen" x-cloak
+         class="fixed inset-0 z-[60] flex items-center justify-center p-4"
+         style="background: rgba(15, 23, 42, 0.55);"
+         @click.self="closeSendModal()">
+        <div x-show="sendModalOpen"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 translate-y-3 scale-95"
+             x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+             class="w-full max-w-md rounded-2xl overflow-hidden shadow-2xl"
+             style="background-color: var(--surface-card);">
+
+            <div class="gradient-navy px-5 py-4 flex items-center gap-2.5">
+                <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5"/></svg>
+                <h3 class="text-white font-bold text-base">Enviar para verificación</h3>
+            </div>
+
+            <form method="POST" action="{{ route('notes.bulk-send') }}" x-ref="bulkSendForm" @submit.prevent="submitSend()">
+                @csrf
+                <template x-for="id in selectedIds" :key="id">
+                    <input type="hidden" name="note_ids[]" :value="id">
+                </template>
+
+                <div class="p-5 space-y-4">
+                    <p class="text-sm" style="color: var(--text-secondary);">
+                        Se enviarán <strong x-text="selectedIds.length" style="color: var(--text-primary);"></strong>
+                        documento(s) seleccionado(s). Indique a qué verificador se enviarán para su revisión:
+                    </p>
+
+                    <div>
+                        <label class="abc-label">Verificador destinatario *</label>
+                        <select name="assigned_to" x-model="sendAssignedTo" class="abc-input" required>
+                            <option value="">-- Seleccione a quién enviar --</option>
+                            @foreach($verifiers as $v)
+                                <option value="{{ $v->id }}">{{ $v->name }}{{ $v->role === 'ADMIN' ? ' (Administrador)' : '' }}</option>
+                            @endforeach
+                        </select>
+                        @if($verifiers->isEmpty())
+                            <p class="text-xs text-red-500 mt-1.5">No hay usuarios con permiso de verificación disponibles.</p>
+                        @endif
+                    </div>
+                </div>
+
+                <div class="px-5 py-4 flex items-center justify-end gap-3 border-t" style="background-color: var(--surface-card-hover); border-color: var(--surface-border);">
+                    <button type="button" @click="closeSendModal()"
+                            class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-colors duration-200"
+                            style="color: var(--text-secondary); background-color: var(--surface-input);">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="abc-send-btn" :disabled="!sendAssignedTo || sending || {{ $verifiers->isEmpty() ? 'true' : 'false' }}">
+                        <div class="svg-wrapper-1">
+                            <div class="svg-wrapper">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
+                                    <path fill="none" d="M0 0h24v24H0z"></path>
+                                    <path fill="currentColor" d="M1.946 9.315c-.522-.174-.527-.455.01-.634l19.087-6.362c.529-.176.832.12.684.638l-5.454 19.086c-.15.529-.455.547-.679.045L12 14l6-8-8 6-8.054-2.685z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <span x-text="sending ? 'Enviando...' : 'Enviar'"></span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>{{-- fin x-data="notesPage()" --}}
 
     <script id="notes-recipients-data" type="application/json">
         @json($users->pluck('name')->values())
+    </script>
+
+    <script id="notes-sendable-ids" type="application/json">
+        @json($sendableNoteIds)
     </script>
 
     <script>
@@ -1188,12 +1350,80 @@
                 }
             }
 
+            const sendableNode = document.getElementById('notes-sendable-ids');
+            let sendableIds = [];
+
+            if (sendableNode) {
+                try {
+                    sendableIds = JSON.parse(sendableNode.textContent || '[]');
+                } catch (error) {
+                    sendableIds = [];
+                }
+            }
+
             return {
                 viewing: null,
                 editing: null,
                 submitting: false,
                 navigating: false,
                 recipients: Array.isArray(recipients) ? recipients : [],
+
+                /* ---- Selección y envío masivo ---- */
+                sendableIds: Array.isArray(sendableIds) ? sendableIds.map(Number) : [],
+                selectedIds: [],
+                sendModalOpen: false,
+                sendAssignedTo: '',
+                sending: false,
+
+                toggleOne(id) {
+                    id = Number(id);
+                    const i = this.selectedIds.indexOf(id);
+                    if (i === -1) {
+                        this.selectedIds.push(id);
+                    } else {
+                        this.selectedIds.splice(i, 1);
+                    }
+                },
+                isSelected(id) {
+                    return this.selectedIds.includes(Number(id));
+                },
+                allSelected() {
+                    return this.sendableIds.length > 0
+                        && this.selectedIds.length === this.sendableIds.length;
+                },
+                toggleAll() {
+                    this.selectedIds = this.allSelected() ? [] : [...this.sendableIds];
+                },
+                clearSelection() {
+                    this.selectedIds = [];
+                },
+                openSendModal() {
+                    if (this.selectedIds.length === 0) {
+                        if (Alpine.store('toasts')) {
+                            Alpine.store('toasts').error('Seleccione al menos un documento.');
+                        }
+                        return;
+                    }
+                    this.sendAssignedTo = '';
+                    this.sending = false;
+                    this.sendModalOpen = true;
+                    document.body.style.overflow = 'hidden';
+                },
+                closeSendModal() {
+                    this.sendModalOpen = false;
+                    this.sending = false;
+                    document.body.style.overflow = '';
+                },
+                submitSend() {
+                    if (!this.sendAssignedTo) {
+                        if (Alpine.store('toasts')) {
+                            Alpine.store('toasts').error('Seleccione a quién enviar para verificación.');
+                        }
+                        return;
+                    }
+                    this.sending = true;
+                    this.$refs.bulkSendForm.submit();
+                },
 
                 isValidRecipient(value) {
                     if (!value) return false;
@@ -1225,6 +1455,7 @@
                 close() {
                     this.viewing = null;
                     this.editing = null;
+                    this.sendModalOpen = false;
                     this.submitting = false;
                     document.body.style.overflow = '';
                 },

@@ -26,6 +26,7 @@ class InternalNote extends Model
         'status',
         'rejection_reason',
         'created_by',
+        'assigned_to',
         'verified_by',
         'verified_at',
     ];
@@ -100,6 +101,11 @@ class InternalNote extends Model
     public function verifier(): BelongsTo
     {
         return $this->belongsTo(User::class, 'verified_by');
+    }
+
+    public function assignee(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'assigned_to');
     }
 
     public function attachments(): HasMany

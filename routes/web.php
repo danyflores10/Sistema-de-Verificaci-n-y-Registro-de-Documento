@@ -44,6 +44,7 @@ Route::middleware(['auth', 'active'])->group(function () {
     // ========================================
     // NOTAS INTERNAS
     // ========================================
+    Route::post('/notes/bulk-send', [InternalNoteController::class, 'bulkSend'])->name('notes.bulk-send');
     Route::resource('notes', InternalNoteController::class);
     Route::post('/notes/{note}/send', [InternalNoteController::class, 'send'])->name('notes.send');
     Route::delete('/attachments/{attachment}', [InternalNoteController::class, 'deleteAttachment'])->name('attachments.destroy');

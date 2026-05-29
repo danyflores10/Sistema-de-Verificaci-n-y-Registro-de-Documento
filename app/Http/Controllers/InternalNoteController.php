@@ -59,13 +59,30 @@ class InternalNoteController extends Controller
             $query->where('created_by', $createdBy);
         }
 
+        // IDs de TODOS los documentos enviables (BORRADOR) que coinciden con los
+        // filtros actuales, en todas las páginas. Permite "seleccionar todos" a
+        // través de la paginación. La consulta ya está acotada al propietario si
+        // el usuario es USUARIO, y solo los BORRADOR son enviables.
+        $sendableNoteIds = (clone $query)
+            ->where('status', InternalNote::STATUS_BORRADOR)
+            ->pluck('id')
+            ->values();
+
         $notes = $query->latest('note_date')->paginate(15)->withQueryString();
         $boxes = Box::orderBy('box_number')->get();
         $users = \App\Models\User::where('is_active', true)
                                  ->orderBy('name')
                                  ->get(['id', 'name', 'role']);
 
-        return view('notes.index', compact('notes', 'boxes', 'users'));
+        // Verificadores disponibles para el envío masivo (usuarios activos
+        // con el módulo de verificación habilitado).
+        $verifiers = \App\Models\User::where('is_active', true)
+                                     ->orderBy('name')
+                                     ->get(['id', 'name', 'role', 'allowed_modules'])
+                                     ->filter(fn ($u) => $u->hasModule('verification'))
+                                     ->values();
+
+        return view('notes.index', compact('notes', 'boxes', 'users', 'verifiers', 'sendableNoteIds'));
     }
 
     public function create()
@@ -310,6 +327,71 @@ class InternalNoteController extends Controller
 
         return redirect()->route('notes.show', $note)
                          ->with('success', 'Documento enviado para revisión.');
+    }
+
+    /**
+     * Envío masivo de documentos a un verificador (BORRADOR → ENVIADO).
+     * Recibe una lista de IDs seleccionados y el verificador destinatario.
+     */
+    public function bulkSend(Request $request)
+    {
+        $validated = $request->validate([
+            'note_ids'    => 'required|array|min:1',
+            'note_ids.*'  => 'integer|exists:internal_notes,id',
+            'assigned_to' => 'required|integer|exists:users,id',
+        ], [
+            'note_ids.required'    => 'Debe seleccionar al menos un documento.',
+            'note_ids.array'       => 'La selección de documentos no es válida.',
+            'note_ids.min'         => 'Debe seleccionar al menos un documento.',
+            'note_ids.*.exists'    => 'Uno de los documentos seleccionados no existe.',
+            'assigned_to.required' => 'Debe seleccionar a quién enviar para verificación.',
+            'assigned_to.exists'   => 'El verificador seleccionado no es válido.',
+        ]);
+
+        // El destinatario debe ser un usuario activo con módulo de verificación.
+        $assignee = \App\Models\User::where('is_active', true)->find($validated['assigned_to']);
+
+        if (! $assignee || ! $assignee->hasModule('verification')) {
+            return back()->with('error', 'El usuario seleccionado no puede verificar documentos.');
+        }
+
+        $notes = InternalNote::whereIn('id', $validated['note_ids'])->get();
+
+        $sent    = 0;
+        $skipped = 0;
+
+        foreach ($notes as $note) {
+            // Solo se envían los BORRADOR sobre los que el usuario tiene permiso.
+            if (! $note->isBorrador() || $request->user()->cannot('send', $note)) {
+                $skipped++;
+                continue;
+            }
+
+            $old = ['status' => $note->status, 'assigned_to' => $note->assigned_to];
+
+            $note->update([
+                'status'      => InternalNote::STATUS_ENVIADO,
+                'assigned_to' => $assignee->id,
+            ]);
+
+            AuditLog::record('ENVIAR', 'internal_notes', $note->id, $old, [
+                'status'      => InternalNote::STATUS_ENVIADO,
+                'assigned_to' => $assignee->id,
+            ]);
+
+            $sent++;
+        }
+
+        if ($sent === 0) {
+            return back()->with('error', 'No se envió ningún documento. Solo se pueden enviar documentos en estado BORRADOR.');
+        }
+
+        $message = "Se enviaron {$sent} documento(s) a {$assignee->name} para verificación.";
+        if ($skipped > 0) {
+            $message .= " {$skipped} omitido(s) por no estar en estado BORRADOR.";
+        }
+
+        return back()->with('success', $message);
     }
 
     /**
