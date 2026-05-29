@@ -21,13 +21,19 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        // Timeouts extendidos para subidas grandes (hasta 5000MB).
+        // Timeouts y memoria extendidos para subidas grandes (hasta 5000MB).
+        // IMPORTANTE: solo en peticiones web. En consola (php artisan serve,
+        // colas, scheduler, tinker) son procesos de larga duración y aplicar
+        // set_time_limit(1800) los mataría a los 30 min con
+        // "Maximum execution time of 1800 seconds exceeded".
         // NOTA: upload_max_filesize y post_max_size son PHP_INI_PERDIR — solo
         // surten efecto desde .user.ini / .htaccess / php.ini, no aquí.
-        @ini_set('max_execution_time', '1800');
-        @ini_set('max_input_time', '1800');
-        @ini_set('memory_limit', '5200M');
-        @set_time_limit(1800);
+        if (! $this->app->runningInConsole()) {
+            @ini_set('max_execution_time', '1800');
+            @ini_set('max_input_time', '1800');
+            @ini_set('memory_limit', '5200M');
+            @set_time_limit(1800);
+        }
 
         // Registrar Policies
         Gate::policy(Box::class, BoxPolicy::class);
