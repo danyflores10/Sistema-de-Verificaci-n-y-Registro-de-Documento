@@ -43,6 +43,18 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // ==============================
+        // USUARIO VISUALIZADOR (SOLO LECTURA)
+        // ==============================
+        User::create([
+            'name'            => 'Visualizador',
+            'email'           => 'visualizador@correos.bo',
+            'password'        => Hash::make('Visual2026*'),
+            'role'            => User::ROLE_VISUALIZADOR,
+            'is_active'       => true,
+            'allowed_modules' => User::VISUALIZADOR_MODULES,
+        ]);
+
+        // ==============================
         // CAJAS DE EJEMPLO
         // ==============================
         $caja1 = Box::create([

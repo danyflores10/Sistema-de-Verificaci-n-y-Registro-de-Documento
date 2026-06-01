@@ -73,9 +73,13 @@
                             Rol <span class="text-red-500">*</span>
                         </label>
                         <select name="role" id="role" required class="abc-input">
-                            <option value="USUARIO" @selected(old('role') === 'USUARIO')>USUARIO</option>
-                            <option value="ADMIN" @selected(old('role') === 'ADMIN')>ADMIN</option>
+                            @foreach(\App\Models\User::ASSIGNABLE_ROLES as $value => $label)
+                                <option value="{{ $value }}" @selected(old('role', 'USUARIO') === $value)>{{ $label }}</option>
+                            @endforeach
                         </select>
+                        <p class="text-xs mt-1.5" style="color: var(--text-muted)">
+                            <strong>Visualizador:</strong> solo puede ver documentos y abrir los PDF. No puede crear, editar ni eliminar nada.
+                        </p>
                         @error('role')
                             <p class="text-red-500 text-xs mt-1.5 flex items-center gap-1">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">

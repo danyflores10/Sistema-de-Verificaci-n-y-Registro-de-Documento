@@ -52,6 +52,34 @@ class User extends Authenticatable
         'log-viewer'   => 'Log Viewer',
     ];
 
+    /* ---- Roles del sistema ---- */
+
+    public const ROLE_ADMIN        = 'ADMIN';
+    public const ROLE_USUARIO      = 'USUARIO';
+    public const ROLE_VISUALIZADOR = 'VISUALIZADOR';
+
+    /**
+     * Roles que un administrador puede asignar desde la gestión de usuarios,
+     * con su etiqueta legible. (SUPER_ADMIN es heredado y no se asigna.)
+     */
+    public const ASSIGNABLE_ROLES = [
+        self::ROLE_USUARIO      => 'Usuario',
+        self::ROLE_ADMIN        => 'Administrador',
+        self::ROLE_VISUALIZADOR => 'Visualizador (solo lectura)',
+    ];
+
+    /**
+     * Módulos del menú que un Visualizador puede llegar a ver. Es un rol de
+     * SOLO LECTURA, por lo que nunca accede a módulos de escritura o
+     * administración (usuarios, permisos, importar, verificación, etc.).
+     */
+    public const VISUALIZADOR_MODULES = [
+        'dashboard',
+        'boxes',
+        'notes',
+        'reports',
+    ];
+
     /* ---- Helpers de módulos ---- */
 
     /**
@@ -61,6 +89,12 @@ class User extends Authenticatable
     public function getAllowedModules(): array
     {
         $availableModules = array_keys(self::ALL_MODULES);
+
+        // El Visualizador es de SOLO LECTURA: pase lo que pase, solo puede ver
+        // los módulos permitidos para su rol (nunca módulos de administración).
+        if ($this->isVisualizador()) {
+            $availableModules = array_values(array_intersect($availableModules, self::VISUALIZADOR_MODULES));
+        }
 
         if (is_null($this->allowed_modules)) {
             return $availableModules;
@@ -98,6 +132,11 @@ class User extends Authenticatable
     public function isUsuario(): bool
     {
         return $this->role === 'USUARIO';
+    }
+
+    public function isVisualizador(): bool
+    {
+        return $this->role === self::ROLE_VISUALIZADOR;
     }
 
     public function hasRole(string ...$roles): bool

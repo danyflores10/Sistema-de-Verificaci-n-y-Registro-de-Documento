@@ -73,9 +73,13 @@
                             Rol <span class="text-red-500">*</span>
                         </label>
                         <select name="role" id="role" required class="abc-input">
-                            <option value="USUARIO" @selected(old('role', $user->role) === 'USUARIO')>USUARIO</option>
-                            <option value="ADMIN" @selected(old('role', $user->role) === 'ADMIN')>ADMIN</option>
+                            @foreach(\App\Models\User::ASSIGNABLE_ROLES as $value => $label)
+                                <option value="{{ $value }}" @selected(old('role', $user->role) === $value)>{{ $label }}</option>
+                            @endforeach
                         </select>
+                        <p class="text-xs mt-1.5" style="color: var(--text-muted)">
+                            <strong>Visualizador:</strong> solo puede ver documentos y abrir los PDF. No puede crear, editar ni eliminar nada.
+                        </p>
                     </div>
 
                     <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">

@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\Box;
 use App\Models\InternalNote;
+use App\Models\User;
 use App\Policies\BoxPolicy;
 use App\Policies\InternalNotePolicy;
 use Illuminate\Support\Facades\Auth;
@@ -14,6 +15,15 @@ use Laravel\Pulse\Facades\Pulse;
 
 class AppServiceProvider extends ServiceProvider
 {
+    /**
+     * Habilidades de escritura que el rol Visualizador (solo lectura) nunca
+     * puede ejecutar en ninguna parte del sistema.
+     */
+    private const WRITE_ABILITIES = [
+        'create', 'update', 'delete', 'restore', 'forceDelete',
+        'send', 'verify', 'reject',
+    ];
+
     public function register(): void
     {
         //
@@ -39,10 +49,17 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Box::class, BoxPolicy::class);
         Gate::policy(InternalNote::class, InternalNotePolicy::class);
 
-        // Gate global: admin puede hacer todo
-        Gate::before(function ($user, $ability) {
-            // No interceptamos para que las policies específicas manejen la lógica
-            return null;
+        // Candado global de SOLO LECTURA para el rol Visualizador.
+        // Cualquier habilidad de escritura (crear, editar, eliminar, enviar,
+        // verificar, etc.) se niega automáticamente en TODO el sistema, de modo
+        // que los botones (@can) y las acciones (authorize) quedan bloqueados
+        // sin tener que tocar cada policy individualmente.
+        Gate::before(function (User $user, string $ability) {
+            if ($user->isVisualizador() && in_array($ability, self::WRITE_ABILITIES, true)) {
+                return false;
+            }
+
+            return null; // las policies específicas resuelven el resto
         });
 
         // Laravel Pulse - Solo ADMIN puede acceder

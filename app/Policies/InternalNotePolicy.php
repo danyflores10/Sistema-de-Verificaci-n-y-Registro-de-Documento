@@ -14,7 +14,8 @@ class InternalNotePolicy
 
     public function view(User $user, InternalNote $note): bool
     {
-        if ($user->isAdmin()) {
+        // El admin y el visualizador (solo lectura) pueden ver todo.
+        if ($user->isAdmin() || $user->isVisualizador()) {
             return true;
         }
         return $note->created_by === $user->id;

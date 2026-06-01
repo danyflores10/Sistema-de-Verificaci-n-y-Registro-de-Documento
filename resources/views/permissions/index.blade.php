@@ -38,6 +38,7 @@
                             <option value="">-- Todos --</option>
                             <option value="ADMIN" @selected(request('role') === 'ADMIN')>ADMIN</option>
                             <option value="USUARIO" @selected(request('role') === 'USUARIO')>USUARIO</option>
+                            <option value="VISUALIZADOR" @selected(request('role') === 'VISUALIZADOR')>VISUALIZADOR</option>
                         </select>
                     </div>
                     <div class="flex gap-2">
@@ -72,6 +73,8 @@
                                         <span class="font-semibold text-sm sm:text-base truncate" style="color: var(--text-primary)">{{ $user->name }}</span>
                                         @if($user->role === 'ADMIN')
                                             <span class="abc-badge bg-red-50 text-red-700 border border-red-200 text-[10px] flex-shrink-0">ADMIN</span>
+                                        @elseif($user->role === 'VISUALIZADOR')
+                                            <span class="abc-badge bg-purple-50 text-purple-700 border border-purple-200 text-[10px] flex-shrink-0">VISUALIZADOR</span>
                                         @else
                                             <span class="abc-badge bg-blue-50 text-blue-700 border border-blue-200 text-[10px] flex-shrink-0">USUARIO</span>
                                         @endif
@@ -155,20 +158,37 @@
                                 <p class="text-xs" style="color: var(--text-muted)">Desmarca los módulos que quieras quitar del menú de este usuario. El Dashboard siempre es visible.</p>
                             </div>
 
+                            @if($user->isVisualizador())
+                                <div class="mb-4 flex items-start gap-2 p-3 rounded-lg bg-purple-50 border border-purple-200 dark:bg-purple-900/10 dark:border-purple-800/40">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-600 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                                        <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                                    </svg>
+                                    <p class="text-xs text-purple-700 dark:text-purple-300">
+                                        <strong>Usuario de solo lectura.</strong> Solo puede ver los documentos y abrir los PDF; no puede crear, editar ni eliminar. Los módulos de administración no están disponibles para este rol.
+                                    </p>
+                                </div>
+                            @endif
+
                             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3">
                                 @foreach(\App\Models\User::ALL_MODULES as $key => $label)
                                     @php
                                         $isChecked = in_array($key, $userModules);
                                         $isDashboard = $key === 'dashboard';
+                                        // Para el Visualizador, los módulos fuera de su set de solo lectura
+                                        // no aplican: se muestran deshabilitados.
+                                        $blockedForViewer = $user->isVisualizador() && !in_array($key, \App\Models\User::VISUALIZADOR_MODULES);
+                                        $disabled = $isDashboard || $blockedForViewer;
                                     @endphp
                                     <label class="relative flex items-center gap-2.5 p-3 rounded-lg border cursor-pointer transition-all duration-150 hover:shadow-sm
-                                                  {{ $isDashboard ? 'opacity-50 cursor-not-allowed' : '' }}"
+                                                  {{ $disabled ? 'opacity-50 cursor-not-allowed' : '' }}"
                                            style="border-color: var(--border-primary); background-color: var(--surface-card)">
                                         <input type="checkbox"
                                                name="modules[]"
                                                value="{{ $key }}"
-                                               {{ $isChecked ? 'checked' : '' }}
-                                               {{ $isDashboard ? 'checked disabled' : '' }}
+                                               {{ $isChecked && !$blockedForViewer ? 'checked' : '' }}
+                                               {{ $isDashboard ? 'checked' : '' }}
+                                               {{ $disabled ? 'disabled' : '' }}
                                                class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 transition">
                                         @if($isDashboard)
                                             <input type="hidden" name="modules[]" value="dashboard">
@@ -177,6 +197,8 @@
                                             <span class="text-xs font-semibold block" style="color: var(--text-primary)">{{ $label }}</span>
                                             @if($isDashboard)
                                                 <span class="text-[9px]" style="color: var(--text-muted)">Siempre visible</span>
+                                            @elseif($blockedForViewer)
+                                                <span class="text-[9px]" style="color: var(--text-muted)">Solo lectura</span>
                                             @endif
                                         </div>
                                     </label>

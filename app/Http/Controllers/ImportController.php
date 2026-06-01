@@ -11,11 +11,16 @@ class ImportController extends Controller
 {
     public function index()
     {
+        // El Visualizador es de solo lectura: no puede importar documentos.
+        abort_if(auth()->user()->isVisualizador(), 403, 'No tienes permiso para importar documentos.');
+
         return view('import.index');
     }
 
     public function store(Request $request)
     {
+        abort_if($request->user()->isVisualizador(), 403, 'No tienes permiso para importar documentos.');
+
         $request->validate([
             'file' => 'required|file|mimes:xlsx,xls,csv|max:512000',
         ], [

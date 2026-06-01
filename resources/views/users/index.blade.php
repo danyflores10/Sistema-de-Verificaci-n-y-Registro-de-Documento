@@ -44,6 +44,7 @@
                             <option value="">-- Todos --</option>
                             <option value="ADMIN" @selected(request('role') === 'ADMIN')>ADMIN</option>
                             <option value="USUARIO" @selected(request('role') === 'USUARIO')>USUARIO</option>
+                            <option value="VISUALIZADOR" @selected(request('role') === 'VISUALIZADOR')>VISUALIZADOR</option>
                         </select>
                     </div>
                     <div class="flex gap-2">
@@ -97,6 +98,14 @@
                                                     <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                                                 </svg>
                                                 ADMIN
+                                            </span>
+                                        @elseif($user->role === 'VISUALIZADOR')
+                                            <span class="abc-badge bg-purple-50 text-purple-700 border border-purple-200">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                                                    <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                                                </svg>
+                                                VISUALIZADOR
                                             </span>
                                         @else
                                             <span class="abc-badge bg-blue-50 text-blue-700 border border-blue-200">
@@ -251,6 +260,8 @@
                                 <span class="mobile-card-value">
                                     @if($user->role === 'ADMIN')
                                         <span class="text-red-600 font-bold text-xs">ADMIN</span>
+                                    @elseif($user->role === 'VISUALIZADOR')
+                                        <span class="text-purple-600 font-bold text-xs">VISUALIZADOR</span>
                                     @else
                                         <span class="text-blue-600 font-bold text-xs">USUARIO</span>
                                     @endif
