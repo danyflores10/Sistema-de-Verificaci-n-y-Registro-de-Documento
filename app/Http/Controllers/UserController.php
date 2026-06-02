@@ -48,7 +48,7 @@ class UserController extends Controller
             'name'     => 'required|string|max:150',
             'email'    => 'required|email|max:150|unique:users,email',
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'role'     => 'required|in:ADMIN,USUARIO,VISUALIZADOR',
+            'role'     => 'required|in:ADMIN,VERIFICADOR,OPERADOR,VISUALIZADOR',
         ], [
             'name.required'      => 'El nombre es obligatorio.',
             'email.required'     => 'El correo electrónico es obligatorio.',
@@ -64,10 +64,9 @@ class UserController extends Controller
             'password'  => Hash::make($validated['password']),
             'role'      => $validated['role'],
             'is_active' => true,
-            // El Visualizador (solo lectura) arranca con los módulos de su rol.
-            'allowed_modules' => $validated['role'] === User::ROLE_VISUALIZADOR
-                ? User::VISUALIZADOR_MODULES
-                : null,
+            // Cada rol acotado (Verificador, Operador, Visualizador) arranca con
+            // el menú por defecto de su rol; ADMIN queda sin límite (null).
+            'allowed_modules' => User::defaultModulesForRole($validated['role']),
         ]);
 
         AuditLog::record('CREAR_USUARIO', 'users', $user->id, null, [
@@ -88,16 +87,16 @@ class UserController extends Controller
         $validated = $request->validate([
             'name'  => 'required|string|max:150',
             'email' => 'required|email|max:150|unique:users,email,' . $user->id,
-            'role'  => 'required|in:ADMIN,USUARIO,VISUALIZADOR',
+            'role'  => 'required|in:ADMIN,VERIFICADOR,OPERADOR,VISUALIZADOR',
         ]);
 
         $old = $user->only(['name', 'email', 'role']);
 
-        // Si se promueve a Visualizador y aún no tiene módulos configurados,
-        // se le asignan los de solo lectura por defecto (el menú se ajusta solo
-        // mediante getAllowedModules, pero así queda reflejado en Permisos).
-        if ($validated['role'] === User::ROLE_VISUALIZADOR && is_null($user->allowed_modules)) {
-            $validated['allowed_modules'] = User::VISUALIZADOR_MODULES;
+        // Al cambiar de rol se restablece el menú al conjunto por defecto del
+        // nuevo rol (null = sin límite para ADMIN). Así un usuario nunca arrastra
+        // los módulos del rol anterior.
+        if ($validated['role'] !== $user->role) {
+            $validated['allowed_modules'] = User::defaultModulesForRole($validated['role']);
         }
 
         $user->update($validated);

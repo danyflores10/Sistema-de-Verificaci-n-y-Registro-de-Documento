@@ -157,7 +157,7 @@
                 </div>
             </div>
 
-            @if(auth()->user()->isAdmin())
+            @if(auth()->user()->hasModule('verification'))
             {{-- Pendientes --}}
             <div class="group relative overflow-hidden rounded-2xl p-5 text-white shadow-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl animate-fade-in-up animate-fade-in-up-delay-3"
                  style="background: linear-gradient(135deg, #dc2626 0%, #f87171 100%);">

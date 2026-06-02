@@ -74,12 +74,14 @@
                         </label>
                         <select name="role" id="role" required class="abc-input">
                             @foreach(\App\Models\User::ASSIGNABLE_ROLES as $value => $label)
-                                <option value="{{ $value }}" @selected(old('role', 'USUARIO') === $value)>{{ $label }}</option>
+                                <option value="{{ $value }}" @selected(old('role', \App\Models\User::ROLE_VERIFICADOR) === $value)>{{ $label }}</option>
                             @endforeach
                         </select>
-                        <p class="text-xs mt-1.5" style="color: var(--text-muted)">
-                            <strong>Visualizador:</strong> solo puede ver documentos y abrir los PDF. No puede crear, editar ni eliminar nada.
-                        </p>
+                        <div class="text-xs mt-1.5 space-y-0.5" style="color: var(--text-muted)">
+                            <p><strong>Verificador:</strong> registra y gestiona documentos (cajas, documentos, importar) y reportes.</p>
+                            <p><strong>Operador:</strong> revisa y aprueba los documentos enviados (verificación y aprobaciones) y reportes.</p>
+                            <p><strong>Visualizador:</strong> solo lectura; ve documentos y abre los PDF, sin crear ni editar.</p>
+                        </div>
                         @error('role')
                             <p class="text-red-500 text-xs mt-1.5 flex items-center gap-1">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">

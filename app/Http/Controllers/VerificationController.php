@@ -33,6 +33,20 @@ class VerificationController extends Controller
     }
 
     /**
+     * Conteo de documentos pendientes de verificación (estado ENVIADO).
+     * Lo consume el menú lateral por sondeo para actualizar el badge en vivo
+     * sin recargar la página. Solo accesible para quien verifica.
+     */
+    public function pendingCount(Request $request)
+    {
+        abort_unless($request->user()->hasModule('verification'), 403);
+
+        return response()->json([
+            'count' => InternalNote::where('status', InternalNote::STATUS_ENVIADO)->count(),
+        ]);
+    }
+
+    /**
      * Verificar (aprobar) una nota
      */
     public function verify(Request $request, InternalNote $note)

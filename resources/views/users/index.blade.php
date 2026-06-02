@@ -42,9 +42,9 @@
                         <label class="abc-label">Rol</label>
                         <select name="role" class="abc-input">
                             <option value="">-- Todos --</option>
-                            <option value="ADMIN" @selected(request('role') === 'ADMIN')>ADMIN</option>
-                            <option value="USUARIO" @selected(request('role') === 'USUARIO')>USUARIO</option>
-                            <option value="VISUALIZADOR" @selected(request('role') === 'VISUALIZADOR')>VISUALIZADOR</option>
+                            @foreach(\App\Models\User::ASSIGNABLE_ROLES as $roleValue => $roleLabel)
+                                <option value="{{ $roleValue }}" @selected(request('role') === $roleValue)>{{ $roleLabel }}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="flex gap-2">
@@ -107,12 +107,19 @@
                                                 </svg>
                                                 VISUALIZADOR
                                             </span>
+                                        @elseif($user->role === 'OPERADOR')
+                                            <span class="abc-badge bg-amber-50 text-amber-700 border border-amber-200">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fill-rule="evenodd" d="M16.403 12.652a3 3 0 000-5.304 3 3 0 00-3.751-3.751 3 3 0 00-5.305 0 3 3 0 00-3.751 3.751 3 3 0 000 5.305 3 3 0 003.751 3.751 3 3 0 005.305 0 3 3 0 003.751-3.751zm-2.546-4.46a.75.75 0 00-1.214-.883l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/>
+                                                </svg>
+                                                OPERADOR
+                                            </span>
                                         @else
                                             <span class="abc-badge bg-blue-50 text-blue-700 border border-blue-200">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
                                                     <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
                                                 </svg>
-                                                USUARIO
+                                                VERIFICADOR
                                             </span>
                                         @endif
                                     </td>
@@ -262,8 +269,10 @@
                                         <span class="text-red-600 font-bold text-xs">ADMIN</span>
                                     @elseif($user->role === 'VISUALIZADOR')
                                         <span class="text-purple-600 font-bold text-xs">VISUALIZADOR</span>
+                                    @elseif($user->role === 'OPERADOR')
+                                        <span class="text-amber-600 font-bold text-xs">OPERADOR</span>
                                     @else
-                                        <span class="text-blue-600 font-bold text-xs">USUARIO</span>
+                                        <span class="text-blue-600 font-bold text-xs">VERIFICADOR</span>
                                     @endif
                                 </span>
                             </div>

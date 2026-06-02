@@ -55,7 +55,8 @@ class User extends Authenticatable
     /* ---- Roles del sistema ---- */
 
     public const ROLE_ADMIN        = 'ADMIN';
-    public const ROLE_USUARIO      = 'USUARIO';
+    public const ROLE_VERIFICADOR  = 'VERIFICADOR';   // antes "USUARIO": gestión documental
+    public const ROLE_OPERADOR     = 'OPERADOR';      // revisa / aprueba documentos
     public const ROLE_VISUALIZADOR = 'VISUALIZADOR';
 
     /**
@@ -63,9 +64,32 @@ class User extends Authenticatable
      * con su etiqueta legible. (SUPER_ADMIN es heredado y no se asigna.)
      */
     public const ASSIGNABLE_ROLES = [
-        self::ROLE_USUARIO      => 'Usuario',
+        self::ROLE_VERIFICADOR  => 'Verificador',
+        self::ROLE_OPERADOR     => 'Operador',
         self::ROLE_ADMIN        => 'Administrador',
         self::ROLE_VISUALIZADOR => 'Visualizador (solo lectura)',
+    ];
+
+    /**
+     * Menú del rol VERIFICADOR: gestión documental (cajas, documentos e
+     * importación) más reportes. Registra y envía documentos para su revisión.
+     */
+    public const VERIFICADOR_MODULES = [
+        'dashboard',
+        'boxes',
+        'notes',
+        'import',
+        'reports',
+    ];
+
+    /**
+     * Menú del rol OPERADOR: revisión y aprobación de documentos enviados
+     * (Verificación y Aprobaciones) más reportes.
+     */
+    public const OPERADOR_MODULES = [
+        'dashboard',
+        'verification',
+        'reports',
     ];
 
     /**
@@ -80,6 +104,21 @@ class User extends Authenticatable
         'reports',
     ];
 
+    /**
+     * Conjunto de módulos por defecto de un rol acotado, o null si el rol no
+     * tiene límite de menú (ADMIN / SUPER_ADMIN ven todo). Sirve tanto para
+     * fijar el menú del rol como para inicializar sus permisos.
+     */
+    public static function defaultModulesForRole(string $role): ?array
+    {
+        return match ($role) {
+            self::ROLE_VERIFICADOR  => self::VERIFICADOR_MODULES,
+            self::ROLE_OPERADOR     => self::OPERADOR_MODULES,
+            self::ROLE_VISUALIZADOR => self::VISUALIZADOR_MODULES,
+            default                 => null,
+        };
+    }
+
     /* ---- Helpers de módulos ---- */
 
     /**
@@ -90,10 +129,11 @@ class User extends Authenticatable
     {
         $availableModules = array_keys(self::ALL_MODULES);
 
-        // El Visualizador es de SOLO LECTURA: pase lo que pase, solo puede ver
-        // los módulos permitidos para su rol (nunca módulos de administración).
-        if ($this->isVisualizador()) {
-            $availableModules = array_values(array_intersect($availableModules, self::VISUALIZADOR_MODULES));
+        // Los roles acotados (Verificador, Operador, Visualizador) nunca ven
+        // módulos fuera del conjunto definido para su rol, pase lo que pase con
+        // sus permisos individuales. ADMIN / SUPER_ADMIN no tienen límite.
+        if ($cap = self::defaultModulesForRole($this->role)) {
+            $availableModules = array_values(array_intersect($availableModules, $cap));
         }
 
         if (is_null($this->allowed_modules)) {
@@ -129,9 +169,14 @@ class User extends Authenticatable
         return $this->role === 'ADMIN';
     }
 
-    public function isUsuario(): bool
+    public function isVerificador(): bool
     {
-        return $this->role === 'USUARIO';
+        return $this->role === self::ROLE_VERIFICADOR;
+    }
+
+    public function isOperador(): bool
+    {
+        return $this->role === self::ROLE_OPERADOR;
     }
 
     public function isVisualizador(): bool

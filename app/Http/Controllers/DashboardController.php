@@ -15,9 +15,9 @@ class DashboardController extends Controller
 
         $scopedNotes = InternalNote::query();
 
-        // El USUARIO solo ve sus propios documentos; ADMIN y VISUALIZADOR
-        // (solo lectura) ven las estadísticas globales del sistema.
-        if ($user->isUsuario()) {
+        // El VERIFICADOR solo ve sus propios documentos; ADMIN, OPERADOR y
+        // VISUALIZADOR ven las estadísticas globales del sistema.
+        if ($user->isVerificador()) {
             $scopedNotes->where('internal_notes.created_by', $user->id);
         }
 

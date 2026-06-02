@@ -96,9 +96,9 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" />
             </svg>
             <span x-show="sidebarOpen" class="truncate">Verificación</span>
-            @if(isset($pendingCount) && $pendingCount > 0)
-                <span class="ml-auto bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{{ $pendingCount }}</span>
-            @endif
+            {{-- Badge dinámico: se actualiza solo por sondeo (ver script al final del bloque). --}}
+            <span id="verif-badge"
+                  class="ml-auto bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full {{ (isset($pendingCount) && $pendingCount > 0) ? '' : 'hidden' }}">{{ (int) ($pendingCount ?? 0) }}</span>
         </a>
         <a href="{{ route('verification.approved') }}"
            class="abc-sidebar-link {{ request()->routeIs('verification.approved') ? 'active' : '' }}">
@@ -107,6 +107,73 @@
             </svg>
             <span x-show="sidebarOpen" class="truncate">Aprobaciones</span>
         </a>
+
+        {{-- Actualización en vivo del contador de pendientes (sondeo cada 8s).
+             No requiere WebSocket ni servidores extra: funciona con php artisan serve. --}}
+        <script>
+        (function () {
+            const ENDPOINT = "{{ route('verification.pending-count') }}";
+            const INTERVAL = 8000;
+            let lastCount = {{ (int) ($pendingCount ?? 0) }};
+            let started = false;
+
+            function render(count) {
+                const el = document.getElementById('verif-badge');
+                if (!el) return;
+                el.textContent = count;
+                el.classList.toggle('hidden', count <= 0);
+            }
+
+            function notify(nuevos) {
+                if (!window.Swal) return;
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'info',
+                    title: nuevos === 1
+                        ? 'Tienes 1 documento nuevo por verificar'
+                        : `Tienes ${nuevos} documentos nuevos por verificar`,
+                    showConfirmButton: false,
+                    timer: 5000,
+                    timerProgressBar: true,
+                });
+            }
+
+            async function poll() {
+                // No consultar si la pestaña está oculta (ahorra peticiones).
+                if (document.hidden) return;
+                try {
+                    const res = await fetch(ENDPOINT, {
+                        headers: { 'Accept': 'application/json' },
+                        credentials: 'same-origin',
+                    });
+                    if (!res.ok) return;
+                    const data = await res.json();
+                    const count = Number(data.count) || 0;
+                    if (count > lastCount) {
+                        notify(count - lastCount);
+                    }
+                    lastCount = count;
+                    render(count);
+                } catch (e) {
+                    // Silencio: se reintenta en el siguiente ciclo.
+                }
+            }
+
+            function start() {
+                if (started) return;
+                started = true;
+                render(lastCount);
+                setInterval(poll, INTERVAL);
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', start);
+            } else {
+                start();
+            }
+        })();
+        </script>
         @endif
 
         @if(auth()->user()->hasModule('users'))

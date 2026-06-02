@@ -32,14 +32,27 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // ==============================
-        // USUARIO DE EJEMPLO
+        // VERIFICADOR DE EJEMPLO (gestión documental)
         // ==============================
-        $usuario = User::create([
-            'name'      => 'Juan Pérez',
-            'email'     => 'juan.perez@correos.bo',
-            'password'  => Hash::make('Usuario2026*'),
-            'role'      => 'USUARIO',
-            'is_active' => true,
+        $verificador = User::create([
+            'name'            => 'Juan Pérez',
+            'email'           => 'juan.perez@correos.bo',
+            'password'        => Hash::make('Usuario2026*'),
+            'role'            => User::ROLE_VERIFICADOR,
+            'is_active'       => true,
+            'allowed_modules' => User::VERIFICADOR_MODULES,
+        ]);
+
+        // ==============================
+        // OPERADOR DE EJEMPLO (revisión y aprobación)
+        // ==============================
+        User::create([
+            'name'            => 'María López',
+            'email'           => 'maria.lopez@correos.bo',
+            'password'        => Hash::make('Operador2026*'),
+            'role'            => User::ROLE_OPERADOR,
+            'is_active'       => true,
+            'allowed_modules' => User::OPERADOR_MODULES,
         ]);
 
         // ==============================
@@ -87,7 +100,7 @@ class DatabaseSeeder extends Seeder
             'pages'           => 10,
             'observations'    => 'Documentos completos sin observaciones',
             'status'          => 'VERIFICADO',
-            'created_by'      => $usuario->id,
+            'created_by'      => $verificador->id,
             'verified_by'     => $admin->id,
             'verified_at'     => now(),
         ]);
@@ -101,7 +114,7 @@ class DatabaseSeeder extends Seeder
             'pages'           => 5,
             'observations'    => null,
             'status'          => 'ENVIADO',
-            'created_by'      => $usuario->id,
+            'created_by'      => $verificador->id,
         ]);
 
         InternalNote::create([
@@ -113,7 +126,7 @@ class DatabaseSeeder extends Seeder
             'pages'           => 15,
             'observations'    => 'Incluye originales y fotocopias notariadas',
             'status'          => 'BORRADOR',
-            'created_by'      => $usuario->id,
+            'created_by'      => $verificador->id,
         ]);
 
         InternalNote::create([
@@ -126,7 +139,7 @@ class DatabaseSeeder extends Seeder
             'observations'    => null,
             'status'          => 'RECHAZADO',
             'rejection_reason' => 'Falta la firma del director en la última página',
-            'created_by'      => $usuario->id,
+            'created_by'      => $verificador->id,
             'verified_by'     => $admin->id,
             'verified_at'     => now(),
         ]);

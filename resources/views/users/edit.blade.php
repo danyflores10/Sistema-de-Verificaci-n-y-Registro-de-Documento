@@ -77,9 +77,12 @@
                                 <option value="{{ $value }}" @selected(old('role', $user->role) === $value)>{{ $label }}</option>
                             @endforeach
                         </select>
-                        <p class="text-xs mt-1.5" style="color: var(--text-muted)">
-                            <strong>Visualizador:</strong> solo puede ver documentos y abrir los PDF. No puede crear, editar ni eliminar nada.
-                        </p>
+                        <div class="text-xs mt-1.5 space-y-0.5" style="color: var(--text-muted)">
+                            <p><strong>Verificador:</strong> registra y gestiona documentos (cajas, documentos, importar) y reportes.</p>
+                            <p><strong>Operador:</strong> revisa y aprueba los documentos enviados (verificación y aprobaciones) y reportes.</p>
+                            <p><strong>Visualizador:</strong> solo lectura; ve documentos y abre los PDF, sin crear ni editar.</p>
+                            <p class="italic">Al cambiar de rol, el menú se restablece al del nuevo rol.</p>
+                        </div>
                     </div>
 
                     <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">

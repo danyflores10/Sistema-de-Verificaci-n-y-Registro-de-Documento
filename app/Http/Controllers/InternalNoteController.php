@@ -31,8 +31,8 @@ class InternalNoteController extends Controller
         $user  = $request->user();
         $query = InternalNote::with(['box', 'creator', 'verifier', 'attachments']);
 
-        // USUARIO solo ve sus registros
-        if ($user->isUsuario()) {
+        // El VERIFICADOR solo ve sus propios registros
+        if ($user->isVerificador()) {
             $query->where('created_by', $user->id);
         }
 
@@ -62,7 +62,7 @@ class InternalNoteController extends Controller
         // IDs de TODOS los documentos enviables (BORRADOR) que coinciden con los
         // filtros actuales, en todas las páginas. Permite "seleccionar todos" a
         // través de la paginación. La consulta ya está acotada al propietario si
-        // el usuario es USUARIO, y solo los BORRADOR son enviables.
+        // el usuario es VERIFICADOR, y solo los BORRADOR son enviables.
         $sendableNoteIds = (clone $query)
             ->where('status', InternalNote::STATUS_BORRADOR)
             ->pluck('id')

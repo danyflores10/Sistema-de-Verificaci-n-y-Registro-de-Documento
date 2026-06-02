@@ -36,9 +36,9 @@
                         <label class="abc-label">Rol</label>
                         <select name="role" class="abc-input">
                             <option value="">-- Todos --</option>
-                            <option value="ADMIN" @selected(request('role') === 'ADMIN')>ADMIN</option>
-                            <option value="USUARIO" @selected(request('role') === 'USUARIO')>USUARIO</option>
-                            <option value="VISUALIZADOR" @selected(request('role') === 'VISUALIZADOR')>VISUALIZADOR</option>
+                            @foreach(\App\Models\User::ASSIGNABLE_ROLES as $roleValue => $roleLabel)
+                                <option value="{{ $roleValue }}" @selected(request('role') === $roleValue)>{{ $roleLabel }}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="flex gap-2">
@@ -75,8 +75,10 @@
                                             <span class="abc-badge bg-red-50 text-red-700 border border-red-200 text-[10px] flex-shrink-0">ADMIN</span>
                                         @elseif($user->role === 'VISUALIZADOR')
                                             <span class="abc-badge bg-purple-50 text-purple-700 border border-purple-200 text-[10px] flex-shrink-0">VISUALIZADOR</span>
+                                        @elseif($user->role === 'OPERADOR')
+                                            <span class="abc-badge bg-amber-50 text-amber-700 border border-amber-200 text-[10px] flex-shrink-0">OPERADOR</span>
                                         @else
-                                            <span class="abc-badge bg-blue-50 text-blue-700 border border-blue-200 text-[10px] flex-shrink-0">USUARIO</span>
+                                            <span class="abc-badge bg-blue-50 text-blue-700 border border-blue-200 text-[10px] flex-shrink-0">VERIFICADOR</span>
                                         @endif
                                         @if(!$user->is_active)
                                             <span class="abc-badge bg-red-100 text-red-700 border border-red-200 text-[10px] flex-shrink-0">BLOQUEADO</span>
@@ -158,14 +160,21 @@
                                 <p class="text-xs" style="color: var(--text-muted)">Desmarca los módulos que quieras quitar del menú de este usuario. El Dashboard siempre es visible.</p>
                             </div>
 
-                            @if($user->isVisualizador())
-                                <div class="mb-4 flex items-start gap-2 p-3 rounded-lg bg-purple-50 border border-purple-200 dark:bg-purple-900/10 dark:border-purple-800/40">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-600 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
-                                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
-                                        <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                            @php
+                                // Conjunto de módulos fijo del rol (null = ADMIN, sin límite).
+                                $roleCap = \App\Models\User::defaultModulesForRole($user->role);
+                            @endphp
+                            @if($roleCap !== null)
+                                <div class="mb-4 flex items-start gap-2 p-3 rounded-lg {{ $user->isVisualizador() ? 'bg-purple-50 border border-purple-200 dark:bg-purple-900/10 dark:border-purple-800/40' : 'bg-blue-50 border border-blue-200 dark:bg-blue-900/10 dark:border-blue-800/40' }}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 flex-shrink-0 mt-0.5 {{ $user->isVisualizador() ? 'text-purple-600' : 'text-blue-600' }}" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
                                     </svg>
-                                    <p class="text-xs text-purple-700 dark:text-purple-300">
-                                        <strong>Usuario de solo lectura.</strong> Solo puede ver los documentos y abrir los PDF; no puede crear, editar ni eliminar. Los módulos de administración no están disponibles para este rol.
+                                    <p class="text-xs {{ $user->isVisualizador() ? 'text-purple-700 dark:text-purple-300' : 'text-blue-700 dark:text-blue-300' }}">
+                                        @if($user->isVisualizador())
+                                            <strong>Usuario de solo lectura.</strong> Solo puede ver los documentos y abrir los PDF; no puede crear, editar ni eliminar. Los módulos fuera de su rol no están disponibles.
+                                        @else
+                                            <strong>Menú fijo por rol.</strong> El rol <strong>{{ \App\Models\User::ASSIGNABLE_ROLES[$user->role] ?? $user->role }}</strong> solo accede a los módulos de su perfil; los demás aparecen deshabilitados.
+                                        @endif
                                     </p>
                                 </div>
                             @endif
@@ -175,10 +184,10 @@
                                     @php
                                         $isChecked = in_array($key, $userModules);
                                         $isDashboard = $key === 'dashboard';
-                                        // Para el Visualizador, los módulos fuera de su set de solo lectura
-                                        // no aplican: se muestran deshabilitados.
-                                        $blockedForViewer = $user->isVisualizador() && !in_array($key, \App\Models\User::VISUALIZADOR_MODULES);
-                                        $disabled = $isDashboard || $blockedForViewer;
+                                        // En roles acotados, los módulos fuera de su conjunto no aplican:
+                                        // se muestran deshabilitados.
+                                        $blockedForRole = $roleCap !== null && !in_array($key, $roleCap, true);
+                                        $disabled = $isDashboard || $blockedForRole;
                                     @endphp
                                     <label class="relative flex items-center gap-2.5 p-3 rounded-lg border cursor-pointer transition-all duration-150 hover:shadow-sm
                                                   {{ $disabled ? 'opacity-50 cursor-not-allowed' : '' }}"
@@ -186,7 +195,7 @@
                                         <input type="checkbox"
                                                name="modules[]"
                                                value="{{ $key }}"
-                                               {{ $isChecked && !$blockedForViewer ? 'checked' : '' }}
+                                               {{ $isChecked && !$blockedForRole ? 'checked' : '' }}
                                                {{ $isDashboard ? 'checked' : '' }}
                                                {{ $disabled ? 'disabled' : '' }}
                                                class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 transition">
@@ -197,8 +206,8 @@
                                             <span class="text-xs font-semibold block" style="color: var(--text-primary)">{{ $label }}</span>
                                             @if($isDashboard)
                                                 <span class="text-[9px]" style="color: var(--text-muted)">Siempre visible</span>
-                                            @elseif($blockedForViewer)
-                                                <span class="text-[9px]" style="color: var(--text-muted)">Solo lectura</span>
+                                            @elseif($blockedForRole)
+                                                <span class="text-[9px]" style="color: var(--text-muted)">Fuera del rol</span>
                                             @endif
                                         </div>
                                     </label>

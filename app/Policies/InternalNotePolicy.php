@@ -14,8 +14,10 @@ class InternalNotePolicy
 
     public function view(User $user, InternalNote $note): bool
     {
-        // El admin y el visualizador (solo lectura) pueden ver todo.
-        if ($user->isAdmin() || $user->isVisualizador()) {
+        // Pueden ver el detalle de cualquier documento: el admin, el visualizador
+        // (solo lectura) y quien tenga el módulo de verificación (Operador), ya
+        // que necesita revisar los documentos enviados antes de aprobarlos.
+        if ($user->isAdmin() || $user->isVisualizador() || $user->hasModule('verification')) {
             return true;
         }
         return $note->created_by === $user->id;
