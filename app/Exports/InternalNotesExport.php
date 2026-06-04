@@ -38,6 +38,7 @@ class InternalNotesExport implements WithMultipleSheets
         if (!empty($this->filters['date_from'])) $query->where('note_date', '>=', $this->filters['date_from']);
         if (!empty($this->filters['date_to']))   $query->where('note_date', '<=', $this->filters['date_to']);
         if (!empty($this->filters['created_by']))$query->where('created_by', $this->filters['created_by']);
+        if (!empty($this->filters['file_type'])) $query->withFileType($this->filters['file_type']);
 
         return $query->orderBy('note_date', 'desc')->get();
     }

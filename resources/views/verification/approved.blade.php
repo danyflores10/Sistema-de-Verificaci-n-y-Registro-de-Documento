@@ -20,7 +20,7 @@
     </div>
 
     <div class="py-6">
-        <div class="max-w-[96rem] mx-auto px-3 sm:px-4 lg:px-6 xl:px-8 space-y-5">
+        <div class="w-full space-y-5">
 
             {{-- Filtros --}}
             <div class="abc-card p-5 animate-fade-in-up">

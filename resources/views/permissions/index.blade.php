@@ -14,7 +14,7 @@
     </div>
 
     <div class="py-6">
-        <div class="max-w-[96rem] mx-auto px-3 sm:px-4 lg:px-6 xl:px-8 space-y-6">
+        <div class="w-full space-y-6">
 
             {{-- Filtros --}}
             <div class="abc-filter-bar">
@@ -218,7 +218,10 @@
                                 <button @click="expanded = false" type="button" class="abc-btn abc-btn-ghost">
                                     Cancelar
                                 </button>
-                                <button type="button" onclick="confirmarGuardarModulos({{ $user->id }}, '{{ addslashes($user->name) }}')"
+                                <button type="button"
+                                        data-user-id="{{ $user->id }}"
+                                        data-user-name="{{ $user->name }}"
+                                        onclick="confirmarGuardarModulos(this.dataset.userId, this.dataset.userName)"
                                         class="abc-btn abc-btn-primary">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                                         <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>

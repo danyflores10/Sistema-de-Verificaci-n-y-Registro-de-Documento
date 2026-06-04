@@ -26,11 +26,11 @@
     </div>
 
     <div class="py-6">
-        <div class="max-w-[96rem] mx-auto px-3 sm:px-4 lg:px-6 xl:px-8">
+        <div class="w-full">
 
             {{-- Filtros --}}
             <div class="abc-filter-bar">
-                <form method="GET" action="{{ route('notes.index') }}" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-4 items-end">
+                <form method="GET" action="{{ route('notes.index') }}" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-8 gap-4 items-end">
                     <div>
                         <label class="abc-label">N° CAJA</label>
                         <select name="box_id" class="abc-input">
@@ -58,6 +58,18 @@
                             <option value="ENVIADO" @selected(request('status') === 'ENVIADO')>ENVIADO</option>
                             <option value="VERIFICADO" @selected(request('status') === 'VERIFICADO')>VERIFICADO</option>
                             <option value="RECHAZADO" @selected(request('status') === 'RECHAZADO')>RECHAZADO</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="abc-label">ARCHIVOS</label>
+                        <select name="file_type" class="abc-input">
+                            <option value="">-- Todos --</option>
+                            <option value="con" @selected(request('file_type') === 'con')>Con archivos</option>
+                            <option value="sin" @selected(request('file_type') === 'sin')>Sin archivos</option>
+                            <option value="pdf" @selected(request('file_type') === 'pdf')>PDF</option>
+                            <option value="zip" @selected(request('file_type') === 'zip')>ZIP</option>
+                            <option value="rar" @selected(request('file_type') === 'rar')>RAR</option>
+                            <option value="word" @selected(request('file_type') === 'word')>Word (DOC/DOCX)</option>
                         </select>
                     </div>
                     <div>
@@ -127,6 +139,7 @@
                                 <th class="px-3 py-3 text-center text-[10px] font-bold text-white/90 uppercase tracking-wider" style="width: 110px;">TIPOLOGIA</th>
                                 <th class="px-3 py-3 text-center text-[10px] font-bold text-white/90 uppercase tracking-wider" style="width: 110px;">EST. CONSERV.</th>
                                 <th class="px-3 py-3 text-left text-[10px] font-bold text-white/90 uppercase tracking-wider" style="width: 210px;">OBSERVACIONES</th>
+                                <th class="px-3 py-3 text-center text-[10px] font-bold text-white/90 uppercase tracking-wider" style="width: 120px;">ARCHIVOS</th>
                                 <th class="px-3 py-3 text-center text-[10px] font-bold text-white/90 uppercase tracking-wider" style="width: 100px;">Estado</th>
                                 <th class="px-3 py-3 text-center text-[10px] font-bold text-white/90 uppercase tracking-wider sticky right-0" style="width: 140px; background: linear-gradient(135deg, var(--abc-navy) 0%, var(--abc-navy-light) 100%); box-shadow: -4px 0 8px -4px rgba(0,0,0,0.15);">Acciones</th>
                             </tr>
@@ -245,6 +258,33 @@
                                     <td class="px-3 py-2.5 text-xs" style="color: var(--text-muted); max-width: 150px;">
                                         <span class="block truncate" title="{{ $note->observations }}">{{ $note->observations ?? '-' }}</span>
                                     </td>
+                                    {{-- ARCHIVOS adjuntos (tipos subidos) --}}
+                                    <td class="px-3 py-2.5 text-center">
+                                        @if($note->attachments->isNotEmpty())
+                                            @php
+                                                $attExtColors = [
+                                                    'PDF'  => 'bg-red-50 text-red-700 ring-red-200',
+                                                    'ZIP'  => 'bg-amber-50 text-amber-700 ring-amber-200',
+                                                    'RAR'  => 'bg-violet-50 text-violet-700 ring-violet-200',
+                                                    'DOC'  => 'bg-sky-50 text-sky-700 ring-sky-200',
+                                                    'DOCX' => 'bg-sky-50 text-sky-700 ring-sky-200',
+                                                ];
+                                                $attExts = $note->attachments
+                                                    ->map(fn($a) => strtoupper(pathinfo($a->original_name, PATHINFO_EXTENSION)))
+                                                    ->filter()
+                                                    ->unique()
+                                                    ->values();
+                                            @endphp
+                                            <div class="inline-flex flex-wrap items-center justify-center gap-1" title="{{ $note->attachments->count() }} archivo(s) adjunto(s)">
+                                                @foreach($attExts as $ext)
+                                                    <span class="inline-flex px-1.5 py-0.5 text-[9px] font-bold rounded ring-1 ring-inset {{ $attExtColors[$ext] ?? 'bg-gray-50 text-gray-700 ring-gray-200' }}">{{ $ext }}</span>
+                                                @endforeach
+                                                <span class="text-[10px] font-semibold" style="color: var(--text-muted);">({{ $note->attachments->count() }})</span>
+                                            </div>
+                                        @else
+                                            <span class="text-[10px]" style="color: var(--text-muted);">—</span>
+                                        @endif
+                                    </td>
                                     <td class="px-3 py-2.5 text-center">
                                         @include('partials.status-badge', ['status' => $note->status])
                                     </td>
@@ -280,7 +320,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="15" class="text-center py-16" style="border: none;">
+                                    <td colspan="16" class="text-center py-16" style="border: none;">
                                         <div class="flex flex-col items-center gap-3">
                                             <div class="w-16 h-16 rounded-full flex items-center justify-center" style="background-color: var(--surface-border-light);">
                                                 <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" style="color: var(--text-muted);"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m6.75 12H9.75m3 0H9.75m0 0V18m-6-13.5V18a2.25 2.25 0 0 0 2.25 2.25h9a2.25 2.25 0 0 0 2.25-2.25V6.108c0-.591-.239-1.16-.659-1.575l-2.847-2.784A2.25 2.25 0 0 0 12.172 1.5H8.25A2.25 2.25 0 0 0 6 3.75Z"/></svg>
@@ -411,6 +451,31 @@
                             <p class="text-[11px] mt-1.5 truncate" style="color: var(--text-muted);" title="{{ $note->observations }}">
                                 <span class="font-semibold">Obs:</span> {{ $note->observations }}
                             </p>
+                        @endif
+
+                        {{-- Archivos adjuntos --}}
+                        @if($note->attachments->isNotEmpty())
+                            @php
+                                $mAttExtColors = [
+                                    'PDF'  => 'bg-red-50 text-red-700 ring-red-200',
+                                    'ZIP'  => 'bg-amber-50 text-amber-700 ring-amber-200',
+                                    'RAR'  => 'bg-violet-50 text-violet-700 ring-violet-200',
+                                    'DOC'  => 'bg-sky-50 text-sky-700 ring-sky-200',
+                                    'DOCX' => 'bg-sky-50 text-sky-700 ring-sky-200',
+                                ];
+                                $mAttExts = $note->attachments
+                                    ->map(fn($a) => strtoupper(pathinfo($a->original_name, PATHINFO_EXTENSION)))
+                                    ->filter()
+                                    ->unique()
+                                    ->values();
+                            @endphp
+                            <div class="flex flex-wrap items-center gap-1 mt-2">
+                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" style="color: var(--text-muted);"><path stroke-linecap="round" stroke-linejoin="round" d="m18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13"/></svg>
+                                @foreach($mAttExts as $ext)
+                                    <span class="inline-flex px-1.5 py-0.5 text-[9px] font-bold rounded ring-1 ring-inset {{ $mAttExtColors[$ext] ?? 'bg-gray-50 text-gray-700 ring-gray-200' }}">{{ $ext }}</span>
+                                @endforeach
+                                <span class="text-[10px] font-semibold" style="color: var(--text-muted);">({{ $note->attachments->count() }})</span>
+                            </div>
                         @endif
 
                         {{-- Acciones --}}
@@ -1010,56 +1075,80 @@
             width: 38px;
             height: 38px;
             border-radius: 12px;
-            transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease, color .18s ease, filter .18s ease;
             cursor: pointer;
-            border: 1px solid transparent;
-            box-shadow: 0 6px 14px -6px rgba(15, 23, 42, 0.45);
+            border: none;
+            overflow: hidden;
+            color: #fff;
+            -webkit-tap-highlight-color: transparent;
+            transition: transform .28s cubic-bezier(.34, 1.56, .64, 1),
+                        box-shadow .28s ease,
+                        filter .28s ease;
         }
+        /* Brillo diagonal que cruza el botón al pasar el cursor */
+        .action-btn::after {
+            content: "";
+            position: absolute;
+            top: -40%;
+            left: -75%;
+            width: 45%;
+            height: 180%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent);
+            transform: skewX(-22deg);
+            transition: left .55s cubic-bezier(.4, 0, .2, 1);
+            pointer-events: none;
+        }
+        .action-btn:hover::after { left: 135%; }
+
         .action-btn svg {
+            position: relative;
+            z-index: 1;
             width: 17px;
             height: 17px;
+            filter: drop-shadow(0 1px 1.5px rgba(0,0,0,.28));
+            transition: transform .28s cubic-bezier(.34, 1.56, .64, 1);
         }
-        .action-btn:hover { transform: translateY(-2px) scale(1.02); }
-        .action-btn:active { transform: translateY(0); }
-        .action-btn:focus-visible {
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(255,255,255,0.9), 0 0 0 6px rgba(59,130,246,0.45);
-        }
+        .action-btn:hover { transform: translateY(-3px) scale(1.07); }
+        .action-btn:hover svg { transform: scale(1.14); }
+        .action-btn:active { transform: translateY(-1px) scale(.97); }
+        .action-btn:focus-visible { outline: none; }
 
         .action-btn-view {
-            color: #fff;
-            background: linear-gradient(135deg, #2563eb, #1d4ed8);
-            border-color: #1e40af;
-            box-shadow: 0 8px 16px -7px rgba(37,99,235,0.75);
+            background: linear-gradient(140deg, #60a5fa 0%, #2563eb 55%, #1d4ed8 100%);
+            box-shadow: 0 6px 16px -6px rgba(37,99,235,.70),
+                        inset 0 1px 0 rgba(255,255,255,.35);
         }
         .action-btn-view:hover {
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-            box-shadow: 0 12px 18px -8px rgba(37,99,235,0.85);
-            filter: saturate(1.08);
+            box-shadow: 0 16px 26px -8px rgba(37,99,235,.90),
+                        inset 0 1px 0 rgba(255,255,255,.45);
+        }
+        .action-btn-view:focus-visible {
+            box-shadow: 0 0 0 3px var(--surface-card, #fff), 0 0 0 6px rgba(37,99,235,.55);
         }
 
         .action-btn-edit {
-            color: #fff;
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            border-color: #b45309;
-            box-shadow: 0 8px 16px -7px rgba(217,119,6,0.75);
+            background: linear-gradient(140deg, #fbbf24 0%, #f59e0b 55%, #d97706 100%);
+            box-shadow: 0 6px 16px -6px rgba(217,119,6,.70),
+                        inset 0 1px 0 rgba(255,255,255,.40);
         }
         .action-btn-edit:hover {
-            background: linear-gradient(135deg, #fbbf24, #f59e0b);
-            box-shadow: 0 12px 18px -8px rgba(217,119,6,0.9);
-            filter: saturate(1.08);
+            box-shadow: 0 16px 26px -8px rgba(217,119,6,.92),
+                        inset 0 1px 0 rgba(255,255,255,.50);
+        }
+        .action-btn-edit:focus-visible {
+            box-shadow: 0 0 0 3px var(--surface-card, #fff), 0 0 0 6px rgba(217,119,6,.55);
         }
 
         .action-btn-delete {
-            color: #fff;
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            border-color: #b91c1c;
-            box-shadow: 0 8px 16px -7px rgba(220,38,38,0.78);
+            background: linear-gradient(140deg, #fb7185 0%, #ef4444 52%, #dc2626 100%);
+            box-shadow: 0 6px 16px -6px rgba(220,38,38,.72),
+                        inset 0 1px 0 rgba(255,255,255,.32);
         }
         .action-btn-delete:hover {
-            background: linear-gradient(135deg, #f87171, #ef4444);
-            box-shadow: 0 12px 18px -8px rgba(220,38,38,0.9);
-            filter: saturate(1.06);
+            box-shadow: 0 16px 26px -8px rgba(220,38,38,.92),
+                        inset 0 1px 0 rgba(255,255,255,.42);
+        }
+        .action-btn-delete:focus-visible {
+            box-shadow: 0 0 0 3px var(--surface-card, #fff), 0 0 0 6px rgba(220,38,38,.55);
         }
 
         .abc-folder-upload .abc-folder-dropzone {

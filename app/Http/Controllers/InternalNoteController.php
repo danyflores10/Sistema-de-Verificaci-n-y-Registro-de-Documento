@@ -59,6 +59,10 @@ class InternalNoteController extends Controller
             $query->where('created_by', $createdBy);
         }
 
+        // Filtro por archivos adjuntos: presencia (con/sin) o por tipo de archivo
+        // subido (PDF, ZIP, RAR, Word). Ver InternalNote::scopeWithFileType().
+        $query->withFileType($request->get('file_type'));
+
         // IDs de TODOS los documentos enviables (BORRADOR) que coinciden con los
         // filtros actuales, en todas las páginas. Permite "seleccionar todos" a
         // través de la paginación. La consulta ya está acotada al propietario si

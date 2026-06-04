@@ -13,11 +13,11 @@
     </div>
 
     <div class="py-6">
-        <div class="max-w-[96rem] mx-auto px-3 sm:px-4 lg:px-6 xl:px-8">
+        <div class="w-full">
 
             {{-- Mensaje de éxito --}}
             @if(session('success'))
-                <div class="max-w-7xl mx-auto mb-6 rounded-xl border border-emerald-200 bg-emerald-50 p-4 flex items-start gap-3">
+                <div class="w-full mb-6 rounded-xl border border-emerald-200 bg-emerald-50 p-4 flex items-start gap-3">
                     <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center">
                         <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
                     </div>
@@ -29,7 +29,7 @@
 
             {{-- Mensaje de error --}}
             @if(session('error'))
-                <div class="max-w-7xl mx-auto mb-6 rounded-xl border border-red-200 bg-red-50 p-4 flex items-start gap-3">
+                <div class="w-full mb-6 rounded-xl border border-red-200 bg-red-50 p-4 flex items-start gap-3">
                     <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-red-500 flex items-center justify-center">
                         <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"/></svg>
                     </div>
@@ -47,7 +47,7 @@
             @endif
 
             {{-- Card principal --}}
-            <div class="abc-card max-w-7xl mx-auto">
+            <div class="abc-card w-full">
                 <div class="p-6">
                     {{-- Instrucciones --}}
                     <div class="mb-6 rounded-xl border border-blue-200 bg-blue-50 p-5">
@@ -200,7 +200,7 @@
             </div>
 
             {{-- Tabla de referencia --}}
-            <div class="abc-card mt-6 max-w-7xl mx-auto">
+            <div class="abc-card mt-6 w-full">
                 <div class="p-5">
                     <h3 class="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
                         <svg class="w-5 h-5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12"/></svg>

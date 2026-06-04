@@ -16,7 +16,7 @@
     </div>
 
     <div class="py-6">
-        <div class="max-w-[96rem] mx-auto px-3 sm:px-4 lg:px-6 xl:px-8">
+        <div class="w-full">
 
             {{-- Filtros --}}
             <div class="abc-filter-bar">

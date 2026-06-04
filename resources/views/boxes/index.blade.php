@@ -17,7 +17,7 @@
         </div>
 
     <div class="py-6">
-        <div class="max-w-[96rem] mx-auto px-3 sm:px-4 lg:px-6 xl:px-8 space-y-6">
+        <div class="w-full space-y-6">
 
             {{-- Filtro de busqueda --}}
             <div class="abc-filter-bar">
@@ -97,7 +97,10 @@
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="button"
-                                                            onclick="confirmarEliminarCaja('{{ addslashes($box->box_number) }}', {{ $box->internal_notes_count }}, 'delete-box-{{ $box->id }}')"
+                                                            data-box-number="{{ $box->box_number }}"
+                                                            data-notes-count="{{ $box->internal_notes_count }}"
+                                                            data-form-id="delete-box-{{ $box->id }}"
+                                                            onclick="confirmarEliminarCaja(this.dataset.boxNumber, Number(this.dataset.notesCount), this.dataset.formId)"
                                                             class="abc-btn abc-btn-danger !px-3 !py-1.5 text-xs">
                                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
                                                             <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
@@ -158,7 +161,11 @@
                                 </a>
                                 <form method="POST" action="{{ route('boxes.destroy', $box) }}" class="flex-1" id="mobile-del-box-{{ $box->id }}">
                                     @csrf @method('DELETE')
-                                    <button type="button" onclick="confirmarEliminarCaja('{{ addslashes($box->box_number) }}', {{ $box->internal_notes_count }}, 'mobile-del-box-{{ $box->id }}')"
+                                    <button type="button"
+                                            data-box-number="{{ $box->box_number }}"
+                                            data-notes-count="{{ $box->internal_notes_count }}"
+                                            data-form-id="mobile-del-box-{{ $box->id }}"
+                                            onclick="confirmarEliminarCaja(this.dataset.boxNumber, Number(this.dataset.notesCount), this.dataset.formId)"
                                             class="w-full text-red-600 bg-red-50 dark:bg-red-900/20 dark:text-red-400 hover:bg-red-100 inline-flex items-center justify-center gap-1.5 py-2 rounded-lg text-[11px] font-semibold transition">
                                         <svg class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
                                         Eliminar

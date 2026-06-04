@@ -112,4 +112,55 @@ class InternalNote extends Model
     {
         return $this->hasMany(NoteAttachment::class, 'internal_note_id');
     }
+
+    /* ---- Scopes ---- */
+
+    /**
+     * Mapa de tipos de filtro de archivo → extensiones que coinciden.
+     */
+    public const FILE_TYPE_EXTENSIONS = [
+        'pdf'  => ['pdf'],
+        'zip'  => ['zip'],
+        'rar'  => ['rar'],
+        'word' => ['doc', 'docx'],
+    ];
+
+    /**
+     * Filtra las notas según los archivos adjuntos subidos:
+     *  - 'con'  → tiene al menos un adjunto
+     *  - 'sin'  → no tiene adjuntos
+     *  - 'pdf' | 'zip' | 'rar' | 'word' → tiene un adjunto de ese tipo
+     *
+     * Se compara por la extensión del nombre original con LOWER() porque en
+     * PostgreSQL LIKE distingue mayúsculas y el mime_type no es confiable para
+     * .zip/.rar (a menudo llega como application/octet-stream).
+     */
+    public function scopeWithFileType($query, ?string $fileType)
+    {
+        if (! $fileType) {
+            return $query;
+        }
+
+        if ($fileType === 'con') {
+            return $query->whereHas('attachments');
+        }
+
+        if ($fileType === 'sin') {
+            return $query->whereDoesntHave('attachments');
+        }
+
+        if (isset(self::FILE_TYPE_EXTENSIONS[$fileType])) {
+            $extensions = self::FILE_TYPE_EXTENSIONS[$fileType];
+
+            return $query->whereHas('attachments', function ($attachmentQuery) use ($extensions) {
+                $attachmentQuery->where(function ($inner) use ($extensions) {
+                    foreach ($extensions as $ext) {
+                        $inner->orWhereRaw('LOWER(original_name) LIKE ?', ['%.' . $ext]);
+                    }
+                });
+            });
+        }
+
+        return $query;
+    }
 }

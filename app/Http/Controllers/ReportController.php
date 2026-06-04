@@ -36,7 +36,7 @@ class ReportController extends Controller
      */
     public function exportExcel(Request $request)
     {
-        $filters = $request->only(['box_id', 'status', 'date_from', 'date_to', 'created_by']);
+        $filters = $request->only(['box_id', 'status', 'date_from', 'date_to', 'created_by', 'file_type']);
 
         return Excel::download(
             new InternalNotesExport($filters),
@@ -66,6 +66,7 @@ class ReportController extends Controller
         if ($createdBy = $request->get('created_by')) {
             $query->where('created_by', $createdBy);
         }
+        $query->withFileType($request->get('file_type'));
 
         $notes = $query->orderBy('note_date', 'desc')->get();
 
