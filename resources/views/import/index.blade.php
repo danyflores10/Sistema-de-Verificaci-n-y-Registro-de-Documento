@@ -3,7 +3,7 @@
         <div class="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
                 <h2 class="text-2xl font-bold tracking-tight">Importar desde Excel</h2>
-                <p class="text-sm text-white/70 mt-1">Carga masiva de documentos desde archivos Excel &mdash; Agencia Boliviana de Correos</p>
+                <p class="text-sm text-white/70 mt-1">Carga masiva de documentos desde archivos Excel &mdash; Correos de Bolivia</p>
             </div>
             <a href="{{ route('notes.index') }}" class="abc-btn abc-btn-warning">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3"/></svg>

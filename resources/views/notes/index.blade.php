@@ -4,7 +4,7 @@
         <div class="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
                 <h2 class="text-2xl font-bold tracking-tight">Documentos</h2>
-                <p class="text-sm text-white/70 mt-1">Gestión de documentos internos &mdash; Agencia Boliviana de Correos</p>
+                <p class="text-sm text-white/70 mt-1">Gestión de documentos internos &mdash; Correos de Bolivia</p>
             </div>
             <div class="flex items-center gap-2 flex-wrap">
                 <a href="{{ route('reports.export.excel', request()->query()) }}" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold bg-emerald-500 hover:bg-emerald-600 text-white transition shadow-sm">
@@ -61,16 +61,9 @@
                         </select>
                     </div>
                     <div>
-                        <label class="abc-label">ARCHIVOS</label>
-                        <select name="file_type" class="abc-input">
-                            <option value="">-- Todos --</option>
-                            <option value="con" @selected(request('file_type') === 'con')>Con archivos</option>
-                            <option value="sin" @selected(request('file_type') === 'sin')>Sin archivos</option>
-                            <option value="pdf" @selected(request('file_type') === 'pdf')>PDF</option>
-                            <option value="zip" @selected(request('file_type') === 'zip')>ZIP</option>
-                            <option value="rar" @selected(request('file_type') === 'rar')>RAR</option>
-                            <option value="word" @selected(request('file_type') === 'word')>Word (DOC/DOCX)</option>
-                        </select>
+                        <label class="abc-label">REFERENCIA</label>
+                        <input type="text" name="reference" value="{{ request('reference') }}"
+                               class="abc-input" placeholder="Buscar...">
                     </div>
                     <div>
                         <label class="abc-label">FECHA desde</label>
@@ -147,6 +140,7 @@
                         <tbody class="divide-y" style="border-color: var(--surface-border-light);">
                             @forelse($notes as $index => $note)
                                 @php
+                                    $effectiveAttachments = $note->getRelation('effectiveAttachments') ?? $note->attachments;
                                     $noteData = [
                                         'id'                  => $note->id,
                                         'box_id'              => $note->box_id,
@@ -178,6 +172,16 @@
                                             'mime_type'    => $a->mime_type,
                                             'size_kb'      => number_format($a->file_size / 1024, 1),
                                         ])->toArray(),
+                                        'display_attachments' => $effectiveAttachments->map(fn($a) => [
+                                            'id'           => $a->id,
+                                            'name'         => $a->original_name,
+                                            'url'          => asset('storage/' . $a->file_path),
+                                            'mime_type'    => $a->mime_type,
+                                            'size_kb'      => number_format($a->file_size / 1024, 1),
+                                            'is_inherited' => (bool) $a->getAttribute('is_inherited_from_box'),
+                                            'is_primary'   => (bool) $a->getAttribute('is_primary_from_note'),
+                                        ])->toArray(),
+                                        'has_inherited_box_pdfs' => (bool) $note->getAttribute('has_inherited_box_pdfs'),
                                     ];
                                 @endphp
                                 <tr class="group transition-colors duration-150 hover:bg-blue-50/40 dark:hover:bg-blue-900/10"
@@ -260,7 +264,7 @@
                                     </td>
                                     {{-- ARCHIVOS adjuntos (tipos subidos) --}}
                                     <td class="px-3 py-2.5 text-center">
-                                        @if($note->attachments->isNotEmpty())
+                                        @if($effectiveAttachments->isNotEmpty())
                                             @php
                                                 $attExtColors = [
                                                     'PDF'  => 'bg-red-50 text-red-700 ring-red-200',
@@ -269,17 +273,22 @@
                                                     'DOC'  => 'bg-sky-50 text-sky-700 ring-sky-200',
                                                     'DOCX' => 'bg-sky-50 text-sky-700 ring-sky-200',
                                                 ];
-                                                $attExts = $note->attachments
+                                                $attExts = $effectiveAttachments
                                                     ->map(fn($a) => strtoupper(pathinfo($a->original_name, PATHINFO_EXTENSION)))
                                                     ->filter()
                                                     ->unique()
                                                     ->values();
+                                                $pdfCount = $effectiveAttachments->filter(fn($a) => strtoupper(pathinfo($a->original_name, PATHINFO_EXTENSION)) === 'PDF')->count();
                                             @endphp
-                                            <div class="inline-flex flex-wrap items-center justify-center gap-1" title="{{ $note->attachments->count() }} archivo(s) adjunto(s)">
+                                            <div class="inline-flex flex-wrap items-center justify-center gap-1" title="{{ $effectiveAttachments->count() }} archivo(s) adjunto(s)">
                                                 @foreach($attExts as $ext)
                                                     <span class="inline-flex px-1.5 py-0.5 text-[9px] font-bold rounded ring-1 ring-inset {{ $attExtColors[$ext] ?? 'bg-gray-50 text-gray-700 ring-gray-200' }}">{{ $ext }}</span>
                                                 @endforeach
-                                                <span class="text-[10px] font-semibold" style="color: var(--text-muted);">({{ $note->attachments->count() }})</span>
+                                                @if($pdfCount > 0)
+                                                    <span class="inline-flex px-1.5 py-0.5 text-[9px] font-bold rounded ring-1 ring-inset bg-amber-50 text-amber-700 ring-amber-200">
+                                                        PDF ({{ $pdfCount }})
+                                                    </span>
+                                                @endif
                                             </div>
                                         @else
                                             <span class="text-[10px]" style="color: var(--text-muted);">—</span>
@@ -352,6 +361,7 @@
             <div class="mobile-show-cards">
                 @forelse($notes as $index => $note)
                     @php
+                        $effectiveAttachments = $note->getRelation('effectiveAttachments') ?? $note->attachments;
                         $mobileData = [
                             'id'                  => $note->id,
                             'box_id'              => $note->box_id,
@@ -383,6 +393,16 @@
                                 'mime_type' => $a->mime_type,
                                 'size_kb'   => number_format($a->file_size / 1024, 1),
                             ])->toArray(),
+                            'display_attachments' => $effectiveAttachments->map(fn($a) => [
+                                'id'           => $a->id,
+                                'name'         => $a->original_name,
+                                'url'          => asset('storage/' . $a->file_path),
+                                'mime_type'    => $a->mime_type,
+                                'size_kb'      => number_format($a->file_size / 1024, 1),
+                                'is_inherited' => (bool) $a->getAttribute('is_inherited_from_box'),
+                                'is_primary'   => (bool) $a->getAttribute('is_primary_from_note'),
+                            ])->toArray(),
+                            'has_inherited_box_pdfs' => (bool) $note->getAttribute('has_inherited_box_pdfs'),
                         ];
                     @endphp
                     <div class="mobile-card-item">
@@ -454,7 +474,7 @@
                         @endif
 
                         {{-- Archivos adjuntos --}}
-                        @if($note->attachments->isNotEmpty())
+                        @if($effectiveAttachments->isNotEmpty())
                             @php
                                 $mAttExtColors = [
                                     'PDF'  => 'bg-red-50 text-red-700 ring-red-200',
@@ -463,7 +483,7 @@
                                     'DOC'  => 'bg-sky-50 text-sky-700 ring-sky-200',
                                     'DOCX' => 'bg-sky-50 text-sky-700 ring-sky-200',
                                 ];
-                                $mAttExts = $note->attachments
+                                $mAttExts = $effectiveAttachments
                                     ->map(fn($a) => strtoupper(pathinfo($a->original_name, PATHINFO_EXTENSION)))
                                     ->filter()
                                     ->unique()
@@ -474,7 +494,7 @@
                                 @foreach($mAttExts as $ext)
                                     <span class="inline-flex px-1.5 py-0.5 text-[9px] font-bold rounded ring-1 ring-inset {{ $mAttExtColors[$ext] ?? 'bg-gray-50 text-gray-700 ring-gray-200' }}">{{ $ext }}</span>
                                 @endforeach
-                                <span class="text-[10px] font-semibold" style="color: var(--text-muted);">({{ $note->attachments->count() }})</span>
+                                <span class="text-[10px] font-semibold" style="color: var(--text-muted);">({{ $effectiveAttachments->count() }})</span>
                             </div>
                         @endif
 
@@ -698,24 +718,41 @@
                         </template>
 
                         {{-- Adjuntos --}}
-                        <template x-if="viewing?.attachments && viewing.attachments.length > 0">
+                        <template x-if="viewing?.display_attachments && viewing.display_attachments.length > 0">
                             <div class="mt-5">
                                 <p class="text-[10px] uppercase tracking-wider font-bold mb-2" style="color: var(--text-muted);">
-                                    Adjuntos (<span x-text="viewing?.attachments.length"></span>)
+                                    Adjuntos (<span x-text="viewing?.display_attachments.length"></span>)
                                 </p>
+                                <template x-if="viewing?.has_inherited_box_pdfs">
+                                    <p class="text-[11px] mb-2" style="color: var(--text-muted);">
+                                        Se muestran PDF de otros registros de la misma caja, sin duplicarlos en la base de datos.
+                                    </p>
+                                </template>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                                    <template x-for="att in viewing?.attachments || []" :key="att.id">
+                                    <template x-for="att in viewing?.display_attachments || []" :key="`${att.id}-${att.is_inherited ? 'inherited' : 'own'}`">
                                         <a :href="att.url" target="_blank"
                                            class="flex items-center gap-3 p-2.5 rounded-lg border transition-colors duration-200 hover:shadow-sm"
                                            style="background-color: var(--surface-input); border-color: var(--surface-border);"
-                                           :class="'hover:border-blue-400'">
+                                            :class="'hover:border-blue-400'">
                                             <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
-                                                 :class="att.mime_type?.includes('pdf') ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-600'">
+                                                 :class="att.is_primary
+                                                    ? 'bg-emerald-100 text-emerald-700'
+                                                    : (att.is_inherited
+                                                        ? 'bg-amber-100 text-amber-700'
+                                                        : (att.mime_type?.includes('pdf') ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-600'))">
                                                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>
                                             </div>
                                             <div class="flex-1 min-w-0">
                                                 <p class="text-xs font-semibold truncate" style="color: var(--text-primary);" x-text="att.name"></p>
-                                                <p class="text-[10px]" style="color: var(--text-muted);" x-text="att.size_kb + ' KB'"></p>
+                                                <p class="text-[10px]" style="color: var(--text-muted);">
+                                                    <span x-text="att.size_kb + ' KB'"></span>
+                                                    <template x-if="att.is_primary">
+                                                        <span> • PDF principal</span>
+                                                    </template>
+                                                    <template x-if="att.is_inherited">
+                                                        <span> • PDF de la caja</span>
+                                                    </template>
+                                                </p>
                                             </div>
                                             <svg class="w-4 h-4 flex-shrink-0" style="color: var(--text-muted);" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/></svg>
                                         </a>

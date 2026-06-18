@@ -22,7 +22,7 @@ class PasswordResetCodeMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Código de Verificación - Agencia Boliviana de Correos',
+            subject: 'Código de Verificación - Correos de Bolivia',
         );
     }
 

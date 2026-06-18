@@ -67,10 +67,9 @@
                 {{-- Logo y branding --}}
                 <div class="text-center mb-8 animate-fade-in-up">
                     <div class="inline-flex items-center justify-center mb-4">
-                        <img src="{{ asset('images/logoCorreos.png') }}" alt="Agencia Boliviana de Correos" class="w-36 h-36 object-contain drop-shadow-[0_0_30px_rgba(255,255,255,0.25)] hover:scale-105 transition-transform duration-500">
+                        <img src="{{ asset('images/logoCorreos.png') }}" alt="Correos de Bolivia" class="w-36 h-36 object-contain drop-shadow-[0_0_30px_rgba(255,255,255,0.25)] hover:scale-105 transition-transform duration-500">
                     </div>
-                    <h1 class="text-2xl font-bold text-white tracking-tight drop-shadow-lg">AGENCIA BOLIVIANA</h1>
-                    <h2 class="text-lg font-medium text-yellow-400 tracking-widest drop-shadow-md">DE CORREOS</h2>
+                    <h1 class="text-xl sm:text-2xl font-bold text-yellow-400 tracking-[0.22em] drop-shadow-md whitespace-nowrap">CORREOS DE BOLIVIA</h1>
                     <p class="text-sm text-white/60 mt-2">Sistema de Verificación y Registro de Documentos</p>
                 </div>
 
@@ -81,7 +80,7 @@
 
                 {{-- Footer --}}
                 <p class="text-center text-xs text-white/40 mt-6 animate-fade-in-up" style="animation-delay: 0.3s;">
-                    &copy; {{ date('Y') }} Agencia Boliviana de Correos — Todos los derechos reservados
+                    &copy; {{ date('Y') }} Correos de Bolivia — Todos los derechos reservados
                 </p>
             </div>
         </div>

@@ -7,6 +7,7 @@ use App\Models\Box;
 use App\Models\InternalNote;
 use App\Models\NoteAttachment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 
 class InternalNoteController extends Controller
@@ -49,6 +50,9 @@ class InternalNoteController extends Controller
         if ($folderNumber = $request->get('folder_number')) {
             $query->where('folder_number', 'like', "%{$folderNumber}%");
         }
+        if ($reference = $request->get('reference')) {
+            $query->whereRaw('LOWER(reference) LIKE ?', ['%' . mb_strtolower($reference, 'UTF-8') . '%']);
+        }
         if ($dateFrom = $request->get('date_from')) {
             $query->where('note_date', '>=', $dateFrom);
         }
@@ -58,10 +62,6 @@ class InternalNoteController extends Controller
         if ($createdBy = $request->get('created_by')) {
             $query->where('created_by', $createdBy);
         }
-
-        // Filtro por archivos adjuntos: presencia (con/sin) o por tipo de archivo
-        // subido (PDF, ZIP, RAR, Word). Ver InternalNote::scopeWithFileType().
-        $query->withFileType($request->get('file_type'));
 
         // IDs de TODOS los documentos enviables (BORRADOR) que coinciden con los
         // filtros actuales, en todas las páginas. Permite "seleccionar todos" a
@@ -73,6 +73,7 @@ class InternalNoteController extends Controller
             ->values();
 
         $notes = $query->latest('note_date')->paginate(15)->withQueryString();
+        $this->hydrateEffectiveAttachments($notes->getCollection());
         $boxes = Box::orderBy('box_number')->get();
         $users = \App\Models\User::where('is_active', true)
                                  ->orderBy('name')
@@ -182,6 +183,7 @@ class InternalNoteController extends Controller
     {
         $this->authorize('view', $note);
         $note->load(['box', 'creator', 'verifier', 'attachments.uploader']);
+        $this->hydrateEffectiveAttachments(collect([$note]), true);
 
         $auditLogs = AuditLog::where('entity', 'internal_notes')
                              ->where('entity_id', $note->id)
@@ -421,5 +423,88 @@ class InternalNoteController extends Controller
         }
 
         return back()->with('success', 'Adjunto eliminado.');
+    }
+
+    /**
+     * Expone PDFs de la misma caja solo a nivel visual cuando una nota no
+     * tiene PDF propio. No crea ni duplica registros en note_attachments.
+     */
+    private function hydrateEffectiveAttachments(Collection $notes, bool $loadUploader = false): void
+    {
+        if ($notes->isEmpty()) {
+            return;
+        }
+
+        $boxIds = $notes->pluck('box_id')
+            ->filter()
+            ->unique()
+            ->values();
+
+        if ($boxIds->isEmpty()) {
+            return;
+        }
+
+        $boxPdfAttachments = NoteAttachment::query()
+            ->select('note_attachments.*', 'internal_notes.box_id')
+            ->join('internal_notes', 'internal_notes.id', '=', 'note_attachments.internal_note_id')
+            ->whereIn('internal_notes.box_id', $boxIds)
+            ->when($loadUploader, fn ($query) => $query->with('uploader'))
+            ->orderBy('note_attachments.id')
+            ->get()
+            ->filter(fn (NoteAttachment $attachment) => $this->isPdfAttachment($attachment))
+            ->groupBy('box_id')
+            ->map(fn (Collection $attachments) => $attachments
+                ->unique(fn (NoteAttachment $attachment) => mb_strtolower($attachment->file_path . '|' . $attachment->original_name))
+                ->values()
+            );
+
+        foreach ($notes as $note) {
+            $ownAttachments = ($note->attachments ?? collect())
+                ->map(function (NoteAttachment $attachment) {
+                    $clonedAttachment = clone $attachment;
+                    $clonedAttachment->setAttribute('is_inherited_from_box', false);
+                    $clonedAttachment->setAttribute('is_primary_from_note', $this->isPdfAttachment($attachment));
+
+                    return $clonedAttachment;
+                })
+                ->values();
+
+            $existingKeys = $ownAttachments
+                ->map(fn (NoteAttachment $attachment) => mb_strtolower($attachment->file_path . '|' . $attachment->original_name))
+                ->all();
+
+            $inheritedPdfs = ($boxPdfAttachments->get($note->box_id) ?? collect())
+                ->reject(fn (NoteAttachment $attachment) => (int) $attachment->internal_note_id === (int) $note->id)
+                ->reject(fn (NoteAttachment $attachment) => in_array(
+                    mb_strtolower($attachment->file_path . '|' . $attachment->original_name),
+                    $existingKeys,
+                    true
+                ))
+                ->map(function (NoteAttachment $attachment) {
+                    $clonedAttachment = clone $attachment;
+                    $clonedAttachment->setAttribute('is_inherited_from_box', true);
+                    $clonedAttachment->setAttribute('is_primary_from_note', false);
+
+                    return $clonedAttachment;
+                })
+                ->values();
+
+            $effectiveAttachments = $ownAttachments->concat($inheritedPdfs)->values();
+            $hasInheritedBoxPdfs = $inheritedPdfs->isNotEmpty();
+
+            $note->setRelation('effectiveAttachments', $effectiveAttachments);
+            $note->setAttribute('has_inherited_box_pdfs', $hasInheritedBoxPdfs);
+        }
+    }
+
+    private function isPdfAttachment(NoteAttachment $attachment): bool
+    {
+        $extension = strtolower(pathinfo($attachment->original_name ?? '', PATHINFO_EXTENSION));
+
+        if ($extension === 'pdf') {
+            return true;
+        }
+
+        return str_contains(strtolower((string) $attachment->mime_type), 'pdf');
     }
 }

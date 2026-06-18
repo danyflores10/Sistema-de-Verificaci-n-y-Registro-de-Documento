@@ -19,9 +19,9 @@
                     {{-- Header con logo --}}
                     <tr>
                         <td style="background: linear-gradient(135deg, #0c2340 0%, #15325a 50%, #0c2340 100%); padding: 36px 40px 28px 40px; text-align: center;">
-                            <img src="{{ $logoSrc }}" alt="Agencia Boliviana de Correos" width="160" style="display: block; margin: 0 auto 16px auto; max-width: 160px; height: auto;">
-                            <h1 style="color: #ffffff; font-size: 20px; font-weight: 700; margin: 0; letter-spacing: 1.5px;">AGENCIA BOLIVIANA</h1>
-                            <p style="color: #f4b223; font-size: 13px; font-weight: 600; margin: 6px 0 0 0; letter-spacing: 4px;">DE CORREOS</p>
+                            <img src="{{ $logoSrc }}" alt="Correos de Bolivia" width="160" style="display: block; margin: 0 auto 16px auto; max-width: 160px; height: auto;">
+                            <h1 style="color: #ffffff; font-size: 20px; font-weight: 700; margin: 0; letter-spacing: 1.5px;">CORREOS</h1>
+                            <p style="color: #f4b223; font-size: 13px; font-weight: 600; margin: 6px 0 0 0; letter-spacing: 4px;">DE BOLIVIA</p>
                         </td>
                     </tr>
 
@@ -65,7 +65,7 @@
                                 <tr>
                                     <td style="padding: 28px 40px; text-align: center;">
                                         <img src="{{ $logoSrc }}" alt="AGBC" width="48" style="display: block; margin: 0 auto 12px auto; max-width: 48px; height: auto; opacity: 0.85;">
-                                        <p style="color: #d1d5db; font-size: 12px; margin: 0 0 6px 0; font-weight: 500;">&copy; {{ date('Y') }} Agencia Boliviana de Correos</p>
+                                        <p style="color: #d1d5db; font-size: 12px; margin: 0 0 6px 0; font-weight: 500;">&copy; {{ date('Y') }} Correos de Bolivia</p>
                                         <p style="color: #8b95a5; font-size: 11px; margin: 0 0 14px 0;">Sistema de Verificación y Registro de Documentos</p>
                                         <table role="presentation" cellspacing="0" cellpadding="0" style="margin: 0 auto;">
                                             <tr>

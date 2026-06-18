@@ -20,8 +20,8 @@
                 <img src="{{ asset('images/logoCorreos.png') }}" alt="ABC" class="w-10 h-10 object-contain drop-shadow-lg">
             </div>
             <div x-show="sidebarOpen" x-transition:enter="transition-opacity duration-200" x-transition:enter-start="opacity-0" class="overflow-hidden">
-                <p class="text-sm font-bold text-white leading-tight tracking-tight">Agencia Boliviana</p>
-                <p class="text-[10px] text-yellow-400/80 font-medium tracking-widest">DE CORREOS</p>
+                <p class="text-sm font-bold text-white leading-tight tracking-tight">Correos</p>
+                <p class="text-[10px] text-yellow-400/80 font-medium tracking-widest">DE BOLIVIA</p>
             </div>
         </a>
         {{-- Close mobile --}}
@@ -252,7 +252,7 @@
     {{-- Sidebar Footer --}}
     <div class="relative z-10 border-t border-white/10 p-3 flex-shrink-0">
         <div x-show="sidebarOpen" class="px-2">
-            <p class="text-[9px] text-gray-500 leading-relaxed text-center">Agencia Boliviana de Correos<br>v1.0 &mdash; 2026</p>
+            <p class="text-[9px] text-gray-500 leading-relaxed text-center">Correos de Bolivia<br>v1.0 &mdash; 2026</p>
         </div>
     </div>
 </aside>

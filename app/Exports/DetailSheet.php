@@ -78,7 +78,7 @@ class DetailSheet implements FromCollection, WithTitle, WithEvents, WithColumnWi
 
                 // === Fila 1: Brand bar ===
                 $sheet->mergeCells("A1:{$lastCol}1");
-                $sheet->setCellValue('A1', 'AGENCIA BOLIVIANA DE CORREOS');
+                $sheet->setCellValue('A1', 'CORREOS DE BOLIVIA');
                 $sheet->getRowDimension(1)->setRowHeight(32);
                 $sheet->getStyle('A1')->applyFromArray([
                     'font' => ['bold' => true, 'size' => 15, 'color' => ['argb' => 'FFFFFFFF']],

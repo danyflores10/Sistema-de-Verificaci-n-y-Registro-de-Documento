@@ -298,18 +298,44 @@
 
             {{-- Adjuntos --}}
             <div class="abc-card mb-6">
+                @php
+                    $effectiveAttachments = $note->getRelation('effectiveAttachments') ?? $note->attachments;
+                @endphp
                 <div class="gradient-navy px-6 py-4 flex items-center gap-3">
                     <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13"/></svg>
-                    <h3 class="text-white font-semibold">Adjuntos ({{ $note->attachments->count() }})</h3>
+                    <h3 class="text-white font-semibold">Adjuntos ({{ $effectiveAttachments->count() }})</h3>
                 </div>
 
                 <div class="p-6">
-                    @if($note->attachments->count())
+                    @if($effectiveAttachments->count())
+                        @if($note->getAttribute('has_inherited_box_pdfs'))
+                            <p class="text-sm mb-4" style="color: var(--text-muted);">
+                                Se muestran PDF de otros registros de la misma caja, sin duplicarlos en la base de datos.
+                            </p>
+                        @endif
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            @foreach($note->attachments as $attachment)
-                                <div class="flex items-center justify-between p-4 rounded-xl" style="background-color: var(--surface-card-hover); border: 1px solid var(--border-primary)">
+                            @foreach($effectiveAttachments as $attachment)
+                                @php
+                                    $cardStyle = 'background-color: var(--surface-card-hover); border: 1px solid var(--border-primary)';
+                                    $iconStyle = 'background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);';
+
+                                    if ($attachment->getAttribute('is_primary_from_note')) {
+                                        $cardStyle = 'background-color: #ecfdf5; border: 1px solid #86efac;';
+                                        $iconStyle = 'background: linear-gradient(135deg, #10b981 0%, #047857 100%);';
+                                    } elseif ($attachment->getAttribute('is_inherited_from_box')) {
+                                        $cardStyle = 'background-color: #fffbeb; border: 1px solid #fcd34d;';
+                                        $iconStyle = 'background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);';
+                                    }
+                                @endphp
+                                <div
+                                    class="flex items-center justify-between p-4 rounded-xl"
+                                    style="{{ $cardStyle }}"
+                                >
                                     <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-lg gradient-navy flex items-center justify-center flex-shrink-0">
+                                        <div
+                                            class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                                            style="{{ $iconStyle }}"
+                                        >
                                             @if(str_contains($attachment->mime_type, 'pdf'))
                                                 <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>
                                             @else
@@ -324,6 +350,12 @@
                                             <p class="text-xs mt-0.5" style="color: var(--text-muted)">
                                                 {{ $attachment->mime_type }} -- {{ number_format($attachment->file_size / 1024, 1) }} KB
                                                 -- Subido por {{ $attachment->uploader->name ?? '-' }}
+                                                @if($attachment->getAttribute('is_primary_from_note'))
+                                                    -- PDF principal
+                                                @endif
+                                                @if($attachment->getAttribute('is_inherited_from_box'))
+                                                    -- PDF de la caja
+                                                @endif
                                             </p>
                                         </div>
                                     </div>

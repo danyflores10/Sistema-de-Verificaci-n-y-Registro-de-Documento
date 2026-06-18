@@ -46,7 +46,7 @@ class SummarySheet implements WithTitle, WithEvents, WithColumnWidths
 
                 // ════════ Fila 1: Logo/Brand ════════
                 $sheet->mergeCells('B2:E2');
-                $sheet->setCellValue('B2', 'AGENCIA BOLIVIANA DE CORREOS');
+                $sheet->setCellValue('B2', 'CORREOS DE BOLIVIA');
                 $sheet->getRowDimension(2)->setRowHeight(36);
                 $sheet->getStyle('B2')->applyFromArray([
                     'font' => ['bold' => true, 'size' => 18, 'color' => ['argb' => 'FFFFFFFF']],

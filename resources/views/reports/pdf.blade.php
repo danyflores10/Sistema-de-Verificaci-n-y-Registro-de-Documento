@@ -342,7 +342,7 @@
             <tr>
                 <td style="width: 55%;">
                     <div class="brand-block">
-                        <div class="b1">AGENCIA BOLIVIANA DE CORREOS</div>
+                        <div class="b1">CORREOS DE BOLIVIA</div>
                         <div class="b2">Sistema de Verificación y Registro de Documentos</div>
                     </div>
                 </td>
@@ -499,7 +499,7 @@
         <table class="footer-table">
             <tr>
                 <td style="width: 33%;">
-                    <span class="gold">AGBC</span> · Agencia Boliviana de Correos
+                    <span class="gold">AGBC</span> · Correos de Bolivia
                 </td>
                 <td style="width: 34%;" class="center">
                     Sistema de Verificación de Documentos · &copy; {{ date('Y') }}
